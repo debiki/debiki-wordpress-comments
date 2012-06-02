@@ -9,20 +9,44 @@ Author URI: http://kajmagnus.debiki.se
 License: GPLv2 or later
 */
 
-add_filter('comments_template', 'debiki_comments');
-function debiki_comments($comments) {
-  return dirname(__FILE__) . '/comments.php';
+add_filter('comments_template', 'path_to_debiki_comments');
+
+function path_to_debiki_comments($comments) {
+	return dirname(__FILE__) . '/comments.php';
 }
 
 
+add_action('wp_head', 'echo_debiki_head');
 
+function echo_debiki_head() {
+	$res = '/wp-content/plugins/debiki-wordpress/res/';
+	echo "
+    <meta name='viewport' content='initial-scale=1.0, minimum-scale=0.01'/>
+    <script src='http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.5.3/modernizr.min.js'></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js'></script>
+    <script src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.19/jquery-ui.min.js'></script>
+	 <script>
+		// Play Framework 2's `require` and `exports` not available.
+		window.require = function() {};
+		window.exports = {};
 
-/*
-# Makes Disqus work on my local network.
-add_action('wp_head', 'my_custom_js');
-function my_custom_js() {
-  echo "<script>var disqus_developer = 1;\n</script>\n";
+		var debiki = { scriptLoad: $.Deferred() };
+		Modernizr.load({
+			test: Modernizr.touch,
+			nope: [
+			'" . $res . "jquery-scrollable.js',
+			'" . $res . "debiki-utterscroll.js',
+			'" . $res . "bootstrap-tooltip.js'],
+			both: [
+			'" . $res . "diff_match_patch.js',
+			'" . $res . "html-sanitizer-bundle.js',
+			'" . $res . "jquery-cookie.js',
+			'" . $res . "tagdog.js',
+			'" . $res . "javascript-yaml-parser.js',
+			'" . $res . "debiki.js']
+		});
+		</script>
+		";
 }
-*/
 
 ?>
