@@ -48,6 +48,14 @@ function echo_debiki_head() {
 			'" . $res . "debiki.js']
 		});
 		</script>
+		<style>
+		.commentlist #respond {
+			float: left;
+			margin: 0 8em 0 0;
+		}
+		.commentlist {
+			width: auto; /* override WP's 68.9% */
+		</style>
 		";
 }
 

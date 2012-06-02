@@ -38,7 +38,10 @@
 
 		<div class='dw-t-vspace'></div>
 		<ol class="commentlist dw-res ui-helper-clearfix">
-			<?php debiki_list_comments(); ?>
+			<?php
+			comment_form();
+			debiki_list_comments();
+			?>
 		</ol>
 
 	<?php
@@ -49,8 +52,6 @@
 			post_type_supports(get_post_type(), 'comments')) : ?>
 		<p class="nocomments"><?php _e('Comments are closed.', 'twentyeleven'); ?></p>
 	<?php endif; ?>
-
-	<?php comment_form(); ?>
 
 </div>
 
