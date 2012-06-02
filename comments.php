@@ -83,22 +83,11 @@ class Debiki_Walker_Comment extends Walker {
 	 *
 	 * @param string $output Passed by reference. Used to append additional content.
 	 * @param int $depth Depth of comment.
-	 * @param array $args Uses 'style' argument for type of HTML list.
+	 * @param array $args Ignored.
 	 */
 	function start_lvl(&$output, $depth, $args) {
 		$GLOBALS['comment_depth'] = $depth + 1;
-
-		switch ( $args['style'] ) {
-			case 'div':
-				break;
-			case 'ol':
-				echo "<ol class='children'>\n";
-				break;
-			default:
-			case 'ul':
-				echo "<ul class='children'>\n";
-				break;
-		}
+		echo "<ol class='children'>\n";
 	}
 
 	/**
@@ -107,22 +96,11 @@ class Debiki_Walker_Comment extends Walker {
 	 *
 	 * @param string $output Passed by reference. Used to append additional content.
 	 * @param int $depth Depth of comment.
-	 * @param array $args Will only append content if style argument value is 'ol' or 'ul'.
+	 * @param array $args Ignored.
 	 */
 	function end_lvl(&$output, $depth, $args) {
 		$GLOBALS['comment_depth'] = $depth + 1;
-
-		switch ( $args['style'] ) {
-			case 'div':
-				break;
-			case 'ol':
-				echo "</ol>\n";
-				break;
-			default:
-			case 'ul':
-				echo "</ul>\n";
-				break;
-		}
+		echo "</ol>\n";
 	}
 
 	/**
@@ -187,17 +165,10 @@ class Debiki_Walker_Comment extends Walker {
 	 * @param string $output Passed by reference. Used to append additional content.
 	 * @param object $comment
 	 * @param int $depth Depth of comment.
-	 * @param array $args
+	 * @param array $args Ignored.
 	 */
 	function end_el(&$output, $comment, $depth, $args) {
-		if ( !empty($args['end-callback']) ) {
-			call_user_func($args['end-callback'], $comment, $args, $depth);
-			return;
-		}
-		if ( 'div' == $args['style'] )
-			echo "</div>\n";
-		else
-			echo "</li>\n";
+		echo "</li>\n";
 	}
 
 }
@@ -211,7 +182,7 @@ function debiki_list_comments($args = array(), $comments = null ) {
 	$comment_alt = $comment_thread_alt = 0;
 	$comment_depth = 1;
 
-	$defaults = array('walker' => null, 'max_depth' => '', 'style' => 'ul', 'callback' => null, 'end-callback' => null, 'type' => 'all',
+	$defaults = array('walker' => null, 'max_depth' => '', 'type' => 'all',
 		'page' => '', 'per_page' => '', 'avatar_size' => 32, 'reverse_top_level' => null, 'reverse_children' => '');
 
 	$r = wp_parse_args( $args, $defaults );
