@@ -10,7 +10,7 @@
  * Based on [wordpress-3.3.2]/wp-content/themes/twentyeleven/comments.php.
  */?>
 
-<div id="comments">
+<div id="comments" class="dw-t dw-ar-t dw-depth-0 dw-hor dw-svg-gparnt">
 	<?php if ( post_password_required() ) : ?>
 		<p class="nopassword"><?php _e( 'This post is password protected. Enter the password to view any comments.', 'twentyeleven' ); ?></p>
 	</div><!-- #comments -->
@@ -36,7 +36,8 @@
 			?>
 		</h2>
 
-		<ol class="commentlist">
+		<div class='dw-t-vspace'></div>
+		<ol class="commentlist dw-res ui-helper-clearfix">
 			<?php debiki_list_comments(); ?>
 		</ol>
 
@@ -86,8 +87,11 @@ class Debiki_Walker_Comment extends Walker {
 	 * @param array $args Ignored.
 	 */
 	function start_lvl(&$output, $depth, $args) {
-		$GLOBALS['comment_depth'] = $depth + 1;
-		echo "<ol class='children'>\n";
+		$depth++;
+		$GLOBALS['comment_depth'] = $depth;
+		$is_root_reply = $depth === 1;
+		$horiz_clearfix = $is_root_reply ? ' ui-helper-clearfix' : '';
+		echo "<ol class='children dw-res{$horiz_clearfix}'>\n";
 	}
 
 	/**
@@ -99,7 +103,7 @@ class Debiki_Walker_Comment extends Walker {
 	 * @param array $args Ignored.
 	 */
 	function end_lvl(&$output, $depth, $args) {
-		$GLOBALS['comment_depth'] = $depth + 1;
+		$GLOBALS['comment_depth'] = $depth + 1;  # not -1? weird?
 		echo "</ol>\n";
 	}
 
@@ -278,9 +282,9 @@ function debiki_render_comment( $comment, $args, $depth ) {
 			break;
 		default :
 	?>
-	<li <?php comment_class(); ?> id="li-comment-<?php comment_ID(); ?>">
-		<article id="comment-<?php comment_ID(); ?>" class="comment">
-			<footer class="comment-meta">
+	<li <?php comment_class('dw-t dw-depth-'.$depth); ?> id="li-comment-<?php comment_ID(); ?>">
+		<article id="comment-<?php comment_ID(); ?>" class="comment dw-p">
+			<footer class="comment-meta dw-p-hd">
 				<div class="comment-author vcard">
 					<?php
 						$avatar_size = 68;
@@ -311,7 +315,7 @@ function debiki_render_comment( $comment, $args, $depth ) {
 
 			</footer>
 
-			<div class="comment-content"><?php comment_text(); ?></div>
+			<div class="comment-content dw-p-bd"><?php comment_text(); ?></div>
 
 			<div class="reply">
 				<?php comment_reply_link( array_merge( $args, array( 'reply_text' => __( 'Reply <span>&darr;</span>', 'twentyeleven' ), 'depth' => $depth, 'max_depth' => $args['max_depth'] ) ) ); ?>
