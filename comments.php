@@ -37,15 +37,7 @@
 		</h2>
 
 		<ol class="commentlist">
-			<?php
-				/* Loop through and list the comments. Tell wp_list_comments()
-				 * to use twentyeleven_comment() to format the comments.
-				 * If you want to overload this in a child theme then you can
-				 * define twentyeleven_comment() and that will be used instead.
-				 * See twentyeleven_comment() in twentyeleven/functions.php for more.
-				 */
-				debiki_list_comments(array('callback' => 'twentyeleven_comment'));
-			?>
+			<?php debiki_list_comments(); ?>
 		</ol>
 
 	<?php
@@ -185,51 +177,7 @@ class Debiki_Walker_Comment extends Walker {
 		$depth++;
 		$GLOBALS['comment_depth'] = $depth;
 
-		if ( !empty($args['callback']) ) {
-			call_user_func($args['callback'], $comment, $args, $depth);
-			return;
-		}
-
-		$GLOBALS['comment'] = $comment;
-		extract($args, EXTR_SKIP);
-
-		if ( 'div' == $args['style'] ) {
-			$tag = 'div';
-			$add_below = 'comment';
-		} else {
-			$tag = 'li';
-			$add_below = 'div-comment';
-		}
-?>
-		<<?php echo $tag ?> <?php comment_class(empty( $args['has_children'] ) ? '' : 'parent') ?> id="comment-<?php comment_ID() ?>">
-		<?php if ( 'div' != $args['style'] ) : ?>
-		<div id="div-comment-<?php comment_ID() ?>" class="comment-body">
-		<?php endif; ?>
-		<div class="comment-author vcard">
-		<?php if ($args['avatar_size'] != 0) echo get_avatar( $comment, $args['avatar_size'] ); ?>
-		<?php printf(__('<cite class="fn">%s</cite> <span class="says">says:</span>'), get_comment_author_link()) ?>
-		</div>
-<?php if ($comment->comment_approved == '0') : ?>
-		<em class="comment-awaiting-moderation"><?php _e('Your comment is awaiting moderation.') ?></em>
-		<br />
-<?php endif; ?>
-
-		<div class="comment-meta commentmetadata"><a href="<?php echo htmlspecialchars( get_comment_link( $comment->comment_ID ) ) ?>">
-			<?php
-				/* translators: 1: date, 2: time */
-				printf( __('%1$s at %2$s'), get_comment_date(),  get_comment_time()) ?></a><?php edit_comment_link(__('(Edit)'),'&nbsp;&nbsp;','' );
-			?>
-		</div>
-
-		<?php comment_text() ?>
-
-		<div class="reply">
-		<?php comment_reply_link(array_merge( $args, array('add_below' => $add_below, 'depth' => $depth, 'max_depth' => $args['max_depth']))) ?>
-		</div>
-		<?php if ( 'div' != $args['style'] ) : ?>
-		</div>
-		<?php endif; ?>
-<?php
+		debiki_render_comment($comment, $args, $depth);
 	}
 
 	/**
@@ -337,5 +285,72 @@ function debiki_list_comments($args = array(), $comments = null ) {
 
 	$in_comment_loop = false;
 }
+
+
+/**
+ * Based on function twentyeleven_comment(..) in
+ * wp-content/themes/twentyeleven/functions.php.
+ *
+ * @param type $comment
+ * @param type $args
+ * @param type $depth
+ */
+function debiki_render_comment( $comment, $args, $depth ) {
+	$GLOBALS['comment'] = $comment;
+	switch ( $comment->comment_type ) :
+		case 'pingback' :
+		case 'trackback' :
+	?>
+	<li class="post pingback">
+		<p><?php _e( 'Pingback:', 'twentyeleven' ); ?> <?php comment_author_link(); ?><?php edit_comment_link( __( 'Edit', 'twentyeleven' ), '<span class="edit-link">', '</span>' ); ?></p>
+	<?php
+			break;
+		default :
+	?>
+	<li <?php comment_class(); ?> id="li-comment-<?php comment_ID(); ?>">
+		<article id="comment-<?php comment_ID(); ?>" class="comment">
+			<footer class="comment-meta">
+				<div class="comment-author vcard">
+					<?php
+						$avatar_size = 68;
+						if ( '0' != $comment->comment_parent )
+							$avatar_size = 39;
+
+						echo get_avatar( $comment, $avatar_size );
+
+						/* translators: 1: comment author, 2: date and time */
+						printf( __( '%1$s on %2$s <span class="says">said:</span>', 'twentyeleven' ),
+							sprintf( '<span class="fn">%s</span>', get_comment_author_link() ),
+							sprintf( '<a href="%1$s"><time pubdate datetime="%2$s">%3$s</time></a>',
+								esc_url( get_comment_link( $comment->comment_ID ) ),
+								get_comment_time( 'c' ),
+								/* translators: 1: date, 2: time */
+								sprintf( __( '%1$s at %2$s', 'twentyeleven' ), get_comment_date(), get_comment_time() )
+							)
+						);
+					?>
+
+					<?php edit_comment_link( __( 'Edit', 'twentyeleven' ), '<span class="edit-link">', '</span>' ); ?>
+				</div><!-- .comment-author .vcard -->
+
+				<?php if ( $comment->comment_approved == '0' ) : ?>
+					<em class="comment-awaiting-moderation"><?php _e( 'Your comment is awaiting moderation.', 'twentyeleven' ); ?></em>
+					<br />
+				<?php endif; ?>
+
+			</footer>
+
+			<div class="comment-content"><?php comment_text(); ?></div>
+
+			<div class="reply">
+				<?php comment_reply_link( array_merge( $args, array( 'reply_text' => __( 'Reply <span>&darr;</span>', 'twentyeleven' ), 'depth' => $depth, 'max_depth' => $args['max_depth'] ) ) ); ?>
+			</div><!-- .reply -->
+		</article><!-- #comment-## -->
+
+	<?php
+			break;
+	endswitch;
+}
+
 
 ?>
