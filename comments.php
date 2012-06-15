@@ -10,6 +10,7 @@
  * Based on [wordpress-3.3.2]/wp-content/themes/twentyeleven/comments.php.
  */?>
 
+<div class='debiki dw-debate'>
 <div id="comments" class="dw-t dw-ar-t dw-depth-0 dw-hor dw-svg-gparnt">
 	<?php if ( post_password_required() ) : ?>
 		<p class="nopassword"><?php _e( 'This post is password protected. Enter the password to view any comments.', 'twentyeleven' ); ?></p>
@@ -36,6 +37,8 @@
 			?>
 		</h2>
 
+		<!-- Makes debiki.js find the parent().children('.dw-t-vspace') and create an SVG root. -->
+		<div class='dw-p'></div>
 		<div class='dw-t-vspace'></div>
 		<ol class="commentlist dw-res ui-helper-clearfix">
 			<?php
@@ -53,6 +56,7 @@
 		<p class="nocomments"><?php _e('Comments are closed.', 'twentyeleven'); ?></p>
 	<?php endif; ?>
 
+</div>
 </div>
 
 
@@ -92,7 +96,7 @@ class Debiki_Walker_Comment extends Walker {
 		$GLOBALS['comment_depth'] = $depth;
 		$is_root_reply = $depth === 1;
 		$horiz_clearfix = $is_root_reply ? ' ui-helper-clearfix' : '';
-		echo "<ol class='children dw-res{$horiz_clearfix}'>\n";
+		echo "<ol class='children dw-res{$horiz_clearfix}'>";
 	}
 
 	/**
