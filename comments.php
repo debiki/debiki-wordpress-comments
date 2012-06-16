@@ -5,7 +5,7 @@
  * some of the people mentioned here, I (KajMagnus) suppose:
  *   http://codex.wordpress.org/Copyright_Holders  )
  *
- * License: GPL2.
+ * License: GPL2 or later
  *
  * Based on [wordpress-3.3.2]/wp-content/themes/twentyeleven/comments.php.
  */?>
