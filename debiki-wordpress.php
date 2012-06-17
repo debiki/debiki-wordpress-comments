@@ -16,15 +16,20 @@ License: GPLv2 or later
 #===========================================================
 
 
-if ( ! defined( 'DEBIKI_PLUGIN_BASENAME' ) )
-	define( 'DEBIKI_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
-
-if ( ! defined( 'DEBIKI_SETTINGS_SLUG' ) )
-	define( 'DEBIKI_SETTINGS_SLUG', 'debiki_comments_options' );
+define( 'DEBIKI_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+define( 'DEBIKI_SETTINGS_SLUG', 'debiki_comments_options' );
+define( 'DEBIKI_ENABLED_QUERY_PARAM', 'debiki-comments-enabled' );
 
 
 function debiki__( $text ) {
 	return $text;  # later, something like: __( $text, 'debiki_comments_l10n' );
+}
+
+
+function debiki_comments_enabled() {
+	$enabled_url_var = $_GET[DEBIKI_ENABLED_QUERY_PARAM];
+	$enabled = !$enabled_url_var || $enabled_url_var == 'true';
+	return $enabled;
 }
 
 
@@ -50,6 +55,7 @@ add_filter('plugin_action_links', 'debiki_add_plugin_action_link', 10, 2);
 function debiki_add_plugin_action_link($links, $file) {
 	if ($file != DEBIKI_PLUGIN_BASENAME)
 		return $links;
+
 	$settings_link = '<a href="' . menu_page_url(DEBIKI_SETTINGS_SLUG, false) . '">'
 		. esc_html(debiki__('Settings')) . '</a>';
 	array_unshift($links, $settings_link);
@@ -62,6 +68,9 @@ function debiki_add_plugin_action_link($links, $file) {
 add_filter('language_attributes', 'classes_to_add_to_html_elem');
 
 function classes_to_add_to_html_elem($output) {
+	if (!debiki_comments_enabled())
+		return $output;
+
 	// `no-js` is for Modernizr.
 	return $output . ' class="no-js dw-render-layout-pending dw-pri"';
 }
@@ -71,7 +80,10 @@ function classes_to_add_to_html_elem($output) {
 
 add_filter('comments_template', 'path_to_debiki_comments');
 
-function path_to_debiki_comments($comments) {
+function path_to_debiki_comments($default_template) {
+	if (!debiki_comments_enabled())
+		return $default_template;
+
 	return dirname(__FILE__) . '/comments.php';
 }
 
@@ -81,6 +93,9 @@ function path_to_debiki_comments($comments) {
 add_action('wp_head', 'echo_debiki_head');
 
 function echo_debiki_head() {
+	if (!debiki_comments_enabled())
+		return;
+
 	$res = '/wp-content/plugins/debiki-wordpress/res/';
 	echo "
     <meta name='viewport' content='initial-scale=1.0, minimum-scale=0.01'/>
