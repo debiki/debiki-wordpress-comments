@@ -10,6 +10,55 @@ License: GPLv2 or later
 */
 
 
+
+#===========================================================
+# Constants and utilities
+#===========================================================
+
+
+if ( ! defined( 'DEBIKI_PLUGIN_BASENAME' ) )
+	define( 'DEBIKI_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+
+if ( ! defined( 'DEBIKI_SETTINGS_SLUG' ) )
+	define( 'DEBIKI_SETTINGS_SLUG', 'debiki_comments_options' );
+
+
+function debiki__( $text ) {
+	return $text;  # later, something like: __( $text, 'debiki_comments_l10n' );
+}
+
+
+
+#===========================================================
+# Filters and action hooks
+#===========================================================
+
+
+# ===== Settings page
+
+require dirname(__FILE__) . '/debiki-settings.php';
+
+add_action('admin_menu', 'debiki_add_menu_items');
+
+function debiki_add_menu_items() {
+	add_options_page('Debiki Comments', 'Debiki Comments', 'manage_options',
+			DEBIKI_SETTINGS_SLUG, 'debiki_echo_settings_page');
+}
+
+add_filter('plugin_action_links', 'debiki_add_plugin_action_link', 10, 2);
+
+function debiki_add_plugin_action_link($links, $file) {
+	if ($file != DEBIKI_PLUGIN_BASENAME)
+		return $links;
+	$settings_link = '<a href="' . menu_page_url(DEBIKI_SETTINGS_SLUG, false) . '">'
+		. esc_html(debiki__('Settings')) . '</a>';
+	array_unshift($links, $settings_link);
+	return $links;
+}
+
+
+# ===== <html> elem classes
+
 add_filter('language_attributes', 'classes_to_add_to_html_elem');
 
 function classes_to_add_to_html_elem($output) {
@@ -18,12 +67,16 @@ function classes_to_add_to_html_elem($output) {
 }
 
 
+# ===== Comments HTML
+
 add_filter('comments_template', 'path_to_debiki_comments');
 
 function path_to_debiki_comments($comments) {
 	return dirname(__FILE__) . '/comments.php';
 }
 
+
+# ===== Javascript and CSS
 
 add_action('wp_head', 'echo_debiki_head');
 
