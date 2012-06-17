@@ -15,14 +15,20 @@ License: GPLv2 or later
 # Constants and utilities
 #===========================================================
 
+function debiki_define_default($constant_name, $value) {
+	if (! defined($constant_name))
+		define($constant_name, $value);
+}
+
 
 define( 'DEBIKI_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
-define( 'DEBIKI_SETTINGS_SLUG', 'debiki_comments_options' );
-define( 'DEBIKI_ENABLED_QUERY_PARAM', 'debiki-comments-enabled' );
+debiki_define_default( 'DEBIKI_SETTINGS_SLUG', 'debiki_comments_options' );
+debiki_define_default( 'DEBIKI_ENABLED_QUERY_PARAM', 'debiki-comments-enabled' );
 
 
 function debiki__( $text ) {
 	return $text;  # later, something like: __( $text, 'debiki_comments_l10n' );
+	       # also see:  http://codex.wordpress.org/Function_Reference/wp_localize_script
 }
 
 
