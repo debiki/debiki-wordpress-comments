@@ -1,0 +1,19 @@
+
+Read:
+http://wordpress.stackexchange.com/questions/715/objective-best-practices-for-plugin-development
+
+
+Automatic tests:
+- Install  http://wordpress.org/extend/plugins/wordpress-importer/
+- Install  http://wordpress.org/extend/plugins/wordpress-importer-extended/
+
+- Install  http://wordpress.org/extend/plugins/wordpress-reset/
+   (or?? http://wordpress.org/extend/plugins/wordpress-database-reset/ )
+
+- Then use AngularJS Seed and JsTestDrive? :-)   and Coffeescript of course
+  Perhaps I can just copy the JsTestDrive related files from
+  https://github.com/angular/angular-seed
+
+Consider loading recent comments dynamically:
+   http://wordpress.org/extend/plugins/bwp-recent-comments/
+
