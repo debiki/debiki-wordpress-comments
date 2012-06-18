@@ -34,7 +34,10 @@ function debiki__( $text ) {
 
 function debiki_comments_enabled() {
 	$enabled_url_var = $_GET[DEBIKI_ENABLED_QUERY_PARAM];
-	$enabled = !$enabled_url_var || $enabled_url_var == 'true';
+	$enabled_in_url = !$enabled_url_var || $enabled_url_var == 'true';
+	$enabled_in_preview = get_option('debiki_comments_enabled');
+	$enabled_in_preview = !$enabled_in_preview || $enabled_in_preview == 'true';
+	$enabled = $enabled_in_url && $enabled_in_preview;
 	return $enabled;
 }
 
@@ -164,5 +167,46 @@ function echo_debiki_head() {
 	else
 		require dirname(__FILE__) . '/theme-specific-default.css';
 }
+
+
+# ===== Theme preview options
+
+add_action('customize_register', 'debiki_register_preview_control');
+
+/**
+ * Creates a theme preview option, `debiki_comments_enabled`, with value `true`
+ * or `false`. Later, when the preview page is renedered (in the same HTTP
+ * request), the option will be considered in `debiki_comments_enabled()`.
+ */
+function debiki_register_preview_control( $customize_manager ) {
+
+	# See `register_controls()` in `wp-includes/class-wp-customize-manager.php`.
+
+	# Concerning `priority` (below).
+	# The theme preview config section with the highest number is placed at the end of
+	# the config list. The last build in section is 'Static Front Page' with prio 120
+	# as of Word Press 3.4.  Lets use a much higher prio, so in case WP adds more
+	# sections, they'll appear before Debiki's section.
+	$customize_manager->add_section( 'debiki_comments', array(
+			'title'    => __( 'Debiki Comment System' ),
+			'priority' => 300,
+		));
+
+	$customize_manager->add_setting( 'debiki_comments_enabled', array(
+			'default' => 'true',
+			'type' => 'option',
+		));
+
+	$customize_manager->add_control( 'debiki_comments_enabled', array(
+			'label'   => debiki__( 'Debiki comments enabled' ),
+			'section' => 'debiki_comments',
+			'type'    => 'radio',
+			'choices' => array(
+				'true' => debiki__( 'Enabled' ),
+				'false'  => debiki__( 'Disabled' ),
+			),
+		));
+}
+
 
 ?>
