@@ -15,11 +15,11 @@ License: GPLv2 or later
 # Constants and utilities
 #===========================================================
 
+
 function debiki_define_default($constant_name, $value) {
 	if (! defined($constant_name))
 		define($constant_name, $value);
 }
-
 
 define( 'DEBIKI_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 debiki_define_default( 'DEBIKI_SETTINGS_SLUG', 'debiki_comments_options' );
@@ -33,10 +33,12 @@ function debiki__( $text ) {
 
 
 function debiki_comments_enabled() {
+	static $enabled = null;
+	if (isset($enabled)) return $enabled;
 	$enabled_url_var = $_GET[DEBIKI_ENABLED_QUERY_PARAM];
-	$enabled_in_url = !$enabled_url_var || $enabled_url_var == 'true';
+	$enabled_in_url = !isset($enabled_url_var) || $enabled_url_var == 'true';
 	$enabled_in_preview = get_option('debiki_comments_enabled');
-	$enabled_in_preview = !$enabled_in_preview || $enabled_in_preview == 'true';
+	$enabled_in_preview = !isset($enabled_in_preview) || $enabled_in_preview == 'true';
 	$enabled = $enabled_in_url && $enabled_in_preview;
 	return $enabled;
 }
