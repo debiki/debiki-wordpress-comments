@@ -43,7 +43,9 @@
 		<ol class="commentlist dw-res ui-helper-clearfix">
 			<?php
 			comment_form();
-			debiki_list_comments();
+			// Need not specify `style` = 'ol', because <ol> is hardcoded
+			// in Debiki_Walker_Comment.
+			wp_list_comments(array('walker' => new Debiki_Walker_Comment));
 			?>
 		</ol>
 
@@ -180,90 +182,6 @@ class Debiki_Walker_Comment extends Walker {
 		echo "</li>\n";
 	}
 
-}
-
-
-function debiki_list_comments($args = array(), $comments = null ) {
-	global $wp_query, $comment_alt, $comment_depth, $comment_thread_alt, $overridden_cpage, $in_comment_loop;
-
-	$in_comment_loop = true;
-
-	$comment_alt = $comment_thread_alt = 0;
-	$comment_depth = 1;
-
-	$defaults = array('walker' => null, 'max_depth' => '', 'type' => 'all',
-		'page' => '', 'per_page' => '', 'avatar_size' => 32, 'reverse_top_level' => null, 'reverse_children' => '');
-
-	$r = wp_parse_args( $args, $defaults );
-
-	// Figure out what comments we'll be looping through ($_comments)
-	if ( null !== $comments ) {
-		$comments = (array) $comments;
-		if ( empty($comments) )
-			return;
-		if ( 'all' != $r['type'] ) {
-			$comments_by_type = &separate_comments($comments);
-			if ( empty($comments_by_type[$r['type']]) )
-				return;
-			$_comments = $comments_by_type[$r['type']];
-		} else {
-			$_comments = $comments;
-		}
-	} else {
-		if ( empty($wp_query->comments) )
-			return;
-		if ( 'all' != $r['type'] ) {
-			if ( empty($wp_query->comments_by_type) )
-				$wp_query->comments_by_type = &separate_comments($wp_query->comments);
-			if ( empty($wp_query->comments_by_type[$r['type']]) )
-				return;
-			$_comments = $wp_query->comments_by_type[$r['type']];
-		} else {
-			$_comments = $wp_query->comments;
-		}
-	}
-
-	if ( '' === $r['per_page'] && get_option('page_comments') )
-		$r['per_page'] = get_query_var('comments_per_page');
-
-	if ( empty($r['per_page']) ) {
-		$r['per_page'] = 0;
-		$r['page'] = 0;
-	}
-
-	if ( '' === $r['max_depth'] ) {
-		if ( get_option('thread_comments') )
-			$r['max_depth'] = get_option('thread_comments_depth');
-		else
-			$r['max_depth'] = -1;
-	}
-
-	if ( '' === $r['page'] ) {
-		if ( empty($overridden_cpage) ) {
-			$r['page'] = get_query_var('cpage');
-		} else {
-			$threaded = ( -1 != $r['max_depth'] );
-			$r['page'] = ( 'newest' == get_option('default_comments_page') ) ? get_comment_pages_count($_comments, $r['per_page'], $threaded) : 1;
-			set_query_var( 'cpage', $r['page'] );
-		}
-	}
-	// Validation check
-	$r['page'] = intval($r['page']);
-	if ( 0 == $r['page'] && 0 != $r['per_page'] )
-		$r['page'] = 1;
-
-	if ( null === $r['reverse_top_level'] )
-		$r['reverse_top_level'] = ( 'desc' == get_option('comment_order') );
-
-	extract( $r, EXTR_SKIP );
-
-	if ( empty($walker) )
-		$walker = new Debiki_Walker_Comment;
-
-	$walker->paged_walk($_comments, $max_depth, $page, $per_page, $r);
-	$wp_query->max_num_comment_pages = $walker->max_pages;
-
-	$in_comment_loop = false;
 }
 
 
