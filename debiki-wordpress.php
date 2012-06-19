@@ -172,10 +172,7 @@ function debiki_echo_head() {
 	# introduce additional colors, so instead, in the file
 	# ./theme-specific/twenty-eleven-v-any.css, change the background to white.)
 	$theme = wp_get_theme();
-	$theme_name = $theme->get('Name');
-	$theme_file = str_replace(' ', '-', $theme_name);
-	$theme_file = strtolower($theme_file);
-	$theme_file = dirname(__FILE__) . '/theme-specific/' . $theme_file;
+	$theme_file = dirname(__FILE__) . '/theme-specific/' . $theme->get_template();
 	$theme_file_any_version = $theme_file . '-v-any.css';
 
 	## In the future, perhaps match on theme version too, something reminiscient of this:
