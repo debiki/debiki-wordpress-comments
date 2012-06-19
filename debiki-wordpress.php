@@ -57,16 +57,16 @@ function debiki_comments_enabled() {
 
 require dirname(__FILE__) . '/debiki-settings.php';
 
-add_action('admin_menu', 'debiki_add_menu_items');
+add_action('admin_menu', 'debiki_add_admin_menu_items');
 
-function debiki_add_menu_items() {
+function debiki_add_admin_menu_items() {
 	add_options_page('Debiki Comments', 'Debiki Comments', 'manage_options',
 			DEBIKI_SETTINGS_SLUG, 'debiki_echo_settings_page');
 }
 
-add_filter('plugin_action_links', 'debiki_add_plugin_action_link', 10, 2);
+add_filter('plugin_action_links', 'debiki_plugin_action_links', 10, 2);
 
-function debiki_add_plugin_action_link($links, $file) {
+function debiki_plugin_action_links($links, $file) {
 	if ($file != DEBIKI_PLUGIN_BASENAME)
 		return $links;
 
@@ -79,9 +79,9 @@ function debiki_add_plugin_action_link($links, $file) {
 
 # ===== <html> elem classes
 
-add_filter('language_attributes', 'classes_to_add_to_html_elem');
+add_filter('language_attributes', 'debiki_classes_for_html_elem');
 
-function classes_to_add_to_html_elem($output) {
+function debiki_classes_for_html_elem($output) {
 	if (!debiki_comments_enabled())
 		return $output;
 
@@ -90,11 +90,11 @@ function classes_to_add_to_html_elem($output) {
 }
 
 
-# ===== Comments HTML
+# ===== Comment template
 
-add_filter('comments_template', 'path_to_debiki_comments');
+add_filter('comments_template', 'debiki_comments_template');
 
-function path_to_debiki_comments($default_template) {
+function debiki_comments_template($default_template) {
 	if (!debiki_comments_enabled())
 		return $default_template;
 
@@ -120,9 +120,9 @@ class Debiki_Walker_Comment extends Walker_Comment {
 
 # ===== Javascript and CSS
 
-add_action('wp_head', 'echo_debiki_head');
+add_action('wp_head', 'debiki_echo_head');
 
-function echo_debiki_head() {
+function debiki_echo_head() {
 	if (!debiki_comments_enabled())
 		return;
 
