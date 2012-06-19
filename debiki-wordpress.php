@@ -101,6 +101,22 @@ function path_to_debiki_comments($default_template) {
 	return dirname(__FILE__) . '/comments.php';
 }
 
+/**
+ * Adds html class attributes required by Debiki's CSS and Javascript.
+ */
+class Debiki_Walker_Comment extends Walker_Comment {
+
+	function start_lvl(&$output, $depth, $args) {
+		$depth++;
+		$GLOBALS['comment_depth'] = $depth;
+		$is_root_reply = $depth === 1;
+		$horiz_clearfix = $is_root_reply ? ' ui-helper-clearfix' : '';
+		assert($args['style'] == 'ol');
+		echo "<ol class='children dw-res{$horiz_clearfix}'>";
+	}
+
+}
+
 
 # ===== Javascript and CSS
 

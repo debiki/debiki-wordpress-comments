@@ -66,23 +66,6 @@
 <?php
 
 /**
- * Adds html class attributes required by Debiki's CSS and Javascript.
- */
-class Debiki_Walker_Comment extends Walker_Comment {
-
-	function start_lvl(&$output, $depth, $args) {
-		$depth++;
-		$GLOBALS['comment_depth'] = $depth;
-		$is_root_reply = $depth === 1;
-		$horiz_clearfix = $is_root_reply ? ' ui-helper-clearfix' : '';
-		assert($args['style'] == 'ol');
-		echo "<ol class='children dw-res{$horiz_clearfix}'>";
-	}
-
-}
-
-
-/**
  * Adds these classes to comment related tags:
  *	  dw-t, dw-depth-<x>, dw-p, dw-p-hd, dw-p-bd
  *
