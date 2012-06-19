@@ -49,6 +49,64 @@ function debiki_comments_enabled() {
 
 
 #===========================================================
+# Theme specific files
+#===========================================================
+
+
+/**
+ * A prefix to prepend to 'style.css' or 'comments.php' -- the resulting file path
+ * points to a theme specific file.
+ *
+ * Regrettably, Debiki won't work well with just any theme.
+ * We need some theme specific tweaks, for the comments HTML and CSS to work with
+ * Debiki's layout and SVG arrows.
+ *
+ * Example: Twenty Eleven's background is gray, but Debiki's SVG arrows are
+ * also gray and would be hard to notice against the background. It's not reasonable to
+ * introduce additional colors, so instead, in the file
+ * ./theme-specific/twenty-eleven-v-any.css, change the background to white.)
+ */
+function debiki_theme_specific_path_prefix() {
+	$theme = wp_get_theme();
+	$path_prefix = dirname(__FILE__) . '/theme-specific/' . $theme->get_template();
+	$path_prefix_any_version = $path_prefix . '-v-any-';
+	return $path_prefix_any_version;
+
+	## In the future, perhaps match on theme version too, something reminiscient of this:
+	# $theme_version = $theme->get('Version');
+	# $theme_file_version_specific = $theme_file . '-v-' . $theme_version . '-style.css';
+	# if (file_exists($theme_file_version_specific)) ... else ...
+	## However, if we only need to upgrade ...-style.css but not ...-comments.php,
+	## then we cannot use the same prefix for both -style.css and -comments.php.
+}
+
+
+function debiki_theme_specific_style_file() {
+	$prefix = debiki_theme_specific_path_prefix();
+	$style_file_path = $prefix . 'style.css';
+
+	if (file_exists($style_file_path))
+		return $style_file_path;
+	else
+		return dirname(__FILE__) . '/theme-specific-default.css';
+		# better: return dirname(__FILE__) . '/theme-specific/default-style.css';
+}
+
+
+function debiki_theme_specific_comments_template() {
+	$prefix = debiki_theme_specific_path_prefix();
+	$comments_file_path = $prefix . 'comments.php';
+
+	if (file_exists($comments_file_path))
+		return $comments_file_path;
+	else
+		return dirname(__FILE__) . '/comments.php';
+		# better:  dirname(__FILE__) . '/theme-specific/default-comments.php';
+}
+
+
+
+#===========================================================
 # Filters and action hooks
 #===========================================================
 
@@ -98,7 +156,7 @@ function debiki_comments_template($default_template) {
 	if (!debiki_comments_enabled())
 		return $default_template;
 
-	return dirname(__FILE__) . '/comments.php';
+	return debiki_theme_specific_comments_template();
 }
 
 /**
@@ -165,25 +223,7 @@ function debiki_echo_head() {
 		}
 		";
 
-	# Tweak theme specific CSS to work with Debiki's layout and SVG arrows.
-	# (Regrettably, Debiki won't work well with just any theme.)
-	# Example: Twenty Eleven's background is gray, but Debiki's SVG arrows are
-	# also gray and would be hard to notice against the background. It's not reasonable to
-	# introduce additional colors, so instead, in the file
-	# ./theme-specific/twenty-eleven-v-any.css, change the background to white.)
-	$theme = wp_get_theme();
-	$theme_file = dirname(__FILE__) . '/theme-specific/' . $theme->get_template();
-	$theme_file_any_version = $theme_file . '-v-any.css';
-
-	## In the future, perhaps match on theme version too, something reminiscient of this:
-	#$theme_version = $theme->get('Version');
-	#$theme_file_version_specific = $theme_file . '-v-' . $theme_version . '.css';
-	#if (file_exists($theme_file_version_specific)) ... else ...
-
-	if (file_exists($theme_file_any_version))
-		require $theme_file_any_version;
-	else
-		require dirname(__FILE__) . '/theme-specific-default.css';
+	require debiki_theme_specific_style_file();
 }
 
 
