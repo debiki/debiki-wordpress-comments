@@ -66,8 +66,7 @@
 <?php
 
 /**
- * Overrides `Comment_Walker.start_lvl` function to add CSS classes to the <ol>
- * comment lists.
+ * Adds html class attributes required by Debiki's CSS and Javascript.
  */
 class Debiki_Walker_Comment extends Walker_Comment {
 
@@ -84,12 +83,17 @@ class Debiki_Walker_Comment extends Walker_Comment {
 
 
 /**
- * Based on function twentyeleven_comment(..) in
- * wp-content/themes/twentyeleven/functions.php.
+ * Adds these classes to comment related tags:
+ *	  dw-t, dw-depth-<x>, dw-p, dw-p-hd, dw-p-bd
  *
- * @param type $comment
- * @param type $args
- * @param type $depth
+ * Copied from function twentyeleven_comment(..) in
+ * wp-content/themes/twentyeleven/functions.php. I've done only a few minor edits,
+ * run a diff to find out.
+ *
+ * (There's a filter, 'comment_class', that I could use to add 'dw-t' and 'dw-depth-'.
+ * However more classes needs to be added elsewhere. And anyway I don't think it's
+ * a good idea to depend on code in the Twenty-Eleven theme -- then Debiki's code
+ * could suddenly break, should someone upgrade the theme.)
  */
 function debiki_render_comment( $comment, $args, $depth ) {
 	$GLOBALS['comment'] = $comment;
