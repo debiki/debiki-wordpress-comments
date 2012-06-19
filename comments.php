@@ -43,9 +43,10 @@
 		<ol class="commentlist dw-res ui-helper-clearfix">
 			<?php
 			comment_form();
-			// Need not specify `style` = 'ol', because <ol> is hardcoded
-			// in Debiki_Walker_Comment.
-			wp_list_comments(array('walker' => new Debiki_Walker_Comment));
+			wp_list_comments(array(
+					'walker' => new Debiki_Walker_Comment,
+					'callback' => 'debiki_render_comment',
+					'style' => 'ol'));
 			?>
 		</ol>
 
@@ -63,123 +64,20 @@
 
 
 <?php
+
 /**
- * HTML comment list class.
- *
- * @package WordPress
- * @uses Walker
- * @since 2.7.0
+ * Overrides `Comment_Walker.start_lvl` function to add CSS classes to the <ol>
+ * comment lists.
  */
-class Debiki_Walker_Comment extends Walker {
-	/**
-	 * @see Walker::$tree_type
-	 * @since 2.7.0
-	 * @var string
-	 */
-	var $tree_type = 'comment';
+class Debiki_Walker_Comment extends Walker_Comment {
 
-	/**
-	 * @see Walker::$db_fields
-	 * @since 2.7.0
-	 * @var array
-	 */
-	var $db_fields = array ('parent' => 'comment_parent', 'id' => 'comment_ID');
-
-	/**
-	 * @see Walker::start_lvl()
-	 * @since 2.7.0
-	 *
-	 * @param string $output Passed by reference. Used to append additional content.
-	 * @param int $depth Depth of comment.
-	 * @param array $args Ignored.
-	 */
 	function start_lvl(&$output, $depth, $args) {
 		$depth++;
 		$GLOBALS['comment_depth'] = $depth;
 		$is_root_reply = $depth === 1;
 		$horiz_clearfix = $is_root_reply ? ' ui-helper-clearfix' : '';
+		assert($args['style'] == 'ol');
 		echo "<ol class='children dw-res{$horiz_clearfix}'>";
-	}
-
-	/**
-	 * @see Walker::end_lvl()
-	 * @since 2.7.0
-	 *
-	 * @param string $output Passed by reference. Used to append additional content.
-	 * @param int $depth Depth of comment.
-	 * @param array $args Ignored.
-	 */
-	function end_lvl(&$output, $depth, $args) {
-		$GLOBALS['comment_depth'] = $depth + 1;  # not -1? weird?
-		echo "</ol>\n";
-	}
-
-	/**
-	 * This function is designed to enhance Walker::display_element() to
-	 * display children of higher nesting levels than selected inline on
-	 * the highest depth level displayed. This prevents them being orphaned
-	 * at the end of the comment list.
-	 *
-	 * Example: max_depth = 2, with 5 levels of nested content.
-	 * 1
-	 *  1.1
-	 *    1.1.1
-	 *    1.1.1.1
-	 *    1.1.1.1.1
-	 *    1.1.2
-	 *    1.1.2.1
-	 * 2
-	 *  2.2
-	 *
-	 */
-	function display_element( $element, &$children_elements, $max_depth, $depth=0, $args, &$output ) {
-
-		if ( !$element )
-			return;
-
-		$id_field = $this->db_fields['id'];
-		$id = $element->$id_field;
-
-		parent::display_element( $element, $children_elements, $max_depth, $depth, $args, $output );
-
-		// If we're at the max depth, and the current element still has children, loop over those and display them at this level
-		// This is to prevent them being orphaned to the end of the list.
-		if ( $max_depth <= $depth + 1 && isset( $children_elements[$id]) ) {
-			foreach ( $children_elements[ $id ] as $child )
-				$this->display_element( $child, $children_elements, $max_depth, $depth, $args, $output );
-
-			unset( $children_elements[ $id ] );
-		}
-
-	}
-
-	/**
-	 * @see Walker::start_el()
-	 * @since 2.7.0
-	 *
-	 * @param string $output Passed by reference. Used to append additional content.
-	 * @param object $comment Comment data object.
-	 * @param int $depth Depth of comment in reference to parents.
-	 * @param array $args
-	 */
-	function start_el(&$output, $comment, $depth, $args) {
-		$depth++;
-		$GLOBALS['comment_depth'] = $depth;
-
-		debiki_render_comment($comment, $args, $depth);
-	}
-
-	/**
-	 * @see Walker::end_el()
-	 * @since 2.7.0
-	 *
-	 * @param string $output Passed by reference. Used to append additional content.
-	 * @param object $comment
-	 * @param int $depth Depth of comment.
-	 * @param array $args Ignored.
-	 */
-	function end_el(&$output, $comment, $depth, $args) {
-		echo "</li>\n";
 	}
 
 }
