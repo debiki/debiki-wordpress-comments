@@ -37,9 +37,12 @@ function debiki_comments_enabled() {
 	if (isset($enabled)) return $enabled;
 	$enabled_url_var = $_GET[DEBIKI_ENABLED_QUERY_PARAM];
 	$enabled_in_url = !isset($enabled_url_var) || $enabled_url_var == 'true';
-	$enabled_in_preview = get_option('debiki_comments_enabled');
-	$enabled_in_preview = !isset($enabled_in_preview) || $enabled_in_preview == 'true';
-	$enabled = $enabled_in_url && $enabled_in_preview;
+	$enabled = $enabled_in_url;
+	if (is_preview()) {
+		$enabled_in_preview_opt = get_option('debiki_comments_enabled', 'true');
+		$enabled_in_preview = $enabled_in_preview_opt == 'true';
+		$enabled &= $enabled_in_preview;
+	}
 	return $enabled;
 }
 
