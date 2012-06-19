@@ -25,6 +25,9 @@ define( 'DEBIKI_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 debiki_define_default( 'DEBIKI_SETTINGS_SLUG', 'debiki_comments_options' );
 debiki_define_default( 'DEBIKI_ENABLED_QUERY_PARAM', 'debiki-comments-enabled' );
 
+# Twenty Eleven is a good default theme (I suppose since it's Automattics' latest one).
+debiki_define_default( 'DEBIKI_DEFAULT_THEME', 'twentyeleven' );
+
 
 function debiki__( $text ) {
 	return $text;  # later, something like: __( $text, 'debiki_comments_l10n' );
@@ -52,6 +55,12 @@ function debiki_comments_enabled() {
 # Theme specific files
 #===========================================================
 
+/**
+ * Theme specific files are located in <debiki-plugin>/theme-specific/.
+ * They are named e.g. twentyeleven-v0-comments.php, and -v0- means that the file
+ * is for any Twenty Eleven theme version (well, from version 0 and upwards).
+ */
+
 
 /**
  * A prefix to prepend to 'style.css' or 'comments.php' -- the resulting file path
@@ -66,15 +75,20 @@ function debiki_comments_enabled() {
  * introduce additional colors, so instead, in the file
  * ./theme-specific/twenty-eleven-v-any.css, change the background to white.)
  */
-function debiki_theme_specific_path_prefix() {
+function debiki_theme_specific_file_path($which_file) {
 	$theme = wp_get_theme();
-	$path_prefix = dirname(__FILE__) . '/theme-specific/' . $theme->get_template();
-	$path_prefix_any_version = $path_prefix . '-v-any-';
-	return $path_prefix_any_version;
+	$prefix = dirname(__FILE__).'/theme-specific/';
+	$suffix = '-v0-'.$which_file;
+	$path = $prefix.$theme->get_template().$suffix;
+
+	if (!file_exists($path))
+		return $prefix.DEBIKI_DEFAULT_THEME.$suffix;
+
+	return $path;
 
 	## In the future, perhaps match on theme version too, something reminiscient of this:
 	# $theme_version = $theme->get('Version');
-	# $theme_file_version_specific = $theme_file . '-v-' . $theme_version . '-style.css';
+	# $theme_file_version_specific = $theme_file . '-v' . $theme_version . '-style.css';
 	# if (file_exists($theme_file_version_specific)) ... else ...
 	## However, if we only need to upgrade ...-style.css but not ...-comments.php,
 	## then we cannot use the same prefix for both -style.css and -comments.php.
@@ -82,26 +96,12 @@ function debiki_theme_specific_path_prefix() {
 
 
 function debiki_theme_specific_style_file() {
-	$prefix = debiki_theme_specific_path_prefix();
-	$style_file_path = $prefix . 'style.css';
-
-	if (file_exists($style_file_path))
-		return $style_file_path;
-	else
-		return dirname(__FILE__) . '/theme-specific-default.css';
-		# better: return dirname(__FILE__) . '/theme-specific/default-style.css';
+	return debiki_theme_specific_file_path('style.css');
 }
 
 
 function debiki_theme_specific_comments_template() {
-	$prefix = debiki_theme_specific_path_prefix();
-	$comments_file_path = $prefix . 'comments.php';
-
-	if (file_exists($comments_file_path))
-		return $comments_file_path;
-	else
-		return dirname(__FILE__) . '/comments.php';
-		# better:  dirname(__FILE__) . '/theme-specific/default-comments.php';
+	return debiki_theme_specific_file_path('comments.php');
 }
 
 
