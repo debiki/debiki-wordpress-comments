@@ -95,6 +95,10 @@ function debiki_theme_specific_file_path($which_file) {
 }
 
 
+function debiki_theme_specific_javascript_file() {
+	return debiki_theme_specific_file_path('script.js');
+}
+
 function debiki_theme_specific_style_file() {
 	return debiki_theme_specific_file_path('style.css');
 }
@@ -176,7 +180,40 @@ class Debiki_Walker_Comment extends Walker_Comment {
 }
 
 
-# ===== Javascript and CSS
+# ===== Remove some WordPress Javascript
+
+# Remove reply link on click Javascript. WordPress' built in removal and reapperance
+# of the reply form happens instantly, and with Debiki's two dimensional layout it's
+# hard to understand what is happening, if things are shuffled around in two
+# dimensions, instantly. Instead, we'll use some jQuery animations to move the
+# reply form more slowly and smoothly.
+
+add_filter('comment_reply_link', 'debiki_remove_reply_link_javascript');
+add_filter('post_comments_link', 'debiki_remove_reply_link_javascript');
+
+function debiki_remove_reply_link_javascript($link) {
+	# Replace: onclick='return addComment.moveForm(...)'
+	# With: The empty string.
+	# But also handle onclick="..." (that is, double quotes instead of single quotes).
+	# Another approach is to remove the onclick handler via Javascript.
+	# That might be better actually; that wouldn't break if WordPress renames some
+	# related Javascript variable / function.
+	$link_without_onclick = preg_replace(
+			"#onclick=(['\"])return addComment.moveForm\\([^)]+\\)\\1#", '', $link, 1);
+	return $link_without_onclick;
+}
+
+# Also remove the Javascript file with the functions that the onclick handlers invoke.
+
+add_action('init','debiki_deregister_comment_reply_script');
+
+function debiki_deregister_comment_reply_script() {
+	wp_deregister_script('comment-reply');
+}
+
+
+
+# ===== Debiki's Javascript and CSS
 
 add_action('wp_head', 'debiki_echo_head');
 
@@ -212,6 +249,10 @@ function debiki_echo_head() {
 			'" . $res . "javascript-yaml-parser.js',
 			'" . $res . "debiki.js']
 		});
+		// -----
+		";
+	require debiki_theme_specific_javascript_file();
+	echo "
 		</script>
 		<style>
 		";
