@@ -10,6 +10,8 @@
  * Based on [wordpress-3.3.2]/wp-content/themes/twentyeleven/comments.php.
  */?>
 
+<?php # `.entry-content` aligns it with, and makes it as wide as, the article ?>
+<div class='entry-content dw-wp-comment-section'>
 <div class='debiki dw-debate'>
 <div id="comments" class="dw-t dw-ar-t dw-depth-0 dw-hor dw-svg-gparnt">
 	<?php if ( post_password_required() ) : ?>
@@ -49,7 +51,6 @@
 					'style' => 'ol'));
 			?>
 		</ol>
-
 	<?php
 	# If no comments and comments are closed, leave a note.
 	# Skip on pages or post types that do not support comments.
@@ -59,6 +60,7 @@
 		<p class="nocomments"><?php _e('Comments are closed.', 'twentyeleven'); ?></p>
 	<?php endif; ?>
 
+</div>
 </div>
 </div>
 
