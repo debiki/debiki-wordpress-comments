@@ -214,16 +214,10 @@ function debiki_echo_head() {
 		});
 		</script>
 		<style>
-		.commentlist #respond {
-			float: left;
-			margin: 0 8em 0 0;
-		}
-		.commentlist {
-			width: auto; /* override WP's 68.9% */
-		}
 		";
-
 	require debiki_theme_specific_style_file();
+	echo "
+		</style>";
 }
 
 
