@@ -1,20 +1,30 @@
 <?php
 /**
- * Based on [wordpress-3.3.2]/wp-content/themes/twentyeleven/comments.php.
- *
- * Parts Copyright (c) 2012 Kaj Magnus Lindberg (born 1979)
- * My (KajMagnus) code is licensed under GPL v2 or later
- *
  * Parts Copyright (c) 2011 by the contributors (to WordPress and (?) b2,
- * some of the people mentioned here, I (KajMagnus) suppose:
+ * some of the people mentioned here, I (KajMagnus, see below) suppose:
  *   http://codex.wordpress.org/Copyright_Holders  )
- *
  * The contributors' code is licensed under GNU General Public License v2 or later,
  * see: wp-content/themes/twentyeleven/style.css
  *
- */?>
+ * Parts Copyright (c) 2012 Kaj Magnus Lindberg (born 1979)
+ * Licensed: GPL v2 or later
+ *
+ *
+ * I (KajMagnus) have edited the PHP code to output certain Debiki related CSS classes,
+ * and some extra tags, and removed next and previous comment page links (which makes
+ * no sense with Debiki's two dimensional layout).
+ */
 
-<?php # `.entry-content` aligns it with, and makes it as wide as, the article ?>
+
+#===========================================================
+# Comment section template
+#===========================================================
+
+/**
+ * Based on [wordpress-3.3.2]/wp-content/themes/twentyeleven/comments.php
+ */
+
+# `.entry-content` aligns it with, and makes it as wide as, the article ?>
 <div class='entry-content dw-wp-comment-section'>
 <div id='comments' class='debiki dw-debate'>
 <div id="dw-t-1" class="dw-t dw-ar-t dw-depth-0 dw-hor dw-svg-gparnt">
@@ -67,9 +77,13 @@
 </div>
 </div>
 </div>
-
-
 <?php
+
+
+
+#===========================================================
+# Single comment template
+#===========================================================
 
 /**
  * Adds these classes to comment related tags:
