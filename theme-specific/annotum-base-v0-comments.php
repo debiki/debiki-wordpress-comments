@@ -77,15 +77,13 @@ if (comments_open()) {
  * Annotum Base code base fairly well, then it will (?) be easier to update
  * this plugin to work with newer version of Annotum Base (?).
  */
-# !! Currently calls back into Annotum Base's code base, ignores the functions
-# further down in this file.  !!
 function debiki_cfct_threaded_comment($comment, $args = array(), $depth) {
 	$GLOBALS['comment'] = $comment;
 	$data = array(
 		'args' => $args,
 		'depth' => $depth,
 	);
-	cfct_template_file('comments', 'threaded', $data);
+	debiki_annotum_base_comments_threaded($data);
 }
 
 
@@ -94,7 +92,7 @@ function debiki_cfct_threaded_comment($comment, $args = array(), $depth) {
 /**
  * Based on: wp-content/themes/annotum-base/comments/threaded.php.
  */
-function debiki_annotum_base_comments_threaded() {
+function debiki_annotum_base_comments_threaded($data) {
 
 
 global $comment;
@@ -103,7 +101,7 @@ global $comment;
 <li class="li-comment" id="li-comment-<?php comment_ID() ?>">
 	<div class="div-comment" id="div-comment-<?php comment_ID(); ?>">
 <?php
-cfct_comment($data);
+debiki_annotum_base_comment_default($data);
 ?>
 	</div>
 <?php
@@ -124,7 +122,7 @@ global $comment, $post;
 extract($data);
 ?>
 <article <?php comment_class('reply'); ?> id="comment-<?php comment_ID(); ?>">
-	<?php cfct_template_file('comment', 'comment-header'); ?>
+	<?php debiki_annotum_base_comment_header(); ?>
 	<div class="content">
 		<?php
 		if ($comment->comment_approved == '0') {
