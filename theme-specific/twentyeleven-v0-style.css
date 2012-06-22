@@ -6,6 +6,10 @@ body {
   background: white; /* #f8f8f8; */
 }
 
+.dw-debate {
+  margin-bottom: 40px; /* or page footer might be too close to the comments */
+}
+
 .commentlist {
   width: auto; /* override WP's 68.9% */
 }
@@ -115,8 +119,13 @@ comments relate to each other. Arrows used instead. */
     /* keep border-right, it indicates a jQuery UI column resize handle */
 }
 
+.commentlist > li::before,
+.commentlist > li.bypostauthor::before {
+  content: none; /* remove image from author name to avatar */
+}
+
 .commentlist .children li.comment {
-  margin: 1.625em 0 0 5px;
+  margin: 2.625em 0 0 5px;
   padding: 0;
 }
 
@@ -126,21 +135,17 @@ comments relate to each other. Arrows used instead. */
   color: #141414; /* or too bright, little contrast to the background */
 }
 
-.comment-meta {
-  padding-left: 5px; /* or author name precisely next to box border */
-}
-
-.commentlist .avatar {
-  left: -94px; /* or too far away from author name */
+.dw-pri.dw-pri .dw-depth-1 .dw-t {
+  margin-top: 50px; /* more vspace between posts */
 }
 
 /* Make root thread reply left positioned .avatar visible, at .dw-depth-1 */
 .dw-p {
   overflow: visible;
 }
-/* Add space for root thread reply .avatar */
+
 .dw-pri .dw-hor > .dw-res > li  {
-  margin-left: 73px;
+  margin-left: 48px; /* hspace between columns */
 }
 
 /* Place other avatar images relative article.dw-p, not .dw-p.parent() */
@@ -152,6 +157,33 @@ comments relate to each other. Arrows used instead. */
   top: 0;
 }
 
+.dw-p-hd {
+  font-size: 12px;
+  margin-bottom: 5px;
+  margin-left: 0 !important;
+  border: none;
+  background-color: transparent !important;
+}
+
+.dw-pri.dw-pri .dw-p-hd img {
+  float: left;
+  position: relative;
+  left: -3px;
+  z-index: 1; /* or could be hidden by .dw-p-bd with position: relative */
+  padding: 0 12px 0 0;
+  box-shadow: none;
+  border: none;
+  border-radius: 0;
+  height: 50px;
+  width: 50px;
+}
+
 .dw-p-bd {
   float: none; /* There're no .dw-p-bd-blk children to wrap (they'd float left) */
+  clear: both; /* clear floating avatar image */
+  margin-top: 0 !important; /* or very much whitespace up to author info */
+}
+
+.dw-p-bd p:last-of-type {
+  margin-bottom: 10px; /* don't push away Reply button (1.625em otherwise) */
 }

@@ -12,8 +12,8 @@
 
 <?php # `.entry-content` aligns it with, and makes it as wide as, the article ?>
 <div class='entry-content dw-wp-comment-section'>
-<div class='debiki dw-debate'>
-<div id="comments" class="dw-t dw-ar-t dw-depth-0 dw-hor dw-svg-gparnt">
+<div id='comments' class='debiki dw-debate'>
+<div id="dw-t-1" class="dw-t dw-ar-t dw-depth-0 dw-hor dw-svg-gparnt">
 	<?php if ( post_password_required() ) : ?>
 		<p class="nopassword"><?php _e( 'This post is password protected. Enter the password to view any comments.', 'twentyeleven' ); ?></p>
 	</div><!-- #comments -->
@@ -71,9 +71,11 @@
  * Adds these classes to comment related tags:
  *	  dw-t, dw-depth-<x>, dw-p, dw-p-hd, dw-p-bd
  *
- * Copied from function twentyeleven_comment(..) in
- * wp-content/themes/twentyeleven/functions.php. I've done only a few minor edits,
- * run a diff to find out.
+ * And adds a fold thread button: [–]  or unfold (if folded): [+]
+ *
+ * Otherwise copied from function twentyeleven_comment(..) in
+ * wp-content/themes/twentyeleven/functions.php. I've tried to do as few edits as
+ * possible, so a diff gives meaningful results.
  *
  * (There's a filter, 'comment_class', that I could use to add 'dw-t' and 'dw-depth-'.
  * However more classes needs to be added elsewhere. And anyway I don't think it's
@@ -93,6 +95,7 @@ function debiki_render_comment( $comment, $args, $depth ) {
 		default :
 	?>
 	<li <?php comment_class('dw-t dw-depth-'.$depth); ?> id="li-comment-<?php comment_ID(); ?>">
+		<a class="dw-z">[–]</a>
 		<article id="comment-<?php comment_ID(); ?>" class="comment dw-p">
 			<footer class="comment-meta dw-p-hd">
 				<div class="comment-author vcard">

@@ -49,7 +49,7 @@ jQuery(function($) {
     // pointless to show a 'Reply' link just above the reply form.
     $lastReplyLinkClicked.show();
     $lastReplyLinkClicked = $i.closest('.reply');
-    $lastReplyLinkClicked.hide();
+    $lastReplyLinkClicked.slideUp();
 
     // Move the reply form.
     showBlogPostReplyFormPlaceholder();
