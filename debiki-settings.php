@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright (c) 2012 Kaj Magnus Lindberg (born 1979)
+ * License: GPL v2 or later
+ */
 
 
 function debiki_echo_settings_page() {
@@ -17,6 +21,9 @@ function debiki_echo_settings_page() {
 	# But it's somewhat deprecated -- and instead links to:
 	# http://ottopress.com/2009/wordpress-settings-api-tutorial/
 	#
+
+	# And: ?
+	# http://alisothegeek.com/2011/01/wordpress-settings-api-tutorial-1/
 }
 
 

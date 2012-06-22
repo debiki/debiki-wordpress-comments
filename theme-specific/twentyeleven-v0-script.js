@@ -1,11 +1,19 @@
 /**
+ * Copyright (c) 2012 Kaj Magnus Lindberg (born 1979)
+ * License: GPL v2 or later
+ */
+
+/**
  * Unbinds any WordPress' reply link onclick handlers and instead adds
  * jQuery animations that smoothly moves the reply form to where
  * it is to be placed (when you've clicked a reply link, to reply
  * to a specific comment).
  *
  * This is supposed to work with most / all themes actually,
- * not just Twenty Eleven.
+ * not just Twenty Eleven. (Twenty Eleven files are fallbacked to,
+ * when there are no theme specific files — and since there are no
+ * other theme specific Javascript files, this Twenty Eleven Javascript
+ * file is used, always).
  */
 
 jQuery(function($) {

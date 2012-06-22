@@ -1,13 +1,17 @@
-<?php/**
- * Copyright (c) 2012 Kaj Magnus Lindberg (born 1979)
+<?php
+/**
+ * Based on [wordpress-3.3.2]/wp-content/themes/twentyeleven/comments.php.
+ *
+ * Parts Copyright (c) 2012 Kaj Magnus Lindberg (born 1979)
+ * My (KajMagnus) code is licensed under GPL v2 or later
  *
  * Parts Copyright (c) 2011 by the contributors (to WordPress and (?) b2,
  * some of the people mentioned here, I (KajMagnus) suppose:
  *   http://codex.wordpress.org/Copyright_Holders  )
  *
- * License: GPL2 or later
+ * The contributors' code is licensed under GNU General Public License v2 or later,
+ * see: wp-content/themes/twentyeleven/style.css
  *
- * Based on [wordpress-3.3.2]/wp-content/themes/twentyeleven/comments.php.
  */?>
 
 <?php # `.entry-content` aligns it with, and makes it as wide as, the article ?>

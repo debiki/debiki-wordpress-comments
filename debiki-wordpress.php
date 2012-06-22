@@ -9,6 +9,9 @@ Author URI: http://kajmagnus.debiki.se
 License: GPLv2 or later
 */
 
+/**
+ * Copyright (c) 2012 Kaj Magnus Lindberg (born 1979)
+ */
 
 
 #===========================================================
