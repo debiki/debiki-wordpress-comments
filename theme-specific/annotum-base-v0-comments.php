@@ -38,19 +38,25 @@ if (comments_open()) {
 				<?php post_comments_feed_link('Comments RSS'); ?>
 			</div>
 
+			<div id='comments' class='debiki dw-debate'>
+			<div id="dw-t-1" class="dw-t dw-ar-t dw-depth-0 dw-hor dw-svg-gparnt">
+			<div class='dw-p'></div>
+			<div class='dw-t-vspace'></div>
+			<ol class="reply-list dw-res ui-helper-clearfix">
 			<?php
-			echo '<ol class="reply-list">', wp_list_comments(array(
+			comment_form();
+			echo wp_list_comments(array(
 					'walker' => new Debiki_Walker_Comment,
 					'callback' => 'debiki_cfct_threaded_comment',
-					'style' => 'ol')), '</ol>';
-
+					'style' => 'ol'));
 			?>
+			</ol>
+			</div>
+			</div>
 		</section>
 
 		<?php
 	}
-
-	comment_form();
 }
 
 
@@ -94,16 +100,19 @@ function debiki_cfct_threaded_comment($comment, $args = array(), $depth) {
  */
 function debiki_annotum_base_comments_threaded($data) {
 
-
 global $comment;
+// Why won't this append $depth??: $debiki_classes = 'dw-t dw-depth-'.$data->$depth;
+extract($data);
+$debiki_classes = 'dw-t dw-depth-'.$depth;
 ?>
 
-<li class="li-comment" id="li-comment-<?php comment_ID() ?>">
-	<div class="div-comment" id="div-comment-<?php comment_ID(); ?>">
+<li class="li-comment <?php echo $debiki_classes ?>" id="li-comment-<?php comment_ID() ?>">
+	<a class="dw-z">[–]</a>
+	<?php /* <div class="div-comment dw-p" id="div-comment-<?php comment_ID(); ?>"> */?>
 <?php
 debiki_annotum_base_comment_default($data);
 ?>
-	</div>
+	<?php # </div> ?>
 <?php
 // Dropped </li> is intentional: WordPress figures out where to place the </li> so it can nest comment lists.
 
@@ -121,9 +130,9 @@ global $comment, $post;
 // Extract data passed in from threaded.php for comment reply link
 extract($data);
 ?>
-<article <?php comment_class('reply'); ?> id="comment-<?php comment_ID(); ?>">
+<article <?php comment_class('reply dw-p'); ?> id="comment-<?php comment_ID(); ?>">
 	<?php debiki_annotum_base_comment_header(); ?>
-	<div class="content">
+	<div class="content dw-p-bd">
 		<?php
 		if ($comment->comment_approved == '0') {
 			echo '<p><b>'.__('Your comment is awaiting moderation.', 'anno').'</b></p>';
@@ -152,7 +161,7 @@ function debiki_annotum_base_comment_header() {
 ?>
 
 <?php global $comment; ?>
-	<div class="header">
+	<div class="header dw-p-hd">
 		<?php echo get_avatar($comment, 40); ?>
 		<h3 class="title"><?php comment_author_link(); ?></h3>
 		<time class="published"><?php comment_date(); ?></time>

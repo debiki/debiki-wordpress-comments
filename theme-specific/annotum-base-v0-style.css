@@ -8,6 +8,55 @@ body {
   background: white; /* #f8f8f8; */
 }
 
+#replies {
+  overflow: visible;
+}
+
+#respond {
+  /* Place above any <svg> and <ol>. */
+  position: relative;
+  z-index: 3;
+  float: left;
+  max-width: 350px; /* don't want to fix widht though?? */
+  padding-right: 60px; /* or there'll be no whitespace */
+}
+
+#respond .row, #respond .form-submit {
+  padding-left: 0; /* remove lots of whitespace */
+}
+
+#respond form label {
+  position: static !important; /* or <label> overlaps <input>, since padding
+                               removed (just above) */
+  display: block; /* place it above <input> */
+}
+
+#respond form label + input,
+#respond form label + textarea {
+  margin-top: 0 !important; /* or pushes label too far away */
+}
+
+#respond textarea {
+  width: 100% !important;
+  padding: 0 !important;
+}
+
+#respond .row, #respond .form-submit {
+  display: block; /* or "hovers"" to the upper right of the <textarea> */
+}
+
+.dw-p {
+  padding: 0; /* cancel padding-left */
+  border: none;
+}
+
+.dw-p-hd {
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+
 .dw-debate {
   margin-bottom: 40px; /* or page footer might be too close to the comments */
 }
