@@ -154,16 +154,41 @@ function debiki_plugin_action_links($links, $file) {
 }
 
 
-# ===== <html> elem classes
+# ===== <html> and <body> elem classes
 
-add_filter('language_attributes', 'debiki_classes_for_html_elem');
+add_filter('language_attributes', 'debiki_add_modernizr_nojs_class_to_html_elem');
 
-function debiki_classes_for_html_elem($output) {
+/**
+ * Attempts to add `class="no-js"` to the <html> elem. This fails sometimes,
+ * because some themes (e.g. Annotum Base) generates the <html> tag like so:
+ * `<html class="no-js" <?php language_attributes() ? >>`
+ * and then the browser (Chrome 19 at least) picks up only the first `class="no-js"`
+ * attribute, but ignores the second one (written just below).
+ * This is okay though, because what we want to do is precisely adding a 'no-js'
+ * class. And the reason Annotum Base also does the same thing, is that Annotum Base
+ * also (just like Debiki) uses Modernizr.
+ */
+function debiki_add_modernizr_nojs_class_to_html_elem($output) {
 	if (!debiki_comments_enabled())
 		return $output;
 
 	// `no-js` is for Modernizr.
-	return $output . ' class="no-js dw-render-layout-pending dw-pri"';
+	return $output.' class="no-js" ';
+}
+
+add_filter('body_class', 'debiki_body_classes');
+
+/**
+ * Adds Debiki specific classes to the <body> elem.
+ */
+function debiki_body_classes($classes) {
+	if (!debiki_comments_enabled())
+		return $output;
+
+	// `no-js` is for Modernizr.
+	$classes[] = 'dw-render-layout-pending';
+	$classes[] = 'dw-pri';
+	return $classes;
 }
 
 
