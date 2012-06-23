@@ -25,8 +25,8 @@
  */
 
 # `.entry-content` aligns it with, and makes it as wide as, the article ?>
-<div class='entry-content dw-wp-comment-section'>
-<div id='comments' class='debiki dw-debate'>
+<div class='entry-content'>
+<div id='comments' class='debiki dw-debate dw-wp-hide-reply-link'>
 <div id="dw-t-1" class="dw-t dw-ar-t dw-depth-0 dw-hor dw-svg-gparnt">
 	<?php if ( post_password_required() ) : ?>
 		<p class="nopassword"><?php _e( 'This post is password protected. Enter the password to view any comments.', 'twentyeleven' ); ?></p>
@@ -148,7 +148,7 @@ function debiki_render_comment( $comment, $args, $depth ) {
 
 			<div class="comment-content dw-p-bd"><?php comment_text(); ?></div>
 
-			<div class="reply">
+			<div class="reply dw-wp-reply-link">
 				<?php comment_reply_link( array_merge( $args, array( 'reply_text' => __( 'Reply <span>&darr;</span>', 'twentyeleven' ), 'depth' => $depth, 'max_depth' => $args['max_depth'] ) ) ); ?>
 			</div><!-- .reply -->
 		</article><!-- #comment-## -->

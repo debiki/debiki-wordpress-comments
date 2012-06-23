@@ -18,6 +18,7 @@
 
 jQuery(function($) {
 
+  var hideReplyLink = $('.dw-wp-hide-reply-link').length !== 0;
   var $replyForm = $('#respond');
   var $replyFormOriginalParent = $('#respond').parent();
   var $lastReplyLinkClicked = $();
@@ -55,9 +56,15 @@ jQuery(function($) {
 
     // Hide the 'Reply' link that the user just clicked, because it's
     // pointless to show a 'Reply' link just above the reply form.
-    $lastReplyLinkClicked.show();
-    $lastReplyLinkClicked = $i.closest('.reply');
-    $lastReplyLinkClicked.slideUp();
+    if (hideReplyLink) {
+      $lastReplyLinkClicked.show();
+      $lastReplyLinkClicked = $i.closest('.dw-wp-reply-link');
+      if (!$lastReplyLinkClicked.length) $lastReplyLinkClicked = $i;
+      $lastReplyLinkClicked.slideUp();
+    }
+    else {
+      // Could disable it?
+    }
 
     // Move the reply form.
     showBlogPostReplyFormPlaceholder();
@@ -75,7 +82,12 @@ jQuery(function($) {
 
   $cancelCommentReplyLink.removeAttr('onclick').click(function(event) {
     $cancelCommentReplyLink.hide();
-    $lastReplyLinkClicked.fadeIn();
+    if (hideReplyLink) {
+      $lastReplyLinkClicked.fadeIn();
+    }
+    else {
+      // Enable it?
+    }
 
     $replyForm.slideUp(function() {
       hideBlogPostReplyFormPlaceholder();
