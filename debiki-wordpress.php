@@ -278,7 +278,7 @@ add_action('wp_head', 'debiki_echo_head');
 function debiki_echo_head() {
 	if (!debiki_comments_enabled())
 		return;
-
+	# This builds a broken URL, if context path isn't /  ?
 	$res = '/wp-content/plugins/debiki-wordpress/res/';
 	echo "
     <meta name='viewport' content='initial-scale=1.0, minimum-scale=0.01'/>
