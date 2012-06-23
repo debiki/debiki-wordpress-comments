@@ -31,6 +31,18 @@ debiki_define_default( 'DEBIKI_ENABLED_QUERY_PARAM', 'debiki-comments-enabled' )
 # Twenty Eleven is a good default theme (I suppose since it's Automattics' latest one).
 debiki_define_default( 'DEBIKI_DEFAULT_THEME', 'twentyeleven' );
 
+debiki_define_default( 'DEBIKI_MODERNIZR_VERSION', '2.5.3');
+debiki_define_default( 'DEBIKI_MODERNIZR_URL',
+		'http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.5.3/modernizr.min.js' );
+
+debiki_define_default( 'DEBIKI_JQUERY_VERSION', '1.7.2');
+debiki_define_default( 'DEBIKI_JQUERY_URL',
+		'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js'); # MIN!
+
+debiki_define_default( 'DEBIKI_JQUERY_UI_VERSION', '1.8.19'); # 1.8.21 available, not .20
+debiki_define_default( 'DEBIKI_JQUERY_UI_URL',
+		'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.19/jquery-ui.js'); # MIN!
+
 
 function debiki__( $text ) {
 	return $text;  # later, something like: __( $text, 'debiki_comments_l10n' );
@@ -218,6 +230,24 @@ function debiki_deregister_comment_reply_script() {
 
 # ===== Debiki's Javascript and CSS
 
+
+add_action('wp_enqueue_scripts', 'debiki_enqueue_scripts');
+
+function debiki_enqueue_scripts() {
+	wp_deregister_script('modernizr');
+	wp_register_script('modernizr', DEBIKI_MODERNIZR_URL, false, DEBIKI_MODERNIZR_VERSION);
+	wp_enqueue_script('modernizr');
+
+	wp_deregister_script('jquery');
+	wp_register_script('jquery', DEBIKI_JQUERY_URL, false, DEBIKI_JQUERY_VERSION);
+	wp_enqueue_script('jquery');
+
+	wp_deregister_script('jquery-ui');
+	wp_register_script('jquery-ui', DEBIKI_JQUERY_UI_URL, false, DEBIKI_JQUERY_UI_VERSION);
+	wp_enqueue_script('jquery-ui');
+}
+
+
 add_action('wp_head', 'debiki_echo_head');
 
 function debiki_echo_head() {
@@ -229,9 +259,6 @@ function debiki_echo_head() {
     <meta name='viewport' content='initial-scale=1.0, minimum-scale=0.01'/>
 	 <link rel='stylesheet' href='" . $res . "jquery-ui/jquery-ui-1.8.16.custom.css'>
 	 <link rel='stylesheet' href='" . $res . "debiki.css'>
-    <script src='http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.5.3/modernizr.min.js'></script>
-    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js'></script>
-    <script src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.19/jquery-ui.min.js'></script>
 	 <script>
 		// Play Framework 2's `require` and `exports` not available.
 		window.require = function() {};
