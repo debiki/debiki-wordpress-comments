@@ -1,0 +1,46 @@
+
+
+============================
+Bugs
+============================
+
+{{{1 "# This builds a broken URL, if context path isn't /  ?"
+}}}1
+
+
+============================
+Styles
+============================
+
+{{{1 Merge Twenty Eleven and Annotum Base stylesheets
+}}}1
+
+
+============================
+Animations
+============================
+
+{{{1 Placeholder when moving reply form downwards in same column
+Otherwise, comments jump upwards.
+
+}}}1
+
+
+============================
+Theme specific
+============================
+
+
+{{{1 Annotum Base
+==============
+
+{{{2 Unregister some jQuery UI scripts that Debiki has already loaded
+
+Debiki loads everything via Google's CDN, should be faster.
+
+
+{{{2 Disable Reply link after click
+
+
+}}}1
+

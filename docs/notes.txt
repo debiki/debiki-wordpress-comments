@@ -1,0 +1,50 @@
+
+
+Git:
+by-step tutorial for publishing a WordPress plugin using Git. 
+http://eamann.com/tech/how-to-publish-a-wordpress-plugin-git/?ref=mindshare
+
+Read:
+http://wordpress.stackexchange.com/questions/715/objective-best-practices-for-plugin-development
+
+
+Automatic tests:
+- Install  http://wordpress.org/extend/plugins/wordpress-importer/
+- Install  http://wordpress.org/extend/plugins/wordpress-importer-extended/
+
+   (or?? http://kuttler.eu/wordpress-plugin/auto-import-wxr-files/)
+
+- Install  http://wordpress.org/extend/plugins/wordpress-reset/
+   (or?? http://wordpress.org/extend/plugins/wordpress-database-reset/ )
+
+- Then use AngularJS Seed and JsTestDrive? :-)   and Coffeescript of course
+  Perhaps I can just copy the JsTestDrive related files from
+  https://github.com/angular/angular-seed
+
+Consider loading recent comments dynamically:
+   http://wordpress.org/extend/plugins/bwp-recent-comments/
+
+
+Functional tests and PHP unit tests:
+  http://wordpress.stackexchange.com/questions/703/tutorials-for-unit-testing-in-wordpress-and-for-unit-test-svn-wordpress-org
+  http://codex.wordpress.org/Automated_Testing
+
+(?? http://code.google.com/p/buddypress-media/wiki/DOCS_bpm_unit_test_top ??)
+
+
+
+
+
+Automatic updates:
+http://w-shadow.com/blog/2010/09/02/automatic-updates-for-any-plugin/
+(linked from:
+  http://wordpress.stackexchange.com/questions/13/updates-for-a-private-plugin )
+
+
+
+
+Dev, test release related:
+  http://wordpress.stackexchange.com/questions/36547/developing-testing-and-releasing?rq=1
+
+SVN: http://wordpress.org/extend/plugins/about/svn/#task-3
+Task 3: "Tagging" a new version
