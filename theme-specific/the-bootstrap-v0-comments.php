@@ -21,9 +21,26 @@
 # Comment section template
 #===========================================================
 
+
 /**
- * Based on:
- *   wp-content/themes/the-bootstrap/comments.php
+ *  An action callback, the_bootstrap_comment_form_top(), adds a Twitter Bootstrap
+ * CSS class `form-horizontal` to the reply form. This doesn't work well with
+ * Debiki's narrow columns, so replace it with Twitter Bootstrap's `form-vertical`
+ * instead.
+ * See: wp-content/themes/the-bootstrap/functions.php
+ */
+
+remove_action('comment_form_top', 'the_bootstrap_comment_form_top');
+add_action('comment_form_top', 'debiki_the_bootstrap_comment_form_top');
+
+function debiki_the_bootstrap_comment_form_top() {
+	echo '<div class="form-vertical">';
+}
+
+
+/**
+ * The comment section.
+ * Based on: wp-content/themes/the-bootstrap/comments.php
  */
 
 if ( post_password_required() ) : ?>
@@ -42,13 +59,18 @@ if ( have_comments() ) : ?>
 					number_format_i18n( get_comments_number() ), '<span>' . get_the_title() . '</span>' ); ?>
 		</h2>
 
-		<?php the_bootstrap_comment_nav(); ?>
-
-		<ol class="commentlist unstyled">
-			<?php wp_list_comments( array( 'callback' => 'the_bootstrap_comment' ) ); ?>
+		<div class='debiki dw-debate'>
+		<div id="dw-t-1" class="dw-t dw-depth-0 dw-hor dw-svg-gparnt">
+		<div class='dw-p'></div>
+		<div class='dw-t-vspace'></div>
+		<ol class="commentlist unstyled dw-res ui-helper-clearfix">
+			<?php
+			debiki_the_bootstrap_comment_form();
+			debiki_list_comments('debiki_the_bootstrap_comment');
+			?>
 		</ol><!-- .commentlist .unstyled -->
-
-		<?php the_bootstrap_comment_nav(); ?>
+		</div>
+		</div>
 
 	</div><!-- #comments -->
 <?php endif;
@@ -57,6 +79,15 @@ if ( ! comments_open() AND ! is_page() AND post_type_supports( get_post_type(), 
 	<p class="nocomments"><?php _e( 'Comments are closed.', 'the-bootstrap' ); ?></p>
 <?php endif;
 
+/**
+ * Wraps the comment_form in a function that can be called above, so I don't have
+ * to copy paste all this code, from here to above — if I did that, a diff would
+ * be harder to interpret.
+ *
+ * Don't indent the method body or it'll be somewhat harder to interpret a diff.
+ */
+function debiki_the_bootstrap_comment_form() {
+return
 comment_form( array(
 	'comment_field'			=>	'<div class="comment-form-comment control-group"><label class="control-label" for="comment">' . _x( 'Comment', 'noun', 'the-bootstrap' ) . '</label><div class="controls"><textarea class="span7" id="comment" name="comment" rows="8" aria-required="true"></textarea></div></div>',
 	'comment_notes_before'	=>	'',
@@ -67,6 +98,8 @@ comment_form( array(
 	'must_log_in'			=>	'<div class="must-log-in control-group controls">' . sprintf( __( 'You must be <a href="%s">logged in</a> to post a comment.', 'the-bootstrap' ), wp_login_url( apply_filters( 'the_permalink', get_permalink( get_the_ID() ) ) ) ) . '</div>',
 	'logged_in_as'			=>	'<div class="logged-in-as control-group controls">' . sprintf( __( 'Logged in as <a href="%1$s">%2$s</a>. <a href="%3$s" title="Log out of this account">Log out?</a>', 'the-bootstrap' ), admin_url( 'profile.php' ), $user_identity, wp_logout_url( apply_filters( 'the_permalink', get_permalink( get_the_ID() ) ) ) ) . '</div>',
 ) );
+}
+
 
 
 
@@ -77,7 +110,7 @@ comment_form( array(
 /**
  * Based on `the_bootstrap_comment` in wp-content/themes/the-bootstrap/functions.php.
  */
-function the_bootstrap_comment( $comment, $args, $depth ) {
+function debiki_the_bootstrap_comment( $comment, $args, $depth ) {
 	$GLOBALS['comment'] = $comment;
 	switch ( $comment->comment_type ) :
 		case 'pingback' :
@@ -91,15 +124,14 @@ function the_bootstrap_comment( $comment, $args, $depth ) {
 			<?php
 			break;
 		default :
-			$offset	=	$depth - 1;
-			$span	=	7 - $offset;
 			?>
-			<li <?php comment_class(); ?> id="li-comment-<?php comment_ID(); ?>">
-				<article id="comment-<?php comment_ID(); ?>" class="comment row">
-					<div class="comment-author-avatar span1<?php if ($offset) echo " offset{$offset}"; ?>">
+			<li <?php comment_class('dw-t dw-depth-'.$depth); ?> id="li-comment-<?php comment_ID(); ?>">
+				<a class="dw-z">[–]</a>
+				<article id="comment-<?php comment_ID(); ?>" class="comment row dw-p">
+					<div class="comment-author-avatar">
 						<?php echo get_avatar( $comment, 70 ); ?>
 					</div>
-					<footer class="comment-meta span<?php echo $span; ?>">
+					<footer class="comment-meta dw-p-hd">
 						<div class="comment-author vcard">
 							<?php
 								/* translators: 1: comment author, 2: date and time */
@@ -121,14 +153,18 @@ function the_bootstrap_comment( $comment, $args, $depth ) {
 
 					</footer><!-- .comment-meta -->
 
-					<div class="comment-content span<?php echo $span; ?>">
+					<div class="comment-content dw-p-bd">
 						<?php
 						comment_text();
+						?>
+						<div class="dw-wp-reply-link" <?php echo debiki_reply_link_data($comment); ?> >
+						<?php						
 						comment_reply_link( array_merge( $args, array(
 							'reply_text'	=>	__( 'Reply <span>&darr;</span>', 'the-bootstrap' ),
 							'depth'			=>	$depth,
 							'max_depth'		=>	$args['max_depth']
 						) ) ); ?>
+						</div>
 					</div><!-- .comment-content -->
 
 				</article><!-- #comment-<?php comment_ID(); ?> .comment -->

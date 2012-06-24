@@ -39,6 +39,17 @@ body {
 #respond textarea {
   width: 100% !important;
   padding: 0 !important;
+  margin-top: 0;
+}
+
+#respond .form-actions {
+  background-color: transparent; /* not gray please */
+  border: none; /* no border-top */
+  padding-right: 0; /* or cannot right align submit btn w textarea */
+}
+
+#respond #submit {
+  float: right;
 }
 
 #respond .row, #respond .form-submit {
@@ -185,6 +196,15 @@ comments relate to each other. Arrows used instead. */
   color: #141414; /* or too bright, little contrast to the background */
 }
 
+.comment-awaiting-moderation {
+  /* This is a Twitter Bootstrap's `alert` <div>. They have background colors
+  and border, but the border & background would extend to the left
+  below the avatar, unless: */
+  display: table-cell;
+  /* ((Alternatively, could add margin-left, but then we'd have to
+  hard code that margin, and that'd break if the avatar is resized.)) */
+}
+
 .dw-pri.dw-pri .dw-depth-1 .dw-t {
   margin: 50px 0 0 5px; /* more vspace between posts & left aligns PNG arrows */
   padding: 0; /* or PNG arrows incorrectly offset */
@@ -208,10 +228,16 @@ comments relate to each other. Arrows used instead. */
   top: 0;
 }
 
+.comment-author-avatar {
+  float: left;
+  padding-right: 1em;
+}
+
 .dw-p-hd {
   font-size: 12px;
   margin-bottom: 5px;
   margin-left: 0 !important;
+  padding: 0 !important; /* or indented */
   border: none;
   background-color: transparent !important;
 }
