@@ -177,7 +177,6 @@ comments relate to each other. Arrows used instead. */
 
 .commentlist .children li.comment {
   margin: 2.625em 0 0 5px;
-  padding: 0;
 }
 
 /* ... But do indicate posts py the author, in some manner. */
@@ -187,7 +186,8 @@ comments relate to each other. Arrows used instead. */
 }
 
 .dw-pri.dw-pri .dw-depth-1 .dw-t {
-  margin-top: 50px; /* more vspace between posts */
+  margin: 50px 0 0 5px; /* more vspace between posts & left aligns PNG arrows */
+  padding: 0; /* or PNG arrows incorrectly offset */
 }
 
 /* Make root thread reply left positioned .avatar visible, at .dw-depth-1 */
@@ -212,6 +212,7 @@ comments relate to each other. Arrows used instead. */
   font-size: 12px;
   margin-bottom: 5px;
   margin-left: 0 !important;
+  padding: 0 !important; /* or indented */
   border: none;
   background-color: transparent !important;
 }
