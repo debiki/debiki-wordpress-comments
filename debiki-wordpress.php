@@ -65,6 +65,78 @@ function debiki_comments_enabled() {
 }
 
 
+#===========================================================
+# Admin stuff
+#===========================================================
+
+
+# ===== Settings page
+
+require dirname(__FILE__) . '/debiki-settings.php';
+
+add_action('admin_menu', 'debiki_add_admin_menu_items');
+
+function debiki_add_admin_menu_items() {
+	add_options_page('Debiki Comments', 'Debiki Comments', 'manage_options',
+			DEBIKI_SETTINGS_SLUG, 'debiki_echo_settings_page');
+}
+
+add_filter('plugin_action_links', 'debiki_plugin_action_links', 10, 2);
+
+function debiki_plugin_action_links($links, $file) {
+	if ($file != DEBIKI_PLUGIN_BASENAME)
+		return $links;
+
+	$settings_link = '<a href="' . menu_page_url(DEBIKI_SETTINGS_SLUG, false) . '">'
+		. esc_html(debiki__('Settings')) . '</a>';
+	array_unshift($links, $settings_link);
+	return $links;
+}
+
+
+# ===== Theme preview options
+
+add_action('customize_register', 'debiki_register_preview_control');
+
+/**
+ * Creates a theme preview option, `debiki_comments_enabled`, with value `true`
+ * or `false`. Later, when the preview page is renedered (in the same HTTP
+ * request), the option will be considered in `debiki_comments_enabled()`.
+ */
+function debiki_register_preview_control( $customize_manager ) {
+
+	# See `register_controls()` in `wp-includes/class-wp-customize-manager.php`.
+
+	# Concerning `priority` (below).
+	# The theme preview config section with the highest number is placed at the end of
+	# the config list. The last build in section is 'Static Front Page' with prio 120
+	# as of Word Press 3.4.  Lets use a much higher prio, so in case WP adds more
+	# sections, they'll appear before Debiki's section.
+	$customize_manager->add_section( 'debiki_comments', array(
+			'title'    => __( 'Debiki Comment System' ),
+			'priority' => 300,
+		));
+
+	$customize_manager->add_setting( 'debiki_comments_enabled', array(
+			'default' => 'true',
+			'type' => 'option',
+		));
+
+	$customize_manager->add_control( 'debiki_comments_enabled', array(
+			'label'   => debiki__( 'Debiki comments enabled' ),
+			'section' => 'debiki_comments',
+			'type'    => 'radio',
+			'choices' => array(
+				'true' => debiki__( 'Enabled' ),
+				'false'  => debiki__( 'Disabled' ),
+			),
+		));
+}
+
+
+if (!debiki_comments_enabled())
+	return;
+
 
 #===========================================================
 # Theme specific files
@@ -128,30 +200,6 @@ function debiki_theme_specific_comments_template() {
 #===========================================================
 # Filters and action hooks
 #===========================================================
-
-
-# ===== Settings page
-
-require dirname(__FILE__) . '/debiki-settings.php';
-
-add_action('admin_menu', 'debiki_add_admin_menu_items');
-
-function debiki_add_admin_menu_items() {
-	add_options_page('Debiki Comments', 'Debiki Comments', 'manage_options',
-			DEBIKI_SETTINGS_SLUG, 'debiki_echo_settings_page');
-}
-
-add_filter('plugin_action_links', 'debiki_plugin_action_links', 10, 2);
-
-function debiki_plugin_action_links($links, $file) {
-	if ($file != DEBIKI_PLUGIN_BASENAME)
-		return $links;
-
-	$settings_link = '<a href="' . menu_page_url(DEBIKI_SETTINGS_SLUG, false) . '">'
-		. esc_html(debiki__('Settings')) . '</a>';
-	array_unshift($links, $settings_link);
-	return $links;
-}
 
 
 # ===== <html> and <body> elem classes
@@ -314,46 +362,6 @@ function debiki_echo_head() {
 	require debiki_theme_specific_style_file();
 	echo "
 		</style>";
-}
-
-
-# ===== Theme preview options
-
-add_action('customize_register', 'debiki_register_preview_control');
-
-/**
- * Creates a theme preview option, `debiki_comments_enabled`, with value `true`
- * or `false`. Later, when the preview page is renedered (in the same HTTP
- * request), the option will be considered in `debiki_comments_enabled()`.
- */
-function debiki_register_preview_control( $customize_manager ) {
-
-	# See `register_controls()` in `wp-includes/class-wp-customize-manager.php`.
-
-	# Concerning `priority` (below).
-	# The theme preview config section with the highest number is placed at the end of
-	# the config list. The last build in section is 'Static Front Page' with prio 120
-	# as of Word Press 3.4.  Lets use a much higher prio, so in case WP adds more
-	# sections, they'll appear before Debiki's section.
-	$customize_manager->add_section( 'debiki_comments', array(
-			'title'    => __( 'Debiki Comment System' ),
-			'priority' => 300,
-		));
-
-	$customize_manager->add_setting( 'debiki_comments_enabled', array(
-			'default' => 'true',
-			'type' => 'option',
-		));
-
-	$customize_manager->add_control( 'debiki_comments_enabled', array(
-			'label'   => debiki__( 'Debiki comments enabled' ),
-			'section' => 'debiki_comments',
-			'type'    => 'radio',
-			'choices' => array(
-				'true' => debiki__( 'Enabled' ),
-				'false'  => debiki__( 'Disabled' ),
-			),
-		));
 }
 
 
