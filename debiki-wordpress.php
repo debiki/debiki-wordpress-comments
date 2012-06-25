@@ -29,7 +29,7 @@ debiki_define_default( 'DEBIKI_SETTINGS_SLUG', 'debiki_comments_options' );
 debiki_define_default( 'DEBIKI_ENABLED_QUERY_PARAM', 'debiki-comments-enabled' );
 
 # Twenty Eleven is a good default theme (I suppose since it's Automattics' latest one).
-debiki_define_default( 'DEBIKI_DEFAULT_THEME', 'twentyeleven' );
+debiki_define_default( 'DEBIKI_DEFAULT_THEME', 'default' );
 
 debiki_define_default( 'DEBIKI_MODERNIZR_VERSION', '2.5.3');
 debiki_define_default( 'DEBIKI_MODERNIZR_URL',
