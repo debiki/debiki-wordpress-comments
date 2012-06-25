@@ -306,9 +306,11 @@ function debiki_remove_reply_link_javascript($link) {
 	# Replace: onclick='return addComment.moveForm(...)'
 	# With: The empty string.
 	# But also handle onclick="..." (that is, double quotes instead of single quotes).
-	# Another approach is to remove the onclick handler via Javascript.
+	# ((Another approach is to remove the onclick handler via Javascript.
 	# That might be better actually; that wouldn't break if WordPress renames some
 	# related Javascript variable / function.
+	# Currently, I do unbind onclick, search for `removeAttr('onclick')` in
+	# twentyeleven-v0-script.js ))
 	$link_without_onclick = preg_replace(
 			"#onclick=(['\"])return addComment.moveForm\\([^)]+\\)\\1#", '', $link, 1);
 	return $link_without_onclick;
