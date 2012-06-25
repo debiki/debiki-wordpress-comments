@@ -66,6 +66,13 @@ jQuery(function($) {
       // Could disable it?
     }
 
+    // Update reply form inputs, so one replies to the correct comment.
+    var $dataTag = $i.closest('.dw-wp-reply-link');
+    var parentCommentId = $dataTag.data('dw_wp_comment_id');
+    var blogPostId = $dataTag.data('dw_wp_post_id');
+    $replyForm.find('input[name=comment_parent]').val(parentCommentId);
+    $replyForm.find('input[name=comment_post_ID]').val(blogPostId);
+
     // Move the reply form.
     showBlogPostReplyFormPlaceholder();
     var $commentToReplyTo = $i.closest('.dw-p');

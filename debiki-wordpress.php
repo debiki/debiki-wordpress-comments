@@ -274,6 +274,22 @@ class Debiki_Walker_Comment extends Walker_Comment {
 
 }
 
+/**
+ * Data attributes with comment and post ids that our Javascript can use
+ * to find the comment and post ID, when moving the reply form. (Then two <input>s
+ * with parent comment id and post id need to be updated.)
+ */
+function debiki_reply_link_data($comment, $opt_post) {
+	# This should be safe w.r.t. xss attacks; `get_comment_reply_link` in
+	# comment-template.php already inlines $comment->comment_ID and $post->ID
+	# in the way I do below.
+	$post_id = $opt_post ? $opt_post->ID : $comment->comment_post_ID;
+	return
+		" data-dw_wp_comment_id='$comment->comment_ID'" .
+		" data-dw_wp_post_id='$post_id'";
+}
+
+
 
 # ===== Remove some WordPress Javascript
 

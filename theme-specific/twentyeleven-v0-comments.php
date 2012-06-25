@@ -145,7 +145,7 @@ function debiki_twenty_eleven_comment( $comment, $args, $depth ) {
 
 			<div class="comment-content dw-p-bd"><?php comment_text(); ?></div>
 
-			<div class="reply dw-wp-reply-link">
+			<div class="reply dw-wp-reply-link" <?php echo debiki_reply_link_data($comment); ?> >
 				<?php comment_reply_link( array_merge( $args, array( 'reply_text' => __( 'Reply <span>&darr;</span>', 'twentyeleven' ), 'depth' => $depth, 'max_depth' => $args['max_depth'] ) ) ); ?>
 			</div><!-- .reply -->
 		</article><!-- #comment-## -->

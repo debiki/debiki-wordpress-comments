@@ -137,7 +137,7 @@ extract($data);
 		comment_text();
 		?>
 	</div><!-- .content -->
-	<div class="footer">
+	<div class="footer dw-wp-reply-link" <?php echo debiki_reply_link_data($comment, $post); ?> >
 		<?php
 			comment_reply_link(array_merge( $args, array('depth' => $depth, 'max_depth' => $args['max_depth'])), $comment, $post);
 			edit_comment_link(__('Edit This', 'anno'), ' <span class="delimiter">&middot;</span> ', '');
