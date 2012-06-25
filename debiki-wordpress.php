@@ -251,6 +251,13 @@ function debiki_comments_template($default_template) {
 	return debiki_theme_specific_comments_template();
 }
 
+function debiki_list_comments($callback) {
+   wp_list_comments(array(
+			'walker' => new Debiki_Walker_Comment,
+			'callback' => $callback,
+			'style' => 'ol'));
+}
+
 /**
  * Adds html class attributes required by Debiki's CSS and Javascript.
  */

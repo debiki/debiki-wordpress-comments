@@ -45,10 +45,7 @@ if (comments_open()) {
 			<ol class="reply-list dw-res ui-helper-clearfix">
 			<?php
 			comment_form();
-			echo wp_list_comments(array(
-					'walker' => new Debiki_Walker_Comment,
-					'callback' => 'debiki_cfct_threaded_comment',
-					'style' => 'ol'));
+			echo debiki_list_comments('debiki_cfct_threaded_comment');
 			?>
 			</ol>
 			</div>

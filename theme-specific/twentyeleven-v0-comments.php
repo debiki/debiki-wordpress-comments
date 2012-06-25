@@ -59,10 +59,7 @@
 		<ol class="commentlist dw-res ui-helper-clearfix">
 			<?php
 			comment_form();
-			wp_list_comments(array(
-					'walker' => new Debiki_Walker_Comment,
-					'callback' => 'debiki_render_comment',
-					'style' => 'ol'));
+			debiki_list_comments('debiki_twenty_eleven_comment');
 			?>
 		</ol>
 	<?php
@@ -100,7 +97,7 @@
  * a good idea to depend on code in the Twenty-Eleven theme -- then Debiki's code
  * could suddenly break, should someone upgrade the theme.)
  */
-function debiki_render_comment( $comment, $args, $depth ) {
+function debiki_twenty_eleven_comment( $comment, $args, $depth ) {
 	$GLOBALS['comment'] = $comment;
 	switch ( $comment->comment_type ) :
 		case 'pingback' :
