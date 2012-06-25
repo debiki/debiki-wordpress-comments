@@ -8,6 +8,18 @@ body {
   background: white; /* #f8f8f8; */
 }
 
+#main, #masthead hgroup {
+  border: none; /* borders overlap with Debiki's comment section */
+}
+
+.post, .type-page, .type-attachment {
+  border-bottom: none; /* keeping only this border looks weird */
+}
+
+.dw-t svg path {
+  stroke: hsl(50, 61%, 85%); /* one of buttercreams' color, better than gray */
+}
+
 #replies {
   overflow: visible;
 }
@@ -196,6 +208,13 @@ comments relate to each other. Arrows used instead. */
   color: #141414; /* or too bright, little contrast to the background */
 }
 
+.dw-p-hd .comment-author {
+  border: none;
+  width: auto;
+  margin-right: 0;
+  min-height: 0;
+}
+
 .comment-awaiting-moderation {
   /* This is a Twitter Bootstrap's `alert` <div>. They have background colors
   and border, but the border & background would extend to the left
@@ -203,6 +222,10 @@ comments relate to each other. Arrows used instead. */
   display: table-cell;
   /* ((Alternatively, could add margin-left, but then we'd have to
   hard code that margin, and that'd break if the avatar is resized.)) */
+}
+
+.dw-depth-0 .dw-t {
+  clear: none;
 }
 
 .dw-pri.dw-pri .dw-depth-1 .dw-t {
@@ -263,4 +286,8 @@ comments relate to each other. Arrows used instead. */
 
 .dw-p-bd p:last-of-type {
   margin-bottom: 10px; /* don't push away Reply button (1.625em otherwise) */
+}
+
+.dw-wp-reply-link {
+  padding: 0; /* or indented */
 }
