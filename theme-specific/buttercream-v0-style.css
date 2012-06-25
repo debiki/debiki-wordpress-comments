@@ -1,0 +1,266 @@
+/**
+ * Copyright (c) 2012 Kaj Magnus Lindberg (born 1979)
+ * License: GPL v2 or later
+ */
+
+/* Brighter background makes SVG arrows visible */
+body {
+  background: white; /* #f8f8f8; */
+}
+
+#replies {
+  overflow: visible;
+}
+
+#respond {
+  /* Place above any <svg> and <ol>. */
+  position: relative;
+  z-index: 3;
+  float: left;
+  max-width: 350px; /* don't want to fix widht though?? */
+  padding-right: 60px; /* or there'll be no whitespace */
+}
+
+#respond .row, #respond .form-submit {
+  padding-left: 0; /* remove lots of whitespace */
+}
+
+#respond form label {
+  position: static !important; /* or <label> overlaps <input>, since padding
+                               removed (just above) */
+  display: block; /* place it above <input> */
+}
+
+#respond form label + input,
+#respond form label + textarea {
+  margin-top: 0 !important; /* or pushes label too far away */
+}
+
+#respond textarea {
+  width: 100% !important;
+  padding: 0 !important;
+  margin-top: 0;
+}
+
+#respond .form-actions {
+  background-color: transparent; /* not gray please */
+  border: none; /* no border-top */
+  padding-right: 0; /* or cannot right align submit btn w textarea */
+}
+
+#respond #submit {
+  float: right;
+}
+
+#respond .row, #respond .form-submit {
+  display: block; /* or "hovers"" to the upper right of the <textarea> */
+}
+
+.dw-p {
+  padding: 0; /* cancel padding-left */
+  border: none;
+}
+
+.dw-p-hd {
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+
+.dw-debate {
+  margin-bottom: 40px; /* or page footer might be too close to the comments */
+}
+
+.commentlist {
+  width: auto; /* override WP's 68.9% */
+}
+
+.commentlist #respond {
+  float: left;
+  margin: 0 5em 0 0;
+  max-width: 400px; /* or too wide */
+  background-color: #e9e9e9; /* or too dark, looks like a big blob */
+  border: 1px solid #e6e6e6;
+
+  /* Make it less obvious */
+  background: white;
+  border: none;
+  padding: 12px 0 0 0;
+
+  /* place above ol.dw-res with z-index 2 because it's :not(svg),
+    and above the column resize handle...
+  ... hmm but column resize handle... has z-index: 1 only [0QKxg2]
+  (see debiki.css) */
+  z-index: 1100;
+}
+
+.dw-depth-1 #respond {
+  padding: 0;
+  float: left;
+  margin: 25px 0 30px 70px; /* 35 + 35 = 70 */
+}
+
+#respond .comment-form-author .required,
+#respond .comment-form-email .required {
+  top: 5px; /* label is now `positon: auto` so top: 45px is too much */
+}
+
+.dw-depth-1 #respond .comment-form-author .required,
+.dw-depth-1 #respond .comment-form-email .required {
+  left: auto; /* was 75%, no good when <input> width now 100% */
+  right: 0px;
+  top: 5px;
+}
+
+
+.dw-depth-1 #respond #reply-title {
+  font-size: 20px;
+}
+
+.dw-depth-1 #respond input[type="text"],
+.dw-depth-1 #respond textarea {
+  -padding: 0;
+  width: 100%;
+}
+
+.dw-depth-1 #respond input#submit {
+  left: 0;
+}
+
+.dw-depth-1 #respond #cancel-comment-reply-link {
+  right: 0;
+  top: -18px; /* the #respond now has padding-top 0, not 12px */
+}
+
+#reply-title {
+  text-transform: none;
+  letter-spacing: 0.05em;
+}
+
+.dw-pri #respond label {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+}
+
+#respond .comment-form-comment label {
+  position: absolute;
+  top: 12px;
+  left: 2px;
+}
+
+#respond input[type="text"], #respond textarea {
+  border: 1px solid #ccc;
+  box-shadow: none;
+  margin-top: 10px;
+  margin-bottom: 1.11111px;
+  padding: 6px; /* default 10px makes it look so very large */
+}
+
+#respond input#submit {
+  background-color: #666;
+  color: white;
+  font-weight: bold;
+  left: 20px;
+}
+
+.dw-pri #comments-title {
+  margin-left: 0; /* or too far off to the right */
+}
+
+/* Comment borders and backgrounds no longer needed to indicate how
+comments relate to each other. Arrows used instead. */
+.commentlist > li.comment,
+.commentlist .children > li.bypostauthor,
+.commentlist .children li.comment {
+  background: white;
+  border-top: none !important;
+  border-bottom: none !important;
+  border-left: none !important;
+    /* keep border-right, it indicates a jQuery UI column resize handle */
+}
+
+.commentlist > li::before,
+.commentlist > li.bypostauthor::before {
+  content: none; /* remove image from author name to avatar */
+}
+
+.commentlist .children li.comment {
+  margin: 2.625em 0 0 5px;
+}
+
+/* ... But do indicate posts py the author, in some manner. */
+.commentlist .bypostauthor > article > .comment-meta {
+  background-color: #d8d8d8;
+  color: #141414; /* or too bright, little contrast to the background */
+}
+
+.comment-awaiting-moderation {
+  /* This is a Twitter Bootstrap's `alert` <div>. They have background colors
+  and border, but the border & background would extend to the left
+  below the avatar, unless: */
+  display: table-cell;
+  /* ((Alternatively, could add margin-left, but then we'd have to
+  hard code that margin, and that'd break if the avatar is resized.)) */
+}
+
+.dw-pri.dw-pri .dw-depth-1 .dw-t {
+  margin: 50px 0 0 5px; /* more vspace between posts & left aligns PNG arrows */
+  padding: 0; /* or PNG arrows incorrectly offset */
+}
+
+/* Make root thread reply left positioned .avatar visible, at .dw-depth-1 */
+.dw-p {
+  overflow: visible;
+}
+
+.dw-pri .dw-hor > .dw-res > li  {
+  margin-left: 48px; /* hspace between columns */
+}
+
+/* Place other avatar images relative article.dw-p, not .dw-p.parent() */
+.dw-p {
+  position: relative;
+}
+.dw-pri :not(.dw-depth-1) > .dw-p > .dw-p-hd .avatar { /* skips root thread reply .avatar */
+  left: 0;
+  top: 0;
+}
+
+.comment-author-avatar {
+  float: left;
+  padding-right: 1em;
+}
+
+.dw-p-hd {
+  font-size: 12px;
+  margin-bottom: 5px;
+  margin-left: 0 !important;
+  padding: 0 !important; /* or indented */
+  border: none;
+  background-color: transparent !important;
+}
+
+.dw-pri.dw-pri .dw-p-hd img {
+  float: left;
+  position: relative;
+  left: -3px;
+  z-index: 1; /* or could be hidden by .dw-p-bd with position: relative */
+  padding: 0 12px 0 0;
+  box-shadow: none;
+  border: none;
+  border-radius: 0;
+  height: 50px;
+  width: 50px;
+}
+
+.dw-p-bd {
+  float: none; /* There're no .dw-p-bd-blk children to wrap (they'd float left) */
+  clear: both; /* clear floating avatar image */
+  margin-top: 0 !important; /* or very much whitespace up to author info */
+}
+
+.dw-p-bd p:last-of-type {
+  margin-bottom: 10px; /* don't push away Reply button (1.625em otherwise) */
+}
