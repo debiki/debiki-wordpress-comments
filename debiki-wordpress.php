@@ -11,6 +11,9 @@ License: GPLv2 or later
 
 /**
  * Copyright (c) 2012 Kaj Magnus Lindberg (born 1979)
+ *
+ * Parts Copyright 2011 by the contributors to WordPress and (?) b2,
+ * (Search for "the contributors" in this file and you'll find more details.)
  */
 
 
@@ -262,6 +265,68 @@ function debiki_list_comments($callback) {
 			'callback' => $callback,
 			'style' => 'ol'));
 }
+
+
+/**
+ * Prints CSS comment classes, but without `alt`, `odd`, `even` and `depth-X` classes.
+ *
+ * Copied from `get_comment_class` in wp-includes/comment-template.php.
+ *
+ * This function only: Copyright 2011 by the contributors to WordPress and (?) b2,
+ * see WordPress' licensing info, in <wordpress-base-dir>/license.txt.
+ */
+function debiki_comment_classes() {
+
+	$comment = get_comment($comment_id);
+	$classes = array();
+	$classes[] = ( empty( $comment->comment_type ) ) ? 'comment' : $comment->comment_type;
+
+	// If the comment author has an id (registered), then print the log in name
+	if ( $comment->user_id > 0 && $user = get_userdata($comment->user_id) ) {
+		// For all registered users, 'byuser'
+		$classes[] = 'byuser';
+		$classes[] = 'comment-author-' . sanitize_html_class(
+				$user->user_nicename, $comment->user_id);
+
+		// For comment authors who are the author of the post
+		if ( $post = get_post($post_id) ) {
+			if ( $comment->user_id === $post->post_author )
+				$classes[] = 'bypostauthor';
+		}
+	}
+
+	$classesStr = join(' ', $classes);
+	return $classesStr;
+}
+
+
+/*
+This doesn't work!!? Why not?
+
+add_filter('comment_class', 'debiki_comment_class_filter');
+
+/**
+ * Removes classes .alt, .odd, .even, and .thread-alt, -odd, -even.
+ * They make little sense with Debiki's two dimensional layout (it doesn't look nice
+ * with whole threads colored or every second item colored, and isn't needed
+ * since we're using arrows instead to indicate comment parent child relationships.)
+ *  /
+function debiki_comment_class_filter($classes) {
+	debiki_array_remove('alt', $classes);
+	debiki_array_remove('odd', $classes);
+	debiki_array_remove('even', $classes);
+	debiki_array_remove('thread-alt', $classes);
+	debiki_array_remove('thread-odd', $classes);
+	debiki_array_remove('thread-even', $classes);
+	return $classes;
+}
+
+function debiki_array_remove($elem, $array) {
+	if (in_array($elem, $array))
+		unset($array[array_search($elem)]);
+}
+*/
+
 
 /**
  * Adds html class attributes required by Debiki's CSS and Javascript.
