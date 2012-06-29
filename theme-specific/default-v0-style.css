@@ -8,18 +8,6 @@ body {
   background: white; /* #f8f8f8; */
 }
 
-#main, #masthead hgroup {
-  border: none; /* borders overlap with Debiki's comment section */
-}
-
-.post, .type-page, .type-attachment {
-  border-bottom: none; /* keeping only this border looks weird */
-}
-
-.dw-t svg path {
-  stroke: hsl(50, 61%, 85%); /* one of buttercreams' color, better than gray */
-}
-
 #replies {
   overflow: visible;
 }
@@ -29,6 +17,7 @@ body {
   position: relative;
   z-index: 3;
   float: left;
+  min-width: 0; /* or spans whole screen if Theme sets 100% (Graphene does) */
   max-width: 350px; /* don't want to fix widht though?? */
   padding-right: 60px; /* or there'll be no whitespace */
 }
@@ -109,7 +98,6 @@ body {
 
 .dw-depth-1 #respond {
   padding: 0;
-  float: left;
   margin: 25px 0 30px 70px; /* 35 + 35 = 70 */
 }
 
@@ -224,8 +212,15 @@ comments relate to each other. Arrows used instead. */
   hard code that margin, and that'd break if the avatar is resized.)) */
 }
 
+.DW.DW .dw-hor > .dw-res > li  {
+  margin-left: 48px; /* hspace between columns */
+}
+
 .dw-depth-0 .dw-t {
   clear: none;
+  /* Some themes (Buttercream) paint darker backgrounds and borders for
+  nested replies. */
+  border: none !important;
 }
 
 .dw-pri.dw-pri .dw-depth-1 .dw-t {
@@ -233,19 +228,13 @@ comments relate to each other. Arrows used instead. */
   padding: 0; /* or PNG arrows incorrectly offset */
 }
 
-/* Make root thread reply left positioned .avatar visible, at .dw-depth-1 */
 .dw-p {
+  /* Make root thread reply left positioned .avatar visible, at .dw-depth-1 */
   overflow: visible;
-}
-
-.dw-pri .dw-hor > .dw-res > li  {
-  margin-left: 48px; /* hspace between columns */
-}
-
-/* Place other avatar images relative article.dw-p, not .dw-p.parent() */
-.dw-p {
+  /* Place other avatar images relative article.dw-p, not .dw-p.parent() */
   position: relative;
 }
+
 .dw-pri :not(.dw-depth-1) > .dw-p > .dw-p-hd .avatar { /* skips root thread reply .avatar */
   left: 0;
   top: 0;
@@ -263,6 +252,15 @@ comments relate to each other. Arrows used instead. */
   padding: 0 !important; /* or indented */
   border: none;
   background-color: transparent !important;
+}
+
+.DW .dw-p-by {
+  font-size: inherit;
+  letter-spacing: 1px;
+}
+
+.dw-p-by a {
+  font-weight: bold;
 }
 
 .dw-pri.dw-pri .dw-p-hd img {
@@ -288,6 +286,21 @@ comments relate to each other. Arrows used instead. */
   margin-bottom: 10px; /* don't push away Reply button (1.625em otherwise) */
 }
 
+.dw-wp-actions {
+  font-size: 90%;
+}
+
+.dw-wp-actions :not(:first-child) {
+  margin-left: 1.2em;
+}
+
 .dw-wp-reply-link {
   padding: 0; /* or indented */
+}
+
+/* Some themes (Buttercream) places the edit link to the right. */
+a.comment-edit-link {
+  position: static;
+  right: auto;
+  margin: 0;
 }
