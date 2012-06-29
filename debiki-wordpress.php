@@ -244,6 +244,7 @@ function debiki_body_classes($classes) {
 	// `no-js` is for Modernizr.
 	$classes[] = 'dw-render-layout-pending';
 	$classes[] = 'dw-pri';
+	$classes[] = 'DW';
 	return $classes;
 }
 
