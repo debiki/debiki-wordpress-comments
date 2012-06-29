@@ -27,6 +27,7 @@ function debiki_define_default($constant_name, $value) {
 define( 'DEBIKI_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 debiki_define_default( 'DEBIKI_SETTINGS_SLUG', 'debiki_comments_options' );
 debiki_define_default( 'DEBIKI_ENABLED_QUERY_PARAM', 'debiki-comments-enabled' );
+debiki_define_default( 'DEBIKI_LAYOUT_QUERY_PARAM', 'debiki-layout' );
 
 # Twenty Eleven is a good default theme (I suppose since it's Automattics' latest one).
 debiki_define_default( 'DEBIKI_DEFAULT_THEME', 'default' );
@@ -163,13 +164,17 @@ if (!debiki_comments_enabled())
  * ./theme-specific/twenty-eleven-v-any.css, change the background to white.)
  */
 function debiki_theme_specific_file_path($which_file) {
-	$theme = wp_get_theme();
+	$templateToUse = $_GET[DEBIKI_LAYOUT_QUERY_PARAM];
+	if (empty($templateToUse)) {
+		$theme = wp_get_theme();
+		$templateToUse = $theme->get_template();
+	}
 	$prefix = dirname(__FILE__).'/theme-specific/';
 	$suffix = '-v0-'.$which_file;
-	$path = $prefix.$theme->get_template().$suffix;
+	$path = $prefix.$templateToUse.$suffix;
 
 	if (!file_exists($path))
-		return $prefix.DEBIKI_DEFAULT_THEME.$suffix;
+		$path = $prefix.DEBIKI_DEFAULT_THEME.$suffix;
 
 	return $path;
 
