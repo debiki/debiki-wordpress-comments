@@ -212,7 +212,7 @@ comments relate to each other. Arrows used instead. */
   hard code that margin, and that'd break if the avatar is resized.)) */
 }
 
-.DW.DW .dw-hor > .dw-res > li  {
+.DW.DW .dw-hor > .dw-res > li:not(:first-child)  {
   margin-left: 48px; /* hspace between columns */
 }
 

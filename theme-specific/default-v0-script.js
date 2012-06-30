@@ -39,12 +39,14 @@ jQuery(function($) {
 
   function showBlogPostReplyFormPlaceholder() {
     if (!$blogPostReplyFormPlaceholder) {
-      $blogPostReplyFormPlaceholder = $replyForm.clone();
-      $blogPostReplyFormPlaceholder.find('[id]').removeAttr('id');
-      var $articleReplyList = $('.dw-depth-0 > .dw-res');
+      $blogPostReplyFormPlaceholder = $('<div>Placeholder</div>')
       $blogPostReplyFormPlaceholder
+          .width($replyForm.width())
+          .height($replyForm.height())
+          .css('padding', $replyForm.css('padding'))
+          .css('margin', $replyForm.css('margin'))
           .css('visibility', 'hidden')
-          .prependTo($articleReplyList);
+          .prependTo($replyFormOriginalParent);
     }
 
     $blogPostReplyFormPlaceholder.show();

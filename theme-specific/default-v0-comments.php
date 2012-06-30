@@ -56,10 +56,8 @@ if (comments_open()) :
 	<div class='dw-p'></div>
 	<div class='dw-t-vspace'></div>
 	<ol class='dw-res'>
-		<?php
-		comment_form();
-		debiki_list_comments('debiki_default_comment');
-		?>
+		<li><?php comment_form(); ?></li>
+		<?php debiki_list_comments('debiki_default_comment'); ?>
 	</ol>
 	</div>
 	</div>
