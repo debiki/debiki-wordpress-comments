@@ -33,10 +33,11 @@ if (post_password_required()) :
 	return;
 endif;
 
-if (have_comments() ) :
+if (comments_open()) :
 ?>
 
-	<h2 id='dw-wp-comments-title'>
+	<?php if (have_comments()): ?>
+		<h2 id='dw-wp-comments-title'>
 		<?php
 		$formatStr = _n(
 				'One thought on &ldquo;%2$s&rdquo;',
@@ -47,7 +48,8 @@ if (have_comments() ) :
 		printf($formatStr, $prettyCommentCount,
 				'<span>'.get_the_title().'</span>');
 		?>
-	</h2>
+		</h2>
+	<?php endif; ?>
 
 	<div class='debiki dw-debate'>
 	<div id='dw-t-1' class='dw-t dw-depth-0 dw-hor dw-svg-gparnt'>
