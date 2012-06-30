@@ -104,7 +104,7 @@ function debiki_default_comment( $comment, $args, $depth ) {
 			break;
 		default :
 	?>
-	<?php/*
+	<?php /*
 	Don't add `comment_class` to the <li>; add it to the <article> instead.
 	Otherwise Themes that color the background for .bypostauthor comments would paint
    the whole <li> — which doesn't look nice, and is not needed,
@@ -121,7 +121,7 @@ function debiki_default_comment( $comment, $args, $depth ) {
 					echo get_avatar($comment, $avatar_size);
 					?>
 					<div class="dw-p-by"><?php comment_author_link() ?></div>
-					<?php/*
+					<?php /*
 					COULD find out which <time> class is "best"? `pubdate` or `published`?
 					*/?>
 					<time class='published' datetime='<?php get_comment_time('c') ?>'>
