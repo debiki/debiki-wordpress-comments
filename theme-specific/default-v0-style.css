@@ -19,7 +19,7 @@ body {
   float: left;
   min-width: 0; /* or spans whole screen if Theme sets 100% (Graphene does) */
   max-width: 350px; /* don't want to fix widht though?? */
-  padding-right: 60px; /* or there'll be no whitespace */
+  padding-right: 40px; /* or there'll be no whitespace */
 }
 
 #respond .row, #respond .form-submit {
