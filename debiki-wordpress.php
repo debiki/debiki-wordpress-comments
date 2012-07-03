@@ -166,7 +166,7 @@ if (!debiki_comments_enabled())
  * introduce additional colors, so instead, in the file
  * ./theme-specific/twenty-eleven-v-any.css, change the background to white.)
  */
-function debiki_theme_specific_file_path($which_file) {
+function debiki_theme_specific_file_path($which_file, $only_file_name = false) {
 	$templateToUse = $_GET[DEBIKI_LAYOUT_QUERY_PARAM];
 	if (empty($templateToUse)) {
 		$theme = wp_get_theme();
@@ -179,6 +179,9 @@ function debiki_theme_specific_file_path($which_file) {
 	if (!file_exists($path))
 		$path = $prefix.DEBIKI_DEFAULT_THEME.$suffix;
 
+	if ($only_file_name)
+		$path = str_replace($prefix, '', $path);
+
 	return $path;
 
 	## In the future, perhaps match on theme version too, something reminiscient of this:
@@ -190,12 +193,12 @@ function debiki_theme_specific_file_path($which_file) {
 }
 
 
-function debiki_theme_specific_javascript_file() {
-	return debiki_theme_specific_file_path('script.js');
+function debiki_theme_specific_javascript_file_name() {
+	return debiki_theme_specific_file_path('script.js', true);
 }
 
-function debiki_theme_specific_style_file() {
-	return debiki_theme_specific_file_path('style.css');
+function debiki_theme_specific_style_file_name() {
+	return debiki_theme_specific_file_path('style.css', true);
 }
 
 
@@ -423,6 +426,7 @@ function debiki_echo_head() {
 	if (!debiki_comments_enabled())
 		return;
 	$res = plugin_dir_url(__FILE__).'res/';
+	$theme_specific = plugin_dir_url(__FILE__).'theme-specific/';
 	echo "
     <meta name='viewport' content='initial-scale=1.0, minimum-scale=0.01'/>
 	 <link rel='stylesheet' href='" . $res . "jquery-ui/jquery-ui-1.8.16.custom.css'>
@@ -445,18 +449,12 @@ function debiki_echo_head() {
 			'" . $res . "jquery-cookie.js',
 			'" . $res . "tagdog.js',
 			'" . $res . "javascript-yaml-parser.js',
-			'" . $res . "debiki.js']
+			'" . $res . "debiki.js',
+			'" . $theme_specific.debiki_theme_specific_javascript_file_name()."']
 		});
-		// -----
-		";
-	require debiki_theme_specific_javascript_file();
-	echo "
 		</script>
-		<style>
-		";
-	require debiki_theme_specific_style_file();
-	echo "
-		</style>";
+		<link rel='stylesheet' href='".
+				$theme_specific.debiki_theme_specific_style_file_name()."'>";
 }
 
 
