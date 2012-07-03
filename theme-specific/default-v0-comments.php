@@ -20,7 +20,7 @@
 
 ?>
 
-<section class='comments dw-wp-comment-section'>
+<section class='<?php echo apply_filters('debiki_comment_section_classes', '') ?>'>
 
 <?php
 if (post_password_required()) :
