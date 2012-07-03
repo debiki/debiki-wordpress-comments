@@ -31,6 +31,11 @@ Theme specific
 ============================
 
 
+{{{1 Twenty Ten
+==============
+
+BUG Hardcoded path to default CSS file
+
 {{{1 Annotum Base
 ==============
 
