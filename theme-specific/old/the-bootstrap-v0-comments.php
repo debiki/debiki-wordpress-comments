@@ -172,3 +172,11 @@ function debiki_the_bootstrap_comment( $comment, $args, $depth ) {
 			break;
 	endswitch;
 }
+
+?>
+
+<div id="respond">
+
+									<form action="http://192.168.122.83/wp-comments-post.php" method="post" id="commentform">
+						</div>					</form>
+							</div><!-- #respond -->
