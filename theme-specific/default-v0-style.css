@@ -199,7 +199,7 @@ comments relate to each other. Arrows used instead. */
 }
 
 .DW.DW .dw-hor > .dw-res > li:not(:first-child)  {
-  margin-left: 48px; /* hspace between columns */
+  margin-left: 10px; /* extra hspace between columns */
 }
 
 .dw-depth-0 .dw-t {
