@@ -427,6 +427,11 @@ function debiki_echo_head() {
 		return;
 	$res = plugin_dir_url(__FILE__).'res/';
 	$theme_specific = plugin_dir_url(__FILE__).'theme-specific/';
+
+	// Enable Utterscroll even if comments not open. Otherwise, if dragscroll
+	// is enabled on only some pages, people would be confused?
+	$on_complete = comments_open() ? "" : "debiki.Utterscroll.enable();";
+
 	echo "
     <meta name='viewport' content='initial-scale=1.0, minimum-scale=0.01'/>
 	 <link rel='stylesheet' href='" . $res . "jquery-ui/jquery-ui-1.8.16.custom.css'>
@@ -450,7 +455,10 @@ function debiki_echo_head() {
 			'" . $res . "tagdog.js',
 			'" . $res . "javascript-yaml-parser.js',
 			'" . $res . "debiki.js',
-			'" . $theme_specific.debiki_theme_specific_javascript_file_name()."']
+			'" . $theme_specific.debiki_theme_specific_javascript_file_name()."'],
+			complete: function() {".
+				$on_complete."
+			}
 		});
 		</script>
 		<link rel='stylesheet' href='".
