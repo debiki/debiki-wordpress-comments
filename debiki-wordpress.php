@@ -435,8 +435,26 @@ function debiki_echo_head() {
 	echo "
     <meta name='viewport' content='initial-scale=1.0, minimum-scale=0.01'/>
 	 <link rel='stylesheet' href='" . $res . "jquery-ui/jquery-ui-1.8.16.custom.css'>
-	 <link rel='stylesheet' href='" . $res . "debiki.css'>
-	 <script>
+	 <link rel='stylesheet' href='" . $res . "debiki.css'>";
+
+	# For production.
+	if (true) echo "
+		<script>
+		  var debiki = { scriptLoad: $.Deferred() };
+		  Modernizr.load({
+		    test: Modernizr.touch,
+		    yep: '".$res."combined-debiki-touch.min.js',
+		    nope: '".$res."combined-debiki-desktop.min.js',
+		    both: '".$theme_specific.debiki_theme_specific_javascript_file_name()."',
+		    complete: function() {".
+				$on_complete."
+			}
+		});
+		</script>";
+
+	# For development.
+	if (false) echo "
+		<script>
 		// Play Framework 2's `require` and `exports` not available.
 		window.require = function() {};
 		window.exports = {};
@@ -460,7 +478,9 @@ function debiki_echo_head() {
 				$on_complete."
 			}
 		});
-		</script>
+		</script>";
+
+	echo "
 		<link rel='stylesheet' href='".
 				$theme_specific.debiki_theme_specific_style_file_name()."'>";
 }
