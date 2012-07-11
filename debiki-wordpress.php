@@ -332,10 +332,12 @@ function debiki_array_remove($elem, $array) {
 */
 
 
+require_once 'debiki-comment-walker.php';
+
 /**
  * Adds html class attributes required by Debiki's CSS and Javascript.
  */
-class Debiki_Walker_Comment extends Walker_Comment {
+class Debiki_Walker_Comment extends Debiki_tmp_Walker_Comment {  # weird names, soon fixed
 
 	function start_lvl(&$output, $depth, $args) {
 		$depth++;
