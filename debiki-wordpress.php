@@ -280,8 +280,12 @@ function debiki_comments_template($default_template) {
 }
 
 function debiki_list_comments($callback) {
+	global $debiki_db;
+	global $query;
+	$post_id = $query->post; # misleading name
+	$ratings = $debiki_db->load_comment_ratings_for_post($post_id);
    wp_list_comments(array(
-			'walker' => new Debiki_Walker_Comment,
+			'walker' => new Debiki_Walker_Comment($ratings),
 			'callback' => $callback,
 			'style' => 'ol'));
 }
@@ -353,6 +357,13 @@ function debiki_array_remove($elem, $array) {
  */
 class Debiki_Walker_Comment extends \Walker_Comment {
 
+	var $comment_ratings;
+
+	public function __construct($comment_ratings) {
+		$this->comment_ratings = $comment_ratings;
+	}
+
+
 	function start_lvl(&$output, $depth, $args) {
 		$depth++;
 		$GLOBALS['comment_depth'] = $depth;
@@ -362,13 +373,13 @@ class Debiki_Walker_Comment extends \Walker_Comment {
 		echo "<ol class='children dw-res{$horiz_clearfix}'>";
 	}
 
+
 	/**
 	 * Based on wp-includes/class-wp-walker.php, class Walker->paged_walk.
 	 * This function: Parts Copyright 2011 by the contributors to WordPress and (?) b2.
 	 */
 	function paged_walk( $elements, $max_depth, $page_num, $per_page ) {
 
-		/* sanity check */
 		if ( empty($elements) || $max_depth < -1 )
 			return '';
 
@@ -389,14 +400,23 @@ class Debiki_Walker_Comment extends \Walker_Comment {
 				$children_elements[ $e->$parent_field ][] = $e;
 		}
 
-		# I'll replace these reverse_... with something that sorts by comment rating.
+		# Sort interesting comments first.
+		$sort_func = array(
+				& $this->comment_ratings, 'get_sort_score_for_comment');
+		usort($top_level_elements, $sort_func);
+		foreach ($children_elements as $parent => $children)
+			usort($children, $sort_func);
+
+		# WordPress normally loads comments by date asc. Here is how you can
+		# sort them by date desc instead.
+		/*
 		if ( !empty($args[0]['reverse_top_level']) ) {
 			$top_level_elements = array_reverse( $top_level_elements );
 		}
 		if ( !empty($args[0]['reverse_children']) ) {
 			foreach ( $children_elements as $parent => $children )
 				$children_elements[$parent] = array_reverse( $children );
-		}
+		} */
 
 		foreach ( $top_level_elements as $e ) {
 			$this->display_element( $e, $children_elements, $max_depth, 0, $args, $output );
