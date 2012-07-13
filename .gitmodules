@@ -1,3 +1,6 @@
 [submodule "angular-seed"]
 	path = angular-seed
 	url = https://github.com/angular/angular-seed.git
+[submodule "wordpress-tests"]
+	path = wordpress-tests
+	url = https://github.com/nb/wordpress-tests.git
