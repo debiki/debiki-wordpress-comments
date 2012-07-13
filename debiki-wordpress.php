@@ -17,6 +17,9 @@ License: GPLv2 or later
  */
 
 
+namespace Debiki;
+
+
 #===========================================================
 # Constants and utilities
 #===========================================================
@@ -85,7 +88,7 @@ function debiki_add_admin_menu_items() {
 			DEBIKI_SETTINGS_SLUG, 'debiki_echo_settings_page');
 }
 
-add_filter('plugin_action_links', 'debiki_plugin_action_links', 10, 2);
+add_filter('plugin_action_links', '\Debiki\debiki_plugin_action_links', 10, 2);
 
 function debiki_plugin_action_links($links, $file) {
 	if ($file != DEBIKI_PLUGIN_BASENAME)
@@ -100,7 +103,7 @@ function debiki_plugin_action_links($links, $file) {
 
 # ===== Theme preview options
 
-add_action('customize_register', 'debiki_register_preview_control');
+add_action('customize_register', '\Debiki\debiki_register_preview_control');
 
 /**
  * Creates a theme preview option, `debiki_comments_enabled`, with value `true`
@@ -215,7 +218,8 @@ function debiki_theme_specific_comments_template() {
 
 # ===== <html> and <body> elem classes
 
-add_filter('language_attributes', 'debiki_add_modernizr_nojs_class_to_html_elem');
+add_filter('language_attributes',
+		'\Debiki\debiki_add_modernizr_nojs_class_to_html_elem');
 
 /**
  * Attempts to add `class="no-js"` to the <html> elem. This fails sometimes,
@@ -235,7 +239,7 @@ function debiki_add_modernizr_nojs_class_to_html_elem($output) {
 	return $output.' class="no-js" ';
 }
 
-add_filter('body_class', 'debiki_body_classes');
+add_filter('body_class', '\Debiki\debiki_body_classes');
 
 /**
  * Adds Debiki specific classes to the <body> elem.
@@ -254,7 +258,7 @@ function debiki_body_classes($classes) {
 
 # ===== Comment template
 
-add_filter('comments_template', 'debiki_comments_template');
+add_filter('comments_template', '\Debiki\debiki_comments_template');
 
 function debiki_comments_template($default_template) {
 	if (!debiki_comments_enabled())
@@ -307,7 +311,7 @@ function debiki_comment_classes() {
 /*
 This doesn't work!!? Why not?
 
-add_filter('comment_class', 'debiki_comment_class_filter');
+add_filter('comment_class', '\Debiki\debiki_comment_class_filter');
 
 /**
  * Removes classes .alt, .odd, .even, and .thread-alt, -odd, -even.
@@ -335,7 +339,7 @@ function debiki_array_remove($elem, $array) {
 /**
  * Adds html class attributes required by Debiki's CSS and Javascript.
  */
-class Debiki_Walker_Comment extends Walker_Comment {
+class Debiki_Walker_Comment extends \Walker_Comment {
 
 	function start_lvl(&$output, $depth, $args) {
 		$depth++;
@@ -424,8 +428,8 @@ function debiki_reply_link_data($comment, $opt_post = null) {
 # dimensions, instantly. Instead, we'll use some jQuery animations to move the
 # reply form more slowly and smoothly.
 
-add_filter('comment_reply_link', 'debiki_remove_reply_link_javascript');
-add_filter('post_comments_link', 'debiki_remove_reply_link_javascript');
+add_filter('comment_reply_link', '\Debiki\debiki_remove_reply_link_javascript');
+add_filter('post_comments_link', '\Debiki\debiki_remove_reply_link_javascript');
 
 function debiki_remove_reply_link_javascript($link) {
 	# Replace: onclick='return addComment.moveForm(...)'
@@ -443,7 +447,8 @@ function debiki_remove_reply_link_javascript($link) {
 
 # Also remove the Javascript file with the functions that the onclick handlers invoke.
 
-add_action('init','debiki_deregister_comment_reply_script');
+add_action('init','\Debiki\debiki_deregister_comment_reply_script');
+
 
 function debiki_deregister_comment_reply_script() {
 	wp_deregister_script('comment-reply');
@@ -454,7 +459,7 @@ function debiki_deregister_comment_reply_script() {
 # ===== Debiki's Javascript and CSS
 
 
-add_action('wp_enqueue_scripts', 'debiki_enqueue_scripts');
+add_action('wp_enqueue_scripts', '\Debiki\debiki_enqueue_scripts');
 
 function debiki_enqueue_scripts() {
 	wp_deregister_script('modernizr');
@@ -471,7 +476,7 @@ function debiki_enqueue_scripts() {
 }
 
 
-add_action('wp_head', 'debiki_echo_head');
+add_action('wp_head', '\Debiki\debiki_echo_head');
 
 function debiki_echo_head() {
 	if (!debiki_comments_enabled())

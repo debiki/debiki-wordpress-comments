@@ -57,7 +57,7 @@ if (comments_open()) :
 	<div class='dw-t-vspace'></div>
 	<ol class='dw-res'>
 		<li><?php comment_form(); ?></li>
-		<?php debiki_list_comments('debiki_default_comment'); ?>
+		<?php \Debiki\debiki_list_comments('debiki_default_comment'); ?>
 	</ol>
 	</div>
 	</div>
@@ -113,7 +113,7 @@ function debiki_default_comment( $comment, $args, $depth ) {
 	<li <?php echo "class='dw-t dw-depth-$depth'" ?> id="li-comment-<?php comment_ID(); ?>">
 		<a class="dw-z">[–]</a>
 		<article id="comment-<?php comment_ID(); ?>"
-				class="<?php echo debiki_comment_classes(), ' dw-p' ?>" >
+				class="<?php echo \Debiki\debiki_comment_classes(), ' dw-p' ?>" >
 			<footer class="dw-p-hd">
 				<div>
 					<?php
@@ -141,7 +141,7 @@ function debiki_default_comment( $comment, $args, $depth ) {
 			</div>
 
 			<span class="dw-wp-actions">
-				<span class="dw-wp-reply-link" <?php echo debiki_reply_link_data($comment); ?> >
+				<span class="dw-wp-reply-link" <?php echo \Debiki\debiki_reply_link_data($comment); ?> >
 					<?php comment_reply_link( array_merge( $args, array( 'reply_text' => __( 'Reply <span>&darr;</span>', 'twentyeleven' ), 'depth' => $depth, 'max_depth' => $args['max_depth'] ) ) ); ?>
 				</span>
 				<span class="dw-wp-edit-link">
