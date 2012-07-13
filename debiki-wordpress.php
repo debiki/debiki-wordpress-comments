@@ -20,6 +20,18 @@ License: GPLv2 or later
 namespace Debiki;
 
 
+require_once('debiki-comment-ratings.php');
+require_once('debiki-database.php');
+
+$debiki_db = new Debiki_Database();
+
+register_activation_hook(__FILE__, array(& $debiki_db, 'install'));
+register_uninstall_hook(__FILE__, array(& $debiki_db, 'uninstall')); # UNTESTED
+add_action('wpmu_new_blog',
+		array(& $debiki_db, 'install_for_single_blog'), 10, 6);  # UNTESTED
+
+
+
 #===========================================================
 # Constants and utilities
 #===========================================================
