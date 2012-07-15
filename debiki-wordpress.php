@@ -281,13 +281,13 @@ function debiki_comments_template($default_template) {
 
 function debiki_list_comments($callback) {
 	global $debiki_db;
-	global $query;
-	$post_id = $query->post; # misleading name
+	$post_id = get_the_ID();
 	$ratings = $debiki_db->load_comment_ratings_for_post($post_id);
    wp_list_comments(array(
 			'walker' => new Debiki_Walker_Comment($ratings),
 			'callback' => $callback,
-			'style' => 'ol'));
+			'style' => 'ol',
+			'debiki_comment_ratings' => $ratings));
 }
 
 
@@ -400,9 +400,22 @@ class Debiki_Walker_Comment extends \Walker_Comment {
 				$children_elements[ $e->$parent_field ][] = $e;
 		}
 
-		# Sort interesting comments first.
-		$sort_func = array(
-				& $this->comment_ratings, 'get_sort_score_for_comment');
+		# Calculate sort scores.
+		foreach ($elements as $e) {
+			$e->sort_score =
+					$this->comment_ratings->sort_score_for_comment($e->comment_ID);
+		}
+
+		# Sort interesting comments first, then sort by post date.
+		$sort_func = function($comment_1, $comment_2) {
+			if ($comment_2->sort_score < $comment_1->sort_score) return -1;
+			if ($comment_1->sort_score < $comment_2->sort_score) return +1;
+			if ($comment_2->comment_date_gmt < $comment_1->comment_date_gmt)
+				return -1;
+			if ($comment_1->comment_date_gmt < $comment_2->comment_date_gmt)
+				return 1;
+			return 0;
+		};
 		usort($top_level_elements, $sort_func);
 		foreach ($children_elements as $parent => $children)
 			usort($children, $sort_func);
@@ -439,7 +452,7 @@ class Debiki_Walker_Comment extends \Walker_Comment {
  * to find the comment and post ID, when moving the reply form. (Then two <input>s
  * with parent comment id and post id need to be updated.)
  */
-function debiki_reply_link_data($comment, $opt_post = null) {
+function debiki_comment_data_attrs($comment, $opt_post = null) {
 
 	# This should be safe w.r.t. xss attacks; `get_comment_reply_link` in
 	# comment-template.php already inlines $comment->comment_ID and $post->ID
@@ -574,4 +587,23 @@ function debiki_echo_head() {
 }
 
 
-?>
+
+#===========================================================
+# Form submission
+#===========================================================
+
+
+add_action('template_redirect', '\Debiki\handle_any_form_subbmission');
+
+function handle_any_form_subbmission(){
+	if (isset($_POST['debiki-action-nonce'])) {
+		require_once 'debiki-handle-form-submission.php';
+		handle_form_subbmission();
+
+		## In the future, perhaps redirect to page specified in hidden input,
+		## (use get_permalink() when rendering <form>  ?)
+
+		die();
+	}
+}
+

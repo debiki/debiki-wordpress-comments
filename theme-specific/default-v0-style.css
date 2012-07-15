@@ -276,7 +276,7 @@ comments relate to each other. Arrows used instead. */
   font-size: 90%;
 }
 
-.dw-wp-actions :not(:first-child) {
+.dw-wp-actions > :not(:first-child) {
   margin-left: 1.2em;
 }
 
@@ -289,4 +289,35 @@ a.comment-edit-link {
   position: static;
   right: auto;
   margin: 0;
+}
+
+.dw-wp-rate-link {
+  margin-left: 2em;
+}
+
+.dw-wp-vote-up,
+.dw-wp-vote-down {
+  display: inline-block;
+  position: relative;
+  background-image:  /* BUG don't hardcode img path */
+    url(/wp-content/plugins/debiki-wordpress-comments/images.png);
+  /* Actual background size is 26x49, but shrink image somewhat. */
+  width: 20px;
+  height: 18px;
+  background-size: 20px 37px;
+}
+
+.dw-wp-vote-up {
+  background-position: 0 18px;
+  top: 5px;
+}
+
+.dw-wp-vote-down {
+  background-position: 0 0;
+  top: 7px;
+  margin-left: 5px;
+}
+
+#dw-wp-rate-comment-form {
+  display: none;
 }

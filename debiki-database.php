@@ -196,7 +196,7 @@ class Debiki_Database {
 
 	function save_comment_rating($rating) {
 		$action = $rating;
-		$action->action_type = 'C';
+		$action->action_type = 'C';  # shouldn't I assert it's 'C', instead?
 		$action->action_value_text = null;
 		return $this->save_comment_action($action);
 	}

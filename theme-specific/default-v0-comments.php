@@ -75,6 +75,20 @@ if (!comments_open() && !is_page() &&
 <?php
 endif; ?>
 
+
+<?php
+# An invisible rate comment form, posted by Javascript.
+# It can be posted to anywhere — a plugin action hook checks for
+# the presence of the debiki-action-nonce input.
+?>
+<form id="dw-wp-rate-comment-form" action="?rate-comment" method="post">
+	<input type="text" name="debiki-action-nonce" value="SECURITY TODO">
+	<input type="text" name="post-id" value="<?php the_ID() ?>">
+	<input type="text" name="comment-id" value="?">
+	<input type="text" name="vote-value" value="?">
+</form>
+
+
 </section>
 <?php
 
@@ -93,7 +107,11 @@ endif; ?>
  * so a diff should give meaningful results.
  */
 function debiki_default_comment( $comment, $args, $depth ) {
+
 	$GLOBALS['comment'] = $comment;
+	$comment_id = get_comment_ID();
+	$comment_ratings = $args['debiki_comment_ratings'];
+
 	switch ( $comment->comment_type ) :
 		case 'pingback' :
 		case 'trackback' :
@@ -113,7 +131,8 @@ function debiki_default_comment( $comment, $args, $depth ) {
 	<li <?php echo "class='dw-t dw-depth-$depth'" ?> id="li-comment-<?php comment_ID(); ?>">
 		<a class="dw-z">[–]</a>
 		<article id="comment-<?php comment_ID(); ?>"
-				class="<?php echo \Debiki\debiki_comment_classes(), ' dw-p' ?>" >
+				class="<?php echo \Debiki\debiki_comment_classes(), ' dw-p' ?>"
+				<?php echo \Debiki\debiki_comment_data_attrs($comment) ?> >
 			<footer class="dw-p-hd">
 				<div>
 					<?php
@@ -141,7 +160,7 @@ function debiki_default_comment( $comment, $args, $depth ) {
 			</div>
 
 			<span class="dw-wp-actions">
-				<span class="dw-wp-reply-link" <?php echo \Debiki\debiki_reply_link_data($comment); ?> >
+				<span class="dw-wp-reply-link">
 					<?php comment_reply_link( array_merge( $args, array( 'reply_text' => __( 'Reply <span>&darr;</span>', 'twentyeleven' ), 'depth' => $depth, 'max_depth' => $args['max_depth'] ) ) ); ?>
 				</span>
 				<span class="dw-wp-edit-link">
@@ -153,6 +172,35 @@ function debiki_default_comment( $comment, $args, $depth ) {
 				COULD include comment permalink:
 					esc_url( get_comment_link( $comment->comment_ID ) )
 				*/?>
+
+				<?php
+					$current_actor = '?'; # for now
+					$rate_classes = '';
+					/*
+					if ($comment_ratings.num_upvotes_for_comment_by_actor(
+							$comment_id, $current_actor) > 0) {
+						$rate_classes .= 'dw-wp-user-voted-up';
+					}
+					if ($comment_ratings.num_downvotes_for_comment_by_actor(
+							$comment_id, $current_actor) > 0) {
+						$rate_classes .= 'dw-wp-user-voted-down';
+					}
+					 */
+					$num_upvotes =
+							$comment_ratings->upvote_count_for_comment($comment_id);
+					$num_downvotes =
+							$comment_ratings->downvote_count_for_comment($comment_id);
+				?>
+				<span class="dw-wp-rate-links <?php echo $rate_classes ?>">
+					<span class="dw-wp-vote-up-count" title="Number of up votes">
+						<?php echo $num_upvotes ?>
+					</span>
+					<a class="dw-wp-vote-up" title="Vote up"></a>
+					<a class="dw-wp-vote-down" title="Vote down"></a>
+					<span class="dw-wp-vote-down-count" title="Number of down votes">
+						<?php echo $num_downvotes ?>
+					</span>
+				</span>
 			</span>
 		</article>
 

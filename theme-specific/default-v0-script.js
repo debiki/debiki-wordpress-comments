@@ -4,10 +4,12 @@
  */
 
 /**
- * This script unbinds any WordPress' reply link onclick handlers and instead
- * adds jQuery animations that smoothly moves the reply form to where
- * it is to be placed (when you've clicked a reply link, to reply
- * to a specific comment).
+ * This script:
+ *  1. Unbinds any WordPress' reply link onclick handlers and instead
+ *    adds jQuery animations that smoothly moves the reply form to where
+ *    it is to be placed (when you've clicked a reply link, to reply
+ *    to a specific comment).
+ *  2. Submits comment ratings, on thumbs up/down click.
  *
  * This script is supposed to work with most / all themes actually,
  * not just Twenty Eleven. (Twenty Eleven files are fallbacked to,
@@ -19,8 +21,14 @@
  *   wp-includes/js/comment-reply.dev.js
  */
 
-jQuery(function($) {
+// ---------------------------------------------------------------------------
+  jQuery(function($) {
+// ---------------------------------------------------------------------------
 
+/**
+ * Animate the reply form; unbind WordPress Javascript.
+ */
+function moveReplyFormOnReplyClick() {
   var hideReplyLink = $('.dw-wp-hide-reply-link').length !== 0;
   var $replyForm = $('#respond');
   var $replyFormOriginalParent = $('#respond').parent();
@@ -56,6 +64,7 @@ jQuery(function($) {
     $blogPostReplyFormPlaceholder.hide();
   }
 
+  // Move the reply form, if user clicks a comment's Reply link.
   $('.comment-reply-link').removeAttr('onclick').click(function(event) {
     var $i = $(this);
 
@@ -72,11 +81,9 @@ jQuery(function($) {
     }
 
     // Update reply form inputs, so one replies to the correct comment.
-    var $dataTag = $i.closest('.dw-wp-reply-link');
-    var parentCommentId = $dataTag.data('dw_wp_comment_id');
-    var blogPostId = $dataTag.data('dw_wp_post_id');
-    $replyForm.find('input[name=comment_parent]').val(parentCommentId);
-    $replyForm.find('input[name=comment_post_ID]').val(blogPostId);
+    var data = getCommentData($i);
+    $replyForm.find('input[name=comment_parent]').val(data.parentCommentId);
+    $replyForm.find('input[name=comment_post_ID]').val(data.blogPostId);
 
     // Move the reply form.
     showBlogPostReplyFormPlaceholder();
@@ -108,5 +115,50 @@ jQuery(function($) {
 
     event.preventDefault();
   });
+}
 
-});
+
+/**
+ * Posts a comment rating, on thumbs up/down click.
+ */
+function submitRatingsOnThumbsClick() {
+  $(document).on('click', '.dw-wp-vote-up, .dw-wp-vote-down',
+      function(event) {
+    event.preventDefault();
+    var $i = $(this);
+    var voteValue = $i.is('.dw-wp-vote-up') ? '+1' : '-1';
+    var $rateCommentForm = $('#dw-wp-rate-comment-form');
+    var data = getCommentData($i);
+    $rateCommentForm.find('input[name=comment-id]').val(data.commentId);
+    $rateCommentForm.find('input[name=vote-value]').val(voteValue);
+    $.post($rateCommentForm.attr('action'), $rateCommentForm.serialize(),
+        'html')
+        .done(function(data) {
+        })
+        .fail(function() {
+        })
+        .always(function() {
+        });
+  });
+}
+
+
+/**
+ * Finds comment id and post id.
+ */
+function getCommentData($elemInComment) {
+    var $dataTag = $elemInComment.closest('.dw-p');
+    return {
+      commentId: $dataTag.attr('id').substr(8), // drop 'comment-'
+      parentCommentId: $dataTag.data('dw_wp_comment_id'),
+      blogPostId: $dataTag.data('dw_wp_post_id')
+    }
+}
+
+
+moveReplyFormOnReplyClick();
+submitRatingsOnThumbsClick();
+
+// ---------------------------------------------------------------------------
+  });
+// ---------------------------------------------------------------------------

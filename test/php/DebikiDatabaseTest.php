@@ -51,7 +51,7 @@ class Debiki_Database_Test extends \WP_UnitTestCase {
 	public function test_counts_zero_ratings() {
 		$db = new Debiki_Database();
 		$ratings = $db->load_comment_ratings_for_post(1);
-		$ratings_comment_1 = $ratings->get_ratings_for_comment(1);
+		$ratings_comment_1 = $ratings->ratings_for_comment(1);
 		$this->assertEquals(0, count($ratings_comment_1));
 	}
 
@@ -61,7 +61,7 @@ class Debiki_Database_Test extends \WP_UnitTestCase {
 	public function test_gets_no_sort_score() {
 		$db = new Debiki_Database();
 		$ratings = $db->load_comment_ratings_for_post(1);
-		$score = $ratings->get_sort_score_for_comment(1);
+		$score = $ratings->sort_score_for_comment(1);
 		$this->assertEquals(0, $score);
 	}
 
@@ -88,7 +88,7 @@ class Debiki_Database_Test extends \WP_UnitTestCase {
 	public function test_gets_sort_score_1() {
 		$db = new Debiki_Database();
 		$ratings = $db->load_comment_ratings_for_post(1);
-		$score = $ratings->get_sort_score_for_comment(1);
+		$score = $ratings->sort_score_for_comment(1);
 		$this->assertEquals(1, $score);
 	}
 
@@ -98,7 +98,7 @@ class Debiki_Database_Test extends \WP_UnitTestCase {
 	public function test_get_back_same_first_rating() {
 		$db = new Debiki_Database();
 		$ratings = $db->load_comment_ratings_for_post(1);
-		$ratings_comment_1 = $ratings->get_ratings_for_comment(1);
+		$ratings_comment_1 = $ratings->ratings_for_comment(1);
 
 		$this->assertEquals(1, count($ratings_comment_1));
 		$rating_loaded = $ratings_comment_1[0];
