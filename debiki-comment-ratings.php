@@ -20,7 +20,12 @@ class Debiki_Action {
 	# Must be either +1 or -1 right now.
 	var $action_value_byte = 0;
 
-	# In the future: Would store comment thread summary.
+	# In the future: The first rating tag. Additional tags concatenated and
+	# stored in $action_value_text.
+	var $action_value_tag = '';
+
+	# In the future: Would store comment thread summary, or additional
+	# rating tags (beyond the first one).
 	var $action_value_text = '';
 
 	# In the future: An array with any rating tags. (You'd

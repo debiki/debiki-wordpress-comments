@@ -39,8 +39,6 @@ class Debiki_Database_Test extends \WP_UnitTestCase {
 
 	function assert_tables_exists($db, $exists) {
 		$this->assertEquals($exists, table_exists($db->actions_table_name));
-		$this->assertEquals($exists, table_exists($db->tags_table_name));
-		$this->assertEquals($exists, table_exists($db->log_table_name));
 	}
 
 

@@ -8,6 +8,21 @@
 See: http://codex.wordpress.org/Creating_Tables_with_Plugins
 */
 
+/*
+ * Concerning action_value_tag and action_value_text:
+ * action_value_tag stores any first rating tag.
+ * Additional tags are concatenated and stored in $action_value_text.
+ * — This is denormalization, and improves performance, and is simpler
+ * I think, since I won't have to bother aboout a separate
+ * rating tags table. But makes it much harder to write, and slower
+ * to exequte, certain probably-never-needed SQL queries.
+ * The reason the very first tag is stored in a separate column,
+ * is that this makes it possible to gather statistics on e.g. which
+ * tags are used the most. So this is a mixture of normalization for
+ * some ad hoc queries, and denormalization for high performance.
+ * (You could search the web for "denormalization performance".)
+ */
+
 namespace Debiki;
 
 require_once 'debiki-comment-ratings.php';
@@ -32,8 +47,6 @@ class Debiki_Database {
 		$prefix = $wpdb->prefix."dw0_";
 
 		$this->actions_table_name = $prefix.'comment_actions';
-		$this->tags_table_name = $prefix.'comment_action_tags';
-		$this->log_table_name = $prefix.'comment_action_log';
 
 		$this->actions_table__post_index_name =
 				$prefix.'comment_actions__comment_ix';
@@ -44,9 +57,6 @@ class Debiki_Database {
 				$prefix.'comment_actions__comment_fk';
 		$this->actions_table__post_fk_name =
 				$prefix.'comment_actions__post_fk';
-
-		$this->tags_table__action_fk_name =
-				$prefix.'comment_actions__tags_action_fk';
 
 		$this->wp_comments_table_name = $wpdb->prefix.'comments';
 		$this->wp_posts_table_name = $wpdb->prefix.'posts';
@@ -113,6 +123,7 @@ class Debiki_Database {
 			action_id bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
 			action_type varchar(20) NOT NULL,
 			action_value_byte tinyint,
+			action_value_tag varchar(50),
 			action_value_text text,
 			creation_date_utc datetime NOT NULL,
 			post_id bigint(20) unsigned NOT NULL,
@@ -141,38 +152,14 @@ class Debiki_Database {
 			CREATE INDEX $this->actions_table__ip_index_name
 			ON $this->actions_table_name (actor_ip);";
 
-		$tags_table_sql = "CREATE TABLE $this->tags_table_name (
-			post_id bigint(20) unsigned NOT NULL,
-			action_id bigint(20) unsigned NOT NULL,
-			action_tag varchar(50) NOT NULL,
-			CONSTRAINT $this->tags_table__action_fk_name
-			FOREIGN KEY (post_id, action_id)
-			REFERENCES $this->actions_table_name (post_id, action_id)
-			ON DELETE CASCADE
-			) $charset_collate;";
-
-		$log_table_sql = "CREATE TABLE $this->log_table_name (
-			action_log_date datetime NOT NULL,
-			action_log_text varchar(2000) NOT NULL
-			) $charset_collate;";
-
 		# Create tables.
 
 		# (Don't use dbDelta please. — Using it is like praying for bugs?)
-
 		# (Check for existance of each table, in case the script has
 		# previously been abruptly terminated and not all tables were created.)
 
-
 		if (!table_exists($this->actions_table_name))
 			$wpdb->query($actions_table_sql);
-
-		if (!table_exists($this->tags_table_name))
-			$wpdb->query($tags_table_sql);
-
-		if (!table_exists($this->log_table_name))
-			$wpdb->query($log_table_sql);
-
 
 		add_option('debiki_wp_comments_db_version', $this->db_version);
 
@@ -189,8 +176,6 @@ class Debiki_Database {
 	function uninstall_for_current_blog() {
 		global $wpdb;
 		$wpdb->query("DROP TABLE $this->actions_table_name;");
-		$wpdb->query("DROP TABLE $this->tags_table_name;");
-		$wpdb->query("DROP TABLE $this->log_table_name;");
 	}
 
 
@@ -206,13 +191,11 @@ class Debiki_Database {
 		global $wpdb;
 
 		assert(Debiki_Comment_Rating::is_valid($action));
-		# $action->creation_date = date("Y-m-d H:i:s", $datetime);
-		# ? $wpdb->query( 'SET autocommit = 0;' );
-		# $wpdb->query( 'START TRANSACTION;' );
 
 		$sql = "insert into $this->actions_table_name (
 					action_type,
 					action_value_byte,
+					action_value_tag,
 					action_value_text,
 					creation_date_utc,
 					post_id,
@@ -222,13 +205,14 @@ class Debiki_Database {
 					actor_ip,
 					actor_user_id
 				) values (
-					%s, %d, %s, UTC_TIMESTAMP(), %d, %d, %s, %s, %s, %d
+					%s, %d, %s, %s, UTC_TIMESTAMP(), %d, %d, %s, %s, %s, %d
 				)";
 
 		$new_action_id = $wpdb->query($wpdb->prepare($sql, array(
 					 # $action->action_id, — auto incremented
 					 $action->action_type,
 					 $action->action_value_byte,
+					 $action->action_value_tag,
 					 $action->action_value_text,
 					 # $action->creation_date, — now(), instead
 					 $action->post_id,
@@ -251,18 +235,4 @@ class Debiki_Database {
 		return Debiki_Comment_Ratings::from_action_rows(& $action_rows);
 	}
 
-
-
-/*
-	if ( $user_ID) {
-		$comments = $wpdb->get_results($wpdb->prepare("SELECT * FROM $wpdb->comments WHERE comment_post_ID = %d AND (comment_approved = '1' OR ( user_id = %d AND comment_approved = '0' ) )  ORDER BY comment_date_gmt", $post->ID, $user_ID));
-	} else if ( empty($comment_author) ) {
-		$comments = get_comments( array('post_id' => $post->ID, 'status' => 'approve', 'order' => 'ASC') );
-	} else {
-		$comments = $wpdb->get_results($wpdb->prepare("SELECT * FROM $wpdb->comments WHERE comment_post_ID = %d AND ( comment_approved = '1' OR ( comment_author = %s AND comment_author_email = %s AND comment_approved = '0' ) ) ORDER BY comment_date_gmt", $post->ID, wp_specialchars_decode($comment_author,ENT_QUOTES), $comment_author_email));
-	}
-
-*/
-
 }
-
