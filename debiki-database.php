@@ -37,9 +37,10 @@ function table_exists($table_name) {
 
 function index_exists($table_name, $index_name) {
 	global $wpdb;
-	$index_name_found = $wpdb->get_var(
-			"show index from $table_name where key_name = $index_name");
-	return $index_name_found == $index_name;
+	$index_info = $wpdb->get_row(
+			"show index from $table_name where key_name = '$index_name'");
+	assert($index_info === null || $index_info->Key_name === $index_name);
+	return $index_info !== null;
 }
 
 
