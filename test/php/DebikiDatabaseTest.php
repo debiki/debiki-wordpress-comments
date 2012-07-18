@@ -67,21 +67,22 @@ class Debiki_Database_Test extends \WP_UnitTestCase {
 	/**
 	 * @depends test_reinstall_for_current_blog
 	 */
-	public function test_save_first_rating() {
+	public function test_insert_first_rating() {
 		$db = new Debiki_Database();
 		$rating = $this->make_first_test_rating();
-		$new_action_id = $db->save_comment_rating($rating);
+		$new_action_id = $db->insert_comment_action($rating);
 		$this->assertEquals(1, $new_action_id);
 	}
 
 	function make_first_test_rating() {
-		return Debiki_Comment_Rating::for_post_comment(1, 1)
-			->from_ip('1.2.3.4')->liked_it(true);
+		return Comment_Rating::create()->post_id(1)->comment_id(1)
+				->actor_ip('1.2.3.4.')->actor_cookie('coookie_abcd')
+				->liked_it(true);
 	}
 
 
 	/**
-	 * @depends test_save_first_rating
+	 * @depends test_insert_first_rating
 	 */
 	public function test_gets_sort_score_1() {
 		$db = new Debiki_Database();
@@ -91,7 +92,7 @@ class Debiki_Database_Test extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * @depends test_save_first_rating
+	 * @depends test_insert_first_rating
 	 */
 	public function test_get_back_same_first_rating() {
 		$db = new Debiki_Database();
@@ -102,8 +103,8 @@ class Debiki_Database_Test extends \WP_UnitTestCase {
 		$rating_loaded = $ratings_comment_1[0];
 
 		$rating_saved = $this->make_first_test_rating();
-		$rating_saved->action_id = 1;
-		$rating_saved->creation_date_utc = $rating_loaded->creation_date_utc;
+		$rating_saved->action_id(1);
+		$rating_saved->creation_date_utc($rating_loaded->creation_date_utc());
 		$this->assertEquals($rating_saved, $rating_loaded);
 	}
 

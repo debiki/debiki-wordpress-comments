@@ -220,7 +220,6 @@ class Debiki_Database {
 
 	function update_comment_action($earlier_version, $action) {
 		global $wpdb;
-		assert(Debiki_Comment_Rating::is_valid($action);
 
 		$values = array();
 		$values[] = $action->action_value_byte;
@@ -272,9 +271,8 @@ class Debiki_Database {
 	# }
 
 
-	function create_comment_action($action) {
+	function insert_comment_action($action) {
 		global $wpdb;
-		assert(Debiki_Comment_Rating::is_valid($action));
 
 		# TODO before release: Insert NULL not empty strings.
 
@@ -292,45 +290,66 @@ class Debiki_Database {
 					actor_cookie,
 					actor_user_id
 				) values (
-					%s, %d, %s, %s, UTC_TIMESTAMP(), null, 0, %s, %s, %s, %d
+					%s, %d, null, null, UTC_TIMESTAMP(),
+					%d, %d, null, null, %s, %s, %d
 				)";
 
 		$wpdb->query($wpdb->prepare($sql, array(
-					 # $action->action_id, — auto incremented
-					 $action->action_type,
-					 $action->action_value_byte,
-					 $action->action_value_tag,
-					 $action->action_value_text,
-					 # $action->creation_date_utc, — now(), instead
-					 $action->post_id,
-					 $action->comment_id,
-					 $action->actor_name,
-					 $action->actor_email,
-					 $action->actor_ip,
-					 $action->actor_cookie,
-					 $action->actor_user_id)));
+				# $action->action_id, — auto incremented
+				$action->action_type(),
+				$action->action_value_byte(),
+				#$action->action_value_tag(), — null, for now
+				#$action->action_value_text(), — null, for now
+				# $action->creation_date_utc, — now(), instead
+				$action->post_id(),
+				$action->comment_id(),
+				#$action->actor_name(), — null
+				#$action->actor_email(), — null
+				$action->actor_ip(),
+				$action->actor_cookie(),
+				$action->actor_user_id())));
 
-		$new_action_id = $wpdb->$insert_id;
+		$new_action_id = $wpdb->insert_id;
 		return $new_action_id;
 	}
 
 
 	function load_comment_ratings_for_post($post_id) {
-		global $wpdb;
+		#global $wpdb;
 		$sql = "
 			select * from $this->actions_table_name
 			where post_id = %d";
-		$action_rows = $wpdb->get_results($wpdb->prepare($sql, $post_id));
-		return Debiki_Comment_Ratings::from_action_rows(& $action_rows);
+		return $this->_load_actions($sql, $post_id);
 	}
 
 
 	function load_comment_ratings_for_comment($comment_id) {
-		global $wpdb;
 		$sql = "
 			select * from $this->actions_table_name
 			where comment_id = %d";
-		$action_rows = $wpdb->get_results($wpdb->prepare($sql, $comment_id));
-		return Debiki_Comment_Ratings::from_action_rows(& $action_rows);
+		return $this->_load_actions($sql, $comment_id);
+	}
+
+
+	private function _load_actions($sql, $values) {
+		global $wpdb;
+		$action_rows = $wpdb->get_results($wpdb->prepare($sql, $values));
+		$this->_convert_strings_to_ints($action_rows);
+		return Comment_Ratings::from_db_rows(& $action_rows);
+	}
+
+
+	private function _convert_strings_to_ints(& $db_rows) {
+		# WordPress loads everything as strings, so we need to
+		# manually convert the appropriate colums to integres.
+		# (Is there no better way?)
+		foreach ($db_rows as & $row) {
+			$row->action_id = intval($row->action_id);
+			$row->action_value_byte =intval($row->action_value_byte);
+			$row->modification_count = intval($row->modification_count);
+			$row->post_id = intval($row->post_id);
+			$row->comment_id = intval($row->comment_id);
+			$row->actor_user_id = intval($row->actor_user_id);
+		}
 	}
 }

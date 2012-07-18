@@ -9,37 +9,151 @@ namespace Debiki;
 
 /**
  * Corresponds to a db row in wp_dw0_comment_actions.
+ *
+ * Can be created from a database row (an array),
+ * or programatically via setters.
  */
-class Debiki_Action {
+class Action {
 
-	var $action_id = 0;
+	protected $data;
 
-	# Right now only comments, 'C', supported.
-	var $action_type = 'C';
+	protected function __construct(& $database_row = null) {
+		if ($database_row) {
+			assert(is_object($database_row));
+			$this->data = & $database_row;
+			return;
+		}
 
-	# Must be either +1 or -1 right now.
-	var $action_value_byte = 0;
+		$this->data = new \stdClass;
+		$this->action_id(0);
+		$this->action_type('C');
+		$this->data->action_value_byte = 0;
+		$this->data->action_value_tag = null;  # not yet any accessors
+		$this->data->action_value_text = null; #
+		# The date must be inited here, or unit test diffs fails —
+		# it seems PHPUnit thinks that members must be declared in the
+		# correct order (which matches the order in which they're read from db).
+		$this->data->creation_date_utc = null;
+		$this->data->modification_date_utc = null;
+		$this->data->modification_count = 0;
+		$this->post_id(0);
+		$this->comment_id(0);
+		$this->data->actor_name = null;  # not yet any accessors
+		$this->data->actor_email = null; #
+		$this->actor_ip('');
+		$this->actor_cookie('');
+		$this->actor_user_id(0);
+	}
 
-	# In the future: The first rating tag. Additional tags concatenated and
-	# stored in $action_value_text.
-	var $action_value_tag = '';
+	function action_id($value = null) {
+		assert($value === null || is_int($value));
+		return $this->_get_or_set('action_id', $value);
+	}
 
-	# In the future: Would store comment thread summary, or additional
-	# rating tags (beyond the first one).
-	var $action_value_text = '';
+	/** Right now only comments, 'C', supported. */
+	function action_type($value = null) {
+		assert($value === null || $value === 'C');
+		return $this->_get_or_set('action_type', $value);
+	}
 
-	# In the future: An array with any rating tags. (You'd
-	# tag your ratings with 'interesting', 'funny', 'faulty', etcetera.)
-	var $action_value_tags = null;
+	/** Set by subclasses. */
+	function action_value_byte() {
+		$d = $this->data;
+		$b = $d->action_value_byte;
+		return $this->data->action_value_byte;
+	}
 
-	var $creation_date_utc = null;
-	var $post_id = 0;
-	var $comment_id = 0;
-	var $actor_name = '';
-	var $actor_email = '';
-	var $actor_ip = '';
-	var $actor_cookie = '';
-	var $actor_user_id = 0;
+	/**
+	 * In the future: The first rating tag. Additional tags concatenated and
+	 * stored in $action_value_text.
+	 *   What? Then why have I also added function action_value_tags ??
+	 */
+	#function action_value_tag($value = null) {
+	#	assert($value === null || is_string($value));
+	#	return $this->_get_or_set('action_value_tag', $value);
+	#}
+
+	/**
+	 * In the future: Would store comment thread summary, or additional
+	 * rating tags (beyond the first one).
+	 */
+	#function action_value_text($value = null) {
+	#	assert($value === null || is_string($value));
+	#	return $this->_get_or_set('action_value_text', $value);
+	#}
+
+	/**
+	 * In the future: An array with any rating tags. (You'd
+	 * tag your ratings with 'interesting', 'funny', 'faulty', etcetera.)
+	 */
+	#function action_value_tags($value = null) {
+	#	assert($value === null); # cannot set, right now
+	#	return $this->_get_or_set('action_value_tags', $value);
+	#}
+
+	function creation_date_utc($value = null) {
+		# A date read from db is a string, so use strings, for now, hmm.
+		assert($value === null || is_string($value));
+		return $this->_get_or_set('creation_date_utc', $value);
+	}
+
+	function post_id($value = null) {
+		assert($value === null || is_int($value));
+		return $this->_get_or_set('post_id', $value);
+	}
+
+	function comment_id($value = null) {
+		assert($value === null || is_int($value));
+		return $this->_get_or_set('comment_id', $value);
+	}
+
+	function actor_ip($value = null) {
+		assert($value === null || is_string($value));
+		return $this->_get_or_set('actor_ip', $value);
+	}
+
+	function actor_cookie($value = null) {
+		assert($value === null || is_string($value));
+		return $this->_get_or_set('actor_cookie', $value);
+	}
+
+	function actor_user_id($value = null) {
+		assert($value === null || is_int($value));
+		return $this->_get_or_set('actor_user_id', $value);
+	}
+
+	protected function _get_or_set($member, $value) {
+		if ($value === null)
+			return $this->data->$member;
+
+		$this->data->$member = $value;
+		return $this;
+	}
+
+}
+
+
+class Comment_Rating extends Action {
+
+	protected function __construct($database_row = null) {
+		parent::__construct($database_row);
+	}
+
+	static function create() {
+		return new Comment_Rating;
+	}
+
+	static function from_db_row($database_row) {
+		return new Comment_Rating($database_row);
+	}
+
+	function liked_it($liked_it) {
+		assert(is_bool($liked_it));
+		$value = $liked_it ? 1 : -1;
+		$this->data->action_value_byte = $value;
+		assert($this->action_value_byte() === $value);
+		return $this;
+	}
 
 }
 
@@ -107,103 +221,37 @@ class Earlier_Action {
 }
 
 
-/**
- * Programatically constructs what corresponds to a db row in
- * wp_dw0_comment_actions and perhaps some rows in
- * wp_dw0_comment_action_tags.
- */
-class Debiki_Comment_Rating extends Debiki_Action {
+class Comment_Ratings {
 
-	private function __construct() {
-		$this->action_value_tags = array();
-	}
-
-	static function for_post_comment($post_id, $comment_id) {
-		assert(is_int($post_id));
-		assert(is_int($comment_id));
-		$rating = new Debiki_Comment_Rating();
-		$rating->post_id = $post_id;
-		$rating->comment_id = $comment_id;
-		return $rating;
-	}
-
-	function from_ip($ip) {
-		assert(is_string($ip));
-		$this->actor_ip = $ip;
-		return $this;
-	}
-
-	function by_user_id($user_id) {
-		assert(is_int($user_id));
-		$this->actor_user_id = $user_id;
-		return $this;
-	}
-
-	function by_name_email($name, $email) {
-		assert(is_string($name));
-		assert(is_string($email));
-		$this->actor_name = $name;
-		$this->actor_email = $email;
-		return $this;
-	}
-
-	function set_actor_cookie($value) {
-		assert(is_string($value));
-		$this->actor_cookie = $value;
-		return $this;
-	}
-
-	function liked_it($liked_it) {
-		assert(is_bool($liked_it));
-		$this->action_value_byte = $liked_it ? 1 : -1;
-		return $this;
-	}
-
-	/**
-	 * Is static, so works also with a rating loaded from database.
-	 * What? No it doesn't! We load an `array(...)` from the db :-(
-	 */
-	static function is_valid($rating) {
-		$ok = $rating->action_type === 'C';  # for now
-		$ok = $rating->action_value_byte === 1 ||  # for now
-				$rating->action_value_byte === -1;
-		$ok &= is_int($rating->post_id);
-		$ok &= is_int($rating->comment_id);
-		$ok &= is_int($rating->actor_user_id);
-		$ok &= is_string($rating->actor_name);
-		$ok &= is_string($rating->actor_email);
-		$ok &= is_string($rating->actor_ip);
-		$ok &= is_string($rating->actor_cookie);
-		return $ok;
-	}
-}
+	private $actions = array();
+	private $ratings_by_comment_id = array();
 
 
-
-class Debiki_Comment_Ratings {
-
-	var $action_rows;
-	var $ratings_by_comment_id = array();
-
-	private function __construct() {}
-
-
-	static function from_action_rows(& $action_rows) {
-		$comment_ratings = new Debiki_Comment_Ratings();
-		$comment_ratings->action_rows = & $action_rows;
-
-		foreach ($action_rows as $action) {
-			if ('C' == $action->action_type)
-				$comment_ratings->ratings_by_comment_id[$action->comment_id][] =
-						$action;
+	private function __construct(& $ratings) {
+		$this->actions = & $ratings;
+		foreach ($this->actions as & $action) {
+			if ('C' == $action->action_type())
+				$this->ratings_by_comment_id[$action->comment_id()][] = & $action;
 		}
+	}
 
-		return $comment_ratings;
+
+	static function containing(& $ratings) {
+		return new Comment_Ratings(& $ratings);
+	}
+
+
+	static function from_db_rows(& $action_rows) {
+		$actions = array();
+		foreach ($action_rows as & $action_row) {
+			$actions[] = Comment_Rating::from_db_row(& $action_row);
+		}
+		return Comment_Ratings::containing(& $actions);
 	}
 
 
 	function find_earlier_version_of($rating) {
-		$ratings = ratings_for_comment($rating->comment_id);
+		$ratings = $this->ratings_for_comment($rating->comment_id());
 
 		function is_same($a, $b) {
 			return $a && $b && $a == $b;
@@ -213,42 +261,37 @@ class Debiki_Comment_Ratings {
 			return !$a || !$b || $a == $b;
 		}
 
-		/*function not_different_ratings($a, $b) {
-			return
-				undef_or_same($a->actor_user_id, $b->actor_user_id) &&
-				undef_or_same($a->actor_cookie, $b->actor_cookie) &&
-				undef_or_same($a->actor_ip, $b->actor_ip);
-		}*/
-
 		# Create a mostly unitialized earlier version.
 		$earlier_version = Earlier_Action::for_($rating);
 
 		# Find any earlier version, and update its member fields.
 		# (If there are many earlier versions (there should not be),
 		# we find them all — this simplifies debugging/testing I think.)
-		foreach ($ratings as $same_perhaps) {
-			if (is_same($same_perhaps->actor_user_id, $rating->actor_user_id)) {
-				$earlier_version->same_by_user_id[] = $same_perhaps;
+		foreach ($ratings as $same_maybe) {
+			if (is_same($same_maybe->actor_user_id(), $rating->actor_user_id())) {
+				$earlier_version->same_by_user_id[] = $same_maybe;
 			}
-			if (is_same($same_perhaps->actor_cookie, $rating->actor_cookie)) {
-				$earlier_version->same_by_cookie[] = $same_perhaps;
+			if (is_same($same_maybe->actor_cookie(), $rating->actor_cookie())) {
+				$earlier_version->same_by_cookie[] = $same_maybe;
 			}
-			if (is_same($same_perhaps->actor_ip, $rating->actor_ip)) {
+			if (is_same($same_maybe->actor_ip(), $rating->actor_ip())) {
 
 				$not_different =
 						undef_or_same(
-							$same_perhaps->actor_user_id, $rating->actor_user_id) &&
+							$same_maybe->actor_user_id(), $rating->actor_user_id()) &&
 						undef_or_same(
-							$same_perhaps->actor_cookie, $rating->actor_cookie);
+							$same_maybe->actor_cookie(), $rating->actor_cookie());
 
 				if ($not_different) {
-					$earlier_version->same_by_ip[] = $same_perhaps;
+					$earlier_version->same_by_ip[] = $same_maybe;
 				}
 				else {
 					$earlier_version->num_others_same_ip += 1;
 				}
 			}
 		}
+
+		return $earlier_version;
 	}
 
 
@@ -286,33 +329,33 @@ class Debiki_Comment_Ratings {
 		foreach ($ratings as $rating) {
 
 			# Each registered user may vote at most once.
-			if ($rating->actor_user_id != 0) {
-				if (isset($user_ids_voted[$rating->actor_user_id]))
+			if ($rating->actor_user_id() != 0) {
+				if (isset($user_ids_voted[$rating->actor_user_id()]))
 					continue;
-				$user_ids_voted[$rating->actor_user_id] = true;
+				$user_ids_voted[$rating->actor_user_id()] = true;
 			}
 
 			# Each cookie may vote at most once.
-			if (!empty($rating->actor_cookie)) {
-				if (isset($cookies_voted[$rating->actor_cookie]))
+			if (strlen($rating->actor_cookie())) {
+				if (isset($cookies_voted[$rating->actor_cookie()]))
 					continue;
-				$cookies_voted[$rating->actor_cookie] = true;
+				$cookies_voted[$rating->actor_cookie()] = true;
 			}
 
 			# Each IP may vote only a certain number of times.
-			if (!empty($rating->actor_ip)) {
-				if (!isset($ip_vote_count[$rating->actor_ip])) {
-					$ip_vote_count[$rating->actor_ip] = 0;
+			if (strlen($rating->actor_ip())) {
+				if (!isset($ip_vote_count[$rating->actor_ip()])) {
+					$ip_vote_count[$rating->actor_ip()] = 0;
 				} else {
-					$count = & $ip_vote_count[$rating->actor_ip];
+					$count = & $ip_vote_count[$rating->actor_ip()];
 					if ($count >= 10) // for now, at most 10 votes per IP
 						continue;
 					++$count;
-					assert($ip_vote_count[$rating->actor_ip] >= 1);
+					assert($ip_vote_count[$rating->actor_ip()] >= 1);
 				}
 			}
 
-			$sort_score += $rating->action_value_byte;
+			$sort_score += $rating->action_value_byte();
 		}
 
 		# COULD cache this value in a database cache table, and refresh
@@ -347,7 +390,7 @@ class Debiki_Comment_Ratings {
 		foreach ($ratings as $rating) {
 			# In the future, what happens here would depend on
 			# the sort_score_algorithm().
-			if ($rating->action_value_byte == $value) {
+			if ($rating->action_value_byte() == $value) {
 				++$count;
 			}
 		}
