@@ -8,9 +8,9 @@
 # You could check out this file: wp-comments-post.php,
 # it does similar things.
 
-require_once('debiki-database.php');
-
 namespace Debiki;
+
+require_once('debiki-database.php');
 
 
 function handle_form_subbmission() {

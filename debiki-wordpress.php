@@ -91,7 +91,7 @@ function debiki_comments_enabled() {
 
 # ===== Settings page
 
-require dirname(__FILE__) . '/debiki-settings.php';
+require_once dirname(__FILE__) . '/debiki-settings.php';
 
 add_action('admin_menu', 'debiki_add_admin_menu_items');
 

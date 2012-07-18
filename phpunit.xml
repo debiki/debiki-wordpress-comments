@@ -10,10 +10,22 @@
          stopOnFailure="false"
          syntaxCheck="false"
          bootstrap="test/php/bootstrap.php">
-    <testsuites>
-        <testsuite name="debiki-database-tests">
-            <directory>./test/php/</directory>
-        </testsuite>
-    </testsuites>
-</phpunit>
+  <testsuites>
+    <testsuite name="debiki-database-tests">
+      <directory>./test/php/</directory>
+    </testsuite>
+  </testsuites>
 
+  <!-- Code coverage class filter. -->
+  <filter>
+    <whitelist addUncoveredFilesFromWhitelist="true">
+      <directory suffix=".php">./</directory>
+      <exclude>
+        <directory suffix=".php">./test</directory>
+        <directory suffix=".php">./wordpress-tests</directory>
+        <directory suffix=".php">./theme-specific/old</directory>
+        <file>debiki-comment-walker.php</file>
+      </exclude>
+    </whitelist>
+  </filter>
+</phpunit>
