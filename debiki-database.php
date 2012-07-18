@@ -35,6 +35,14 @@ function table_exists($table_name) {
 }
 
 
+function index_exists($table_name, $index_name) {
+	global $wpdb;
+	$index_name_found = $wpdb->get_var(
+			"show index from $table_name where key_name = $index_name");
+	return $index_name_found == $index_name;
+}
+
+
 class Debiki_Database {
 
 
@@ -174,11 +182,23 @@ class Debiki_Database {
 		# Create tables.
 
 		# (Don't use dbDelta please. — Using it is like praying for bugs?)
-		# (Check for existance of each table, in case the script has
+		# (Check for existance of each table and index, in case the script has
 		# previously been abruptly terminated and not all tables were created.)
 
 		if (!table_exists($this->actions_table_name))
 			$wpdb->query($actions_table_sql);
+
+		if (!index_exists($this->actions_table_name,
+				$this->actions_table__post_index_name))
+			$wpdb->query($actions_table__post_index_sql);
+
+		if (!index_exists($this->actions_table_name,
+				$this->actions_table__comment_index_name))
+			$wpdb->query($actions_table__comment_index_sql);
+
+		if (!index_exists($this->actions_table_name,
+				$this->actions_table__ip_index_name))
+			$wpdb->query($actions_table__ip_index_sql);
 
 		add_option('debiki_wp_comments_db_version', $this->db_version);
 
