@@ -38,6 +38,13 @@ function table_exists($table_name) {
 class Debiki_Database {
 
 
+	/**
+	 * For DoS attack prevention. Not vote fraud detection — each row
+	 * might not count as a rating, later when sorting comments by good/bad
+	 * ratings.
+	 */
+	static const max_rating_rows_per_comment_and_ip = 50;
+
 	function __construct() {
 		global $wpdb;
 
@@ -49,6 +56,8 @@ class Debiki_Database {
 		$this->actions_table_name = $prefix.'comment_actions';
 
 		$this->actions_table__post_index_name =
+				$prefix.'comment_actions__post_ix';
+		$this->actions_table__comment_index_name =
 				$prefix.'comment_actions__comment_ix';
 		$this->actions_table__ip_index_name =
 				$prefix.'comment_actions__ip_ix';
@@ -119,6 +128,8 @@ class Debiki_Database {
 		# `action_id` is unique, but not used as primary key (PK),
 		# because there is no need for an index on that column only.
 		# Instead, (post_id, action_id) is the PK (and used in queries).
+		# Note: If you change any column name, please update the
+		# Action_Locator.located_by constants.
 		$actions_table_sql = "CREATE TABLE $this->actions_table_name (
 			action_id bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
 			action_type varchar(20) NOT NULL,
@@ -126,11 +137,14 @@ class Debiki_Database {
 			action_value_tag varchar(50),
 			action_value_text text,
 			creation_date_utc datetime NOT NULL,
+			modification_date_utc datetime default null,
+			modification_count int NOT NULL default 0,
 			post_id bigint(20) unsigned NOT NULL,
 			comment_id bigint(20) unsigned NOT NULL,
 			actor_name tinytext,
 			actor_email varchar(100),
 			actor_ip varchar(100),
+			actor_cookie varchar(100),
 			actor_user_id bigint(20) unsigned,
 			CONSTRAINT $this->actions_table__comment_fk_name
 			FOREIGN KEY (comment_id)
@@ -147,7 +161,12 @@ class Debiki_Database {
 			CREATE INDEX $this->actions_table__post_index_name
 			ON $this->actions_table_name (post_id);";
 
-		# Index for restricting votes per IP.
+		# Index for looking up all actions related to one comment.
+		$actions_table__comment_index_sql= "
+			create index $this->actions_table__comment_index_name
+			on $this->actions_table_name (comment_id);";
+
+		# Index on IP address.
 		$actions_table__ip_index_sql = "
 			CREATE INDEX $this->actions_table__ip_index_name
 			ON $this->actions_table_name (actor_ip);";
@@ -179,18 +198,65 @@ class Debiki_Database {
 	}
 
 
-	function save_comment_rating($rating) {
-		$action = $rating;
-		$action->action_type = 'C';  # shouldn't I assert it's 'C', instead?
-		$action->action_value_text = null;
-		return $this->save_comment_action($action);
+	function update_comment_action($earlier_version, $action) {
+		global $wpdb;
+		assert(Debiki_Comment_Rating::is_valid($action);
+
+		$values = array();
+		$values[] = $action->action_value_byte;
+
+		# Specify which row to update.
+
+		if (isset($earlier_version->same_by_user_id[0])) {
+			$where_clause = "actor_user_id = %d";
+			$values[] = $earlier_version->same_by_user_id[0];
+		}
+		else if (isset($earlier_version->same_by_cookie[0])) {
+			$where_clause = "actor_cookie = %s";
+			$values[] = $earlier_version->same_by_cookie[0];
+		}
+		else if (isset($earlier_version->same_by_ip[0])) {
+			$where_clause = "actor_ip = %s";
+			$values[] = $earlier_version->same_by_ip[0];
+		}
+		else {
+			assert(false);
+		}
+
+		# Update the row.
+
+		# (Right now, only +1/-1 ratings supported, so only
+		# action_value_byte is updated.)
+		$sql = "update $this->actions_table_name set
+					action_value_byte = %d,
+					modification_date_utc = UTC_TIMESTAMP(),
+					modification_count = modification_count + 1
+				where ".$where_clause;
+
+		$wpdb->query($wpdb->prepare($sql, $values));
+
+		$num_rows_updated = $wpdb->$rows_affected;
+		return $num_rows_updated;
 	}
 
 
-	function save_comment_action($action) {
-		global $wpdb;
+	/**
+	 * Increments/decrements action_value_byte for a catch-all rating
+	 * for $rating->actor_ip.
+	 *
+	 * (Later when we sort comments by ratings, this catch-all rating
+	 * will perhaps count as only one rating although it represents
+	 * rather many rating submission attempts, from a single IP.)
+	 */
+	# function update_catch_all_by_ip_rating($rating) {
+	# }
 
+
+	function create_comment_action($action) {
+		global $wpdb;
 		assert(Debiki_Comment_Rating::is_valid($action));
+
+		# TODO before release: Insert NULL not empty strings.
 
 		$sql = "insert into $this->actions_table_name (
 					action_type,
@@ -203,25 +269,28 @@ class Debiki_Database {
 					actor_name,
 					actor_email,
 					actor_ip,
+					actor_cookie,
 					actor_user_id
 				) values (
-					%s, %d, %s, %s, UTC_TIMESTAMP(), %d, %d, %s, %s, %s, %d
+					%s, %d, %s, %s, UTC_TIMESTAMP(), null, 0, %s, %s, %s, %d
 				)";
 
-		$new_action_id = $wpdb->query($wpdb->prepare($sql, array(
+		$wpdb->query($wpdb->prepare($sql, array(
 					 # $action->action_id, — auto incremented
 					 $action->action_type,
 					 $action->action_value_byte,
 					 $action->action_value_tag,
 					 $action->action_value_text,
-					 # $action->creation_date, — now(), instead
+					 # $action->creation_date_utc, — now(), instead
 					 $action->post_id,
 					 $action->comment_id,
 					 $action->actor_name,
 					 $action->actor_email,
 					 $action->actor_ip,
+					 $action->actor_cookie,
 					 $action->actor_user_id)));
 
+		$new_action_id = $wpdb->$insert_id;
 		return $new_action_id;
 	}
 
@@ -235,4 +304,13 @@ class Debiki_Database {
 		return Debiki_Comment_Ratings::from_action_rows(& $action_rows);
 	}
 
+
+	function load_comment_ratings_for_comment($comment_id) {
+		global $wpdb;
+		$sql = "
+			select * from $this->actions_table_name
+			where comment_id = %d";
+		$action_rows = $wpdb->get_results($wpdb->prepare($sql, $comment_id));
+		return Debiki_Comment_Ratings::from_action_rows(& $action_rows);
+	}
 }
