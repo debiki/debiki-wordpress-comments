@@ -186,7 +186,7 @@ class Earlier_Action {
 	var $same_by_ip = array();
 
 	/**
-	 * When saving a new rating:
+	 * OLD COMMENT When saving a new rating:
 	 * If there are very many ratings from one single ip, then, if
 	 * the new rating doesn't match any of those other ratings,
 	 * a generic action will be created for this IP. It is stored
@@ -197,7 +197,9 @@ class Earlier_Action {
 	 * (Vote fraud is handled elsewhere, namely when rendering a page
 	 * and sorting comments.)
 	 */
-	var $num_others_same_ip = 0;
+	function num_ratings_same_ip() {
+		return count($this->same_by_ip);
+	}
 
 	/**
 	 * The action whose earlier version is located by this locator.
@@ -212,11 +214,10 @@ class Earlier_Action {
 		return new Earlier_Action($action);
 	}
 
-	public function found() {
+	public function found_with_same_uid_or_cookie() {
 		return 0 <
 			count($this->same_by_user_id) +
-			count($this->same_by_cookie) +
-			count($this->same_by_ip);
+			count($this->same_by_cookie);
 	}
 }
 
@@ -236,30 +237,22 @@ class Comment_Ratings {
 	}
 
 
-	static function containing(& $ratings) {
+	static function with(& $ratings) {
 		return new Comment_Ratings(& $ratings);
 	}
 
 
-	static function from_db_rows(& $action_rows) {
-		$actions = array();
-		foreach ($action_rows as & $action_row) {
-			$actions[] = Comment_Rating::from_db_row(& $action_row);
+	static function from_db_rows(& $rating_rows) {
+		$ratings = array();
+		foreach ($rating_rows as & $rating_row) {
+			$ratings[] = Comment_Rating::from_db_row(& $rating_row);
 		}
-		return Comment_Ratings::containing(& $actions);
+		return Comment_Ratings::with(& $ratings);
 	}
 
 
 	function find_earlier_version_of($rating) {
 		$ratings = $this->ratings_for_comment($rating->comment_id());
-
-		function is_same($a, $b) {
-			return $a && $b && $a == $b;
-		}
-
-		function undef_or_same($a, $b) {
-			return !$a || !$b || $a == $b;
-		}
 
 		# Create a mostly unitialized earlier version.
 		$earlier_version = Earlier_Action::for_($rating);
@@ -268,32 +261,28 @@ class Comment_Ratings {
 		# (If there are many earlier versions (there should not be),
 		# we find them all — this simplifies debugging/testing I think.)
 		foreach ($ratings as $same_maybe) {
-			if (is_same($same_maybe->actor_user_id(), $rating->actor_user_id())) {
+
+			if ($this->_is_same(
+					$same_maybe->actor_user_id(), $rating->actor_user_id())) {
 				$earlier_version->same_by_user_id[] = $same_maybe;
 			}
-			if (is_same($same_maybe->actor_cookie(), $rating->actor_cookie())) {
+
+			if ($this->_is_same(
+					$same_maybe->actor_cookie(), $rating->actor_cookie())) {
 				$earlier_version->same_by_cookie[] = $same_maybe;
 			}
-			if (is_same($same_maybe->actor_ip(), $rating->actor_ip())) {
 
-				$not_different =
-						undef_or_same(
-							$same_maybe->actor_user_id(), $rating->actor_user_id()) &&
-						undef_or_same(
-							$same_maybe->actor_cookie(), $rating->actor_cookie());
-
-				if ($not_different) {
-					$earlier_version->same_by_ip[] = $same_maybe;
-				}
-				else {
-					$earlier_version->num_others_same_ip += 1;
-				}
+			if ($this->_is_same($same_maybe->actor_ip(), $rating->actor_ip())) {
+				$earlier_version->same_by_ip[] = $same_maybe;
 			}
 		}
 
 		return $earlier_version;
 	}
 
+	private function _is_same($a, $b) {
+		return $a && $b && $a == $b;
+	}
 
 	function ratings_for_comment($comment_id) {
 		if (!array_key_exists($comment_id, $this->ratings_by_comment_id))

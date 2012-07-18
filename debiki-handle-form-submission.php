@@ -61,7 +61,7 @@ function create_or_update_rating($new_rating) {
 	if ($earlier_version->found()) {
 		$debiki_db->update_comment_rating($earlier_version, $new_rating);
 	}
-	else if ($earlier_version->num_others_same_ip >=
+	else if ($earlier_version->num_ratings_same_ip() >=
 			Debiki_Database::max_rating_rows_per_comment_and_ip) {
 		# Create/update a catch all rating for this IP, so a single IP
 		# cannot insert terribly many rows into the database.
@@ -82,7 +82,7 @@ function create_or_update_rating($new_rating) {
 	else {
 		$new_cookie_value = random_string(10);
 		set_comment_rating_cookie($new_cookie_value);
-		$new_rating->actor_cookie = $new_cookie_value;
+		$new_rating->actor_cookie($new_cookie_value);
 		$debiki_db->create_comment_action($new_rating);
 	}
 }
