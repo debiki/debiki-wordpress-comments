@@ -52,7 +52,7 @@ class Debiki_Database {
 	 * might not count as a rating, later when sorting comments by good/bad
 	 * ratings.
 	 */
-	static const max_rating_rows_per_comment_and_ip = 50;
+	const max_rating_rows_per_comment_and_ip = 50;
 
 	function __construct() {
 		global $wpdb;
@@ -255,7 +255,7 @@ class Debiki_Database {
 
 		$wpdb->query($wpdb->prepare($sql, $values));
 
-		$num_rows_updated = $wpdb->$rows_affected;
+		$num_rows_updated = $wpdb->rows_affected;
 		return $num_rows_updated;
 	}
 
