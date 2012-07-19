@@ -150,11 +150,11 @@ class Debiki_Database {
 			modification_count int NOT NULL default 0,
 			post_id bigint(20) unsigned NOT NULL,
 			comment_id bigint(20) unsigned NOT NULL,
+			actor_user_id bigint(20) unsigned,
+			actor_cookie varchar(100),
+			actor_ip varchar(100),
 			actor_name tinytext,
 			actor_email varchar(100),
-			actor_ip varchar(100),
-			actor_cookie varchar(100),
-			actor_user_id bigint(20) unsigned,
 			CONSTRAINT $this->actions_table__comment_fk_name
 			FOREIGN KEY (comment_id)
 			REFERENCES $this->wp_comments_table_name (comment_ID)
@@ -286,14 +286,14 @@ class Debiki_Database {
 					creation_date_utc,
 					post_id,
 					comment_id,
-					actor_name,
-					actor_email,
-					actor_ip,
+					actor_user_id,
 					actor_cookie,
-					actor_user_id
+					actor_ip,
+					actor_name,
+					actor_email
 				) values (
 					%s, %d, null, null, UTC_TIMESTAMP(),
-					%d, %d, null, null, %s, %s, %d
+					%d, %d, %d, %s, %s, null, null
 				)";
 
 		$wpdb->query($wpdb->prepare($sql, array(
@@ -305,11 +305,11 @@ class Debiki_Database {
 				# $action->creation_date_utc, — now(), instead
 				$action->post_id(),
 				$action->comment_id(),
-				#$action->actor_name(), — null
-				#$action->actor_email(), — null
-				$action->actor_ip(),
+				$action->actor_user_id(),
 				$action->actor_cookie(),
-				$action->actor_user_id())));
+				$action->actor_ip())));
+				#$action->actor_name(), — null
+				#$action->actor_email(), — null,
 
 		$new_action_id = $wpdb->insert_id;
 		return $new_action_id;
@@ -326,6 +326,7 @@ class Debiki_Database {
 
 
 	function load_comment_ratings_for_comment($comment_id) {
+		# wp_comments comment_ID is the primary key (post id not needed).
 		$sql = "
 			select * from $this->actions_table_name
 			where comment_id = %d";
