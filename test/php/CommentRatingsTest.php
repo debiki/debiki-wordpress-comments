@@ -142,17 +142,15 @@ class Find_Earlier_Version_Test extends \WP_UnitTestCase {
 				->actor_ip('5.5.5.5.');
 	}
 
-	public function check_earlier_version_absent($rating, $other_rating) {
-		$ratings_array = array($other_rating);
-		$ratings = Comment_Ratings::with(& $ratings_array);
+	public function check_earlier_version_absent(& $rating, & $other_rating) {
+		$ratings = Comment_Ratings::with(& $other_rating);
 		$earlier_version = $ratings->find_earlier_version_of($rating);
 		$this->assertFalse($earlier_version->found_with_same_uid_or_cookie());
 		return $earlier_version;
 	}
 
-	public function check_earlier_version_exists($rating, $other_rating) {
-		$ratings_array = array($other_rating);
-		$ratings = Comment_Ratings::with(& $ratings_array);
+	public function check_earlier_version_exists(& $rating, & $other_rating) {
+		$ratings = Comment_Ratings::with(& $other_rating);
 		$earlier_version = $ratings->find_earlier_version_of($rating);
 		$this->assertTrue($earlier_version->found_with_same_uid_or_cookie());
 		return $earlier_version;

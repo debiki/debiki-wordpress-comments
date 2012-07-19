@@ -233,7 +233,9 @@ class Comment_Ratings {
 
 
 	private function __construct(& $ratings) {
-		$this->actions = & $ratings;
+		if (is_array($ratings)) $this->actions = & $ratings;
+		else $this->actions[] = & $ratings;
+
 		foreach ($this->actions as & $action) {
 			if ($this->post_id === -1) $this->post_id = $action->post_id();
 			else assert('$this->post_id == $action->post_id() /*same page*/');
