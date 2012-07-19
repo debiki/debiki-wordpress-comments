@@ -97,6 +97,36 @@ class Find_Earlier_Version_Test extends \WP_UnitTestCase {
 				$this->new_rating_no_uid()->actor_cookie('otr-cki'));
 	}
 
+	public function test_finds_six_same__count_ip() {
+		$rating = $this->new_rating();
+		$others = array();
+		# Two with same user id
+		$others[] = $this->new_rating()
+				->actor_cookie('otr-cki')->actor_ip('5.5.5.5');
+		$others[] = $this->new_rating()
+				->actor_cookie('otr-cki2')->actor_ip('6.6.6.6');
+		# Two with same cookie
+		$others[] = $this->new_rating()
+				->actor_user_id(678)->actor_ip('5.5.5.5');
+		$others[] = $this->new_rating()
+				->actor_user_id(901)->actor_ip('6.6.6.6');
+		# Two with same IP
+		$others[] = $this->new_rating()
+				->actor_user_id(678)->actor_cookie('otr-cki');
+		$others[] = $this->new_rating()
+				->actor_user_id(901)->actor_cookie('otr-cki2');
+		# One by someone else, and one for another comment (should not be found).
+		$others[] = $this->new_rating_by_other_everything();
+		$others[] = $this->new_rating()->comment_id(111);
+		$ratings = Comment_Ratings::with($others);
+		$earlier_version = $ratings->find_earlier_version_of($rating);
+		$this->assertTrue($earlier_version->found_with_same_uid_or_cookie());
+		$this->assertEquals(2, $earlier_version->num_ratings_same_ip());
+		$this->assertEquals(2, count($earlier_version->same_by_user_id));
+		$this->assertEquals(2, count($earlier_version->same_by_cookie));
+		$this->assertEquals(2, count($earlier_version->same_by_ip));
+	}
+
 	function new_rating() {
 		return Comment_Rating::create()->post_id(1)->comment_id(2)
 				->actor_user_id(3)->actor_cookie('cookie_abcd')
@@ -105,6 +135,11 @@ class Find_Earlier_Version_Test extends \WP_UnitTestCase {
 
 	function new_rating_no_uid() {
 		return $this->new_rating()->actor_user_id(0);
+	}
+
+	function new_rating_by_other_everything() {
+		return $this->new_rating()->actor_user_id(999)->actor_cookie('otr-cki')
+				->actor_ip('5.5.5.5.');
 	}
 
 	public function check_earlier_version_absent($rating, $other_rating) {
