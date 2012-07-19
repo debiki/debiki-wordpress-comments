@@ -222,26 +222,37 @@ class Earlier_Action {
 }
 
 
+/**
+ * Ratings for comments on one single page/post.
+ */
 class Comment_Ratings {
 
 	private $actions = array();
 	private $ratings_by_comment_id = array();
+	private $post_id = -1;
 
 
 	private function __construct(& $ratings) {
 		$this->actions = & $ratings;
 		foreach ($this->actions as & $action) {
+			if ($this->post_id === -1) $this->post_id = $action->post_id();
+			else assert('$this->post_id == $action->post_id() /*same page*/');
+
 			if ('C' == $action->action_type())
 				$this->ratings_by_comment_id[$action->comment_id()][] = & $action;
 		}
 	}
 
-
+	/**
+	 * All ratings must be for comments on the same page.
+	 */
 	static function with(& $ratings) {
 		return new Comment_Ratings(& $ratings);
 	}
 
-
+	/**
+	 * All ratings must be for comments on the same page.
+	 */
 	static function from_db_rows(& $rating_rows) {
 		$ratings = array();
 		foreach ($rating_rows as & $rating_row) {
