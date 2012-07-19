@@ -19,7 +19,8 @@ class Find_Earlier_Version_Test extends \WP_UnitTestCase {
 
 	public function test_with_no_other_ratings_and_count_ip() {
 		$rating = $this->new_rating();
-		$ratings = Comment_Ratings::with($rating);
+		$ratings_array = array();
+		$ratings = Comment_Ratings::with(& $ratings_array);
 		$earlier_version = $ratings->find_earlier_version_of($rating);
 		$this->assertFalse($earlier_version->found_with_same_uid_or_cookie());
 		$this->assertEquals(0, $earlier_version->num_ratings_same_ip());
