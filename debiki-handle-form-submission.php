@@ -12,26 +12,43 @@ namespace Debiki;
 
 require_once('debiki-database.php');
 
+class ForbiddenException extends \Exception {
+	function __construct($message) {
+		$this->message = $message;
+	}
+}
+
 
 function handle_form_subbmission() {
+	try {
+		handle_form_subbmission_or_throw();
+	}
+	catch (ForbiddenException $exception) {
+		header('HTTP/1.1 403 Forbidden');
+		die($exception->message);
+	}
+}
+
+
+function handle_form_subbmission_or_throw() {
 
 	if ($_SERVER['REQUEST_METHOD'] !== 'POST')
-		die_forbidden('Bad request method');
+		throw_forbidden('Bad request method');
 
 	# `_safe` means the variable has been sanitized.
 	$user_id_safe = get_current_user_id();
-	$post_id_safe = get_int_die_unless_gtz('post-id');
-	$comment_id_safe = get_int_die_unless_gtz('comment-id');
+	$post_id_safe = get_int_throw_unless_gtz('post-id');
+	$comment_id_safe = get_int_throw_unless_gtz('comment-id');
 
 	# WordPress' comment.php filters the IP in this way.
 	$ip_addr_safe =
 		preg_replace('/[^0-9a-fA-F:., ]/', '', $_SERVER['REMOTE_ADDR']);
 
 	# Convert rating to boolean
-	$liked_it = get_string_or_die('vote-value');
+	$liked_it = get_string_or_throw('vote-value');
 	if ($liked_it === '+1') $liked_it_safe = true;
 	else if ($liked_it === '-1') $liked_it_safe = false;
-	else die_forbidden("Bad input: vote-value");
+	else throw_forbidden("Bad input: vote-value");
 
 	# Find any name and email, for unregistered users.
 	# `wp_get_current_commenter` finds the name and email from cookies,
@@ -77,7 +94,7 @@ function create_or_update_rating($new_rating) {
 		# Could:
 		# $debiki_db->update_catch_all_by_ip_rating($new_rating);
 		# But for now:
-		die_forbidden('Too many comment rating attempts from this IP');
+		throw_forbidden('Too many comment rating attempts from this IP');
 	}
 	else {
 		$new_cookie_value = random_string(10);
@@ -108,31 +125,30 @@ function random_string($length, $valid_chars =
 }
 
 
-function die_forbidden($error_message) {
-	header('HTTP/1.1 403 Forbidden');
-	die($error_message);
+function throw_forbidden($error_message) {
+	throw new ForbiddenException($error_message);
 }
 
 
-function get_string_or_die($input_name) {
+function get_string_or_throw($input_name) {
 	if (!isset($_POST[$input_name])) {
-		die_forbidden("Missing input: $input_name");
+		throw_forbidden("Missing input: $input_name");
 	}
 	return $_POST[$input_name];
 }
 
 
-function get_int_or_die($input_name) {
-	$value_str = get_string_or_die($input_name);
+function get_int_or_throw($input_name) {
+	$value_str = get_string_or_throw($input_name);
 	$value_int = (int) $value_str;
 	return $value_int;
 }
 
 
-function get_int_die_unless_gtz($input_name) {
-	$value = get_int_or_die($input_name);
+function get_int_throw_unless_gtz($input_name) {
+	$value = get_int_or_throw($input_name);
 	if ($value <= 0) {
-		die_forbidden("Bad input: $input_name");
+		throw_forbidden("Bad input: $input_name");
 	}
 	return $value;
 }
