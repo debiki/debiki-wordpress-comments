@@ -231,6 +231,11 @@ class Comment_Ratings {
 	private $ratings_by_comment_id = array();
 	private $post_id = -1;
 
+	# For now:  (and should be private)
+	var $settings = array(
+		'max_ratings_per_ip' => 10
+	);
+
 
 	private function __construct(& $ratings) {
 		if (is_array($ratings)) $this->actions = & $ratings;
@@ -347,13 +352,13 @@ class Comment_Ratings {
 			# Each IP may vote only a certain number of times.
 			if (strlen($rating->actor_ip())) {
 				if (!isset($ip_vote_count[$rating->actor_ip()])) {
-					$ip_vote_count[$rating->actor_ip()] = 0;
+					$ip_vote_count[$rating->actor_ip()] = 1;
 				} else {
 					$count = & $ip_vote_count[$rating->actor_ip()];
-					if ($count >= 10) // for now, at most 10 votes per IP
+					if ($count >= $this->settings['max_ratings_per_ip'])
 						continue;
 					++$count;
-					assert($ip_vote_count[$rating->actor_ip()] >= 1);
+					assert($ip_vote_count[$rating->actor_ip()] >= 2);
 				}
 			}
 
