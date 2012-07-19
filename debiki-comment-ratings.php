@@ -45,14 +45,14 @@ class Action {
 		$this->actor_user_id(0);
 	}
 
-	function action_id($value = null) {
-		assert($value === null || is_int($value));
+	function action_id($value = -1) {
+		assert($value === -1 || is_int($value));
 		return $this->_get_or_set('action_id', $value);
 	}
 
 	/** Right now only comments, 'C', supported. */
-	function action_type($value = null) {
-		assert($value === null || $value === 'C');
+	function action_type($value = -1) {
+		assert($value === -1 || $value === 'C');
 		return $this->_get_or_set('action_type', $value);
 	}
 
@@ -91,39 +91,39 @@ class Action {
 	#	return $this->_get_or_set('action_value_tags', $value);
 	#}
 
-	function creation_date_utc($value = null) {
+	function creation_date_utc($value = -1) {
 		# A date read from db is a string, so use strings, for now, hmm.
-		assert($value === null || is_string($value));
+		assert($value === -1 || is_string($value));
 		return $this->_get_or_set('creation_date_utc', $value);
 	}
 
-	function post_id($value = null) {
-		assert($value === null || is_int($value));
+	function post_id($value = -1) {
+		assert($value === -1 || is_int($value));
 		return $this->_get_or_set('post_id', $value);
 	}
 
-	function comment_id($value = null) {
-		assert($value === null || is_int($value));
+	function comment_id($value = -1) {
+		assert($value === -1 || is_int($value));
 		return $this->_get_or_set('comment_id', $value);
 	}
 
-	function actor_ip($value = null) {
-		assert($value === null || is_string($value));
+	function actor_ip($value = -1) {
+		assert($value === -1 || is_string($value));
 		return $this->_get_or_set('actor_ip', $value);
 	}
 
-	function actor_cookie($value = null) {
-		assert($value === null || is_string($value));
+	function actor_cookie($value = -1) {
+		assert($value === -1 || is_string($value));
 		return $this->_get_or_set('actor_cookie', $value);
 	}
 
-	function actor_user_id($value = null) {
-		assert($value === null || is_int($value));
+	function actor_user_id($value = -1) {
+		assert($value === -1 || is_int($value));
 		return $this->_get_or_set('actor_user_id', $value);
 	}
 
 	protected function _get_or_set($member, $value) {
-		if ($value === null)
+		if ($value === -1)
 			return $this->data->$member;
 
 		$this->data->$member = $value;
