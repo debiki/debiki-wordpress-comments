@@ -250,6 +250,11 @@ class Comment_Ratings {
 		}
 	}
 
+	static function none() {
+		$ratings = array();
+		return new Comment_Ratings(& $ratings);
+	}
+
 	/**
 	 * All ratings must be for comments on the same page.
 	 */
