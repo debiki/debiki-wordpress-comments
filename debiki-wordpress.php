@@ -93,7 +93,7 @@ function debiki_comments_enabled() {
 
 require_once dirname(__FILE__) . '/debiki-settings.php';
 
-add_action('admin_menu', 'debiki_add_admin_menu_items');
+add_action('admin_menu', '\Debiki\debiki_add_admin_menu_items');
 
 function debiki_add_admin_menu_items() {
 	add_options_page('Debiki Comments', 'Debiki Comments', 'manage_options',
