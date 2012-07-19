@@ -12,6 +12,9 @@ namespace Debiki;
 
 require_once('debiki-database.php');
 
+define('DEBIKI_COMMENT_RATING_COOKIE', 'debiki_comment_rating_'.COOKIEHASH);
+
+
 class ForbiddenException extends \Exception {
 	function __construct($message) {
 		$this->message = $message;
@@ -53,30 +56,36 @@ function handle_form_subbmission_or_throw() {
 	# Find any name and email, for unregistered users.
 	# `wp_get_current_commenter` finds the name and email from cookies,
 	# which needs to be sanitized first.
+	/* Should I really save user's name?
 	sanitize_comment_cookies();
 	$author = wp_get_current_commenter();
 	$author_name_safe = $author['comment_author'];
 	$author_email_safe = $author['comment_author_email'];
+	*/
 
-	$rating = Debiki_Comment_Rating::for_post_comment(
-			$post_id_safe, $comment_id_safe)
-			->from_ip($ip_addr_safe)
-			->by_user_id($user_id_safe)
-			->by_name_email($author_name_safe, $author_email_safe)
+	$cookie_value_safe = get_comment_rating_cookie_value_safe_or_throw();
+
+	$rating = Comment_Rating::create()
+			->post_id($post_id_safe)
+			->comment_id($comment_id_safe)
+			->actor_user_id($user_id_safe)
+			->actor_cookie($cookie_value_safe)
+			->actor_ip($ip_addr_safe)
 			->liked_it($liked_it_safe);
+			#->by_name_email($author_name_safe, $author_email_safe)
 
-	create_or_update_rating($rating);
+	insert_or_update_rating($rating);
 }
 
 
-function create_or_update_rating($new_rating) {
+function insert_or_update_rating($new_rating) {
 	$debiki_db = new Debiki_Database();
-	$comment_ratings =
-			$debiki_db->load_comment_ratings_for_comment($new_rating->comment_id);
+	$comment_ratings = $debiki_db->load_comment_ratings_for_comment(
+			$new_rating->comment_id());
 	$earlier_version = $comment_ratings->find_earlier_version_of($new_rating);
 
-	if ($earlier_version->found()) {
-		$debiki_db->update_comment_rating($earlier_version, $new_rating);
+	if ($earlier_version->found_with_same_uid_or_cookie()) {
+		$debiki_db->update_comment_action($earlier_version, $new_rating);
 	}
 	else if ($earlier_version->num_ratings_same_ip() >=
 			Debiki_Database::max_rating_rows_per_comment_and_ip) {
@@ -97,20 +106,26 @@ function create_or_update_rating($new_rating) {
 		throw_forbidden('Too many comment rating attempts from this IP');
 	}
 	else {
-		$new_cookie_value = random_string(10);
+		$new_cookie_value = random_string(12);
 		set_comment_rating_cookie($new_cookie_value);
 		$new_rating->actor_cookie($new_cookie_value);
-		$debiki_db->create_comment_action($new_rating);
+		$debiki_db->insert_comment_action($new_rating);
 	}
 }
 
 
 function set_comment_rating_cookie($value) {
 	$lifetime = 30000000;
-	setcookie('debiki_comment_rating_'.COOKIEHASH, $value,
+	setcookie(DEBIKI_COMMENT_RATING_COOKIE, $value,
 			time() + $lifetime, COOKIEPATH, COOKIE_DOMAIN);
-	$new_cookie = $_COOKIE['debiki_comment_rating_'.COOKIEHASH];
-	return $new_cookie;
+}
+
+
+function get_comment_rating_cookie_value_safe_or_throw() {
+	$value = $_COOKIE[DEBIKI_COMMENT_RATING_COOKIE];
+	$matches_evil_char = preg_match('/[^0-9a-zA-Z]/', $value);
+	if ($matches_evil_char) throw_forbidden('Bad comment rating cookie');
+	return $value;
 }
 
 
