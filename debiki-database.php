@@ -223,21 +223,22 @@ class Debiki_Database {
 		global $wpdb;
 
 		$values = array();
-		$values[] = $action->action_value_byte;
+		$values[] = $action->action_value_byte();
+		$values[] = $action->comment_id();
 
 		# Specify which row to update.
 
 		if (isset($earlier_version->same_by_user_id[0])) {
 			$where_clause = "actor_user_id = %d";
-			$values[] = $earlier_version->same_by_user_id[0];
+			$values[] = $earlier_version->same_by_user_id[0]->actor_user_id();
 		}
 		else if (isset($earlier_version->same_by_cookie[0])) {
 			$where_clause = "actor_cookie = %s";
-			$values[] = $earlier_version->same_by_cookie[0];
+			$values[] = $earlier_version->same_by_cookie[0]->actor_cookie();
 		}
 		else if (isset($earlier_version->same_by_ip[0])) {
 			$where_clause = "actor_ip = %s";
-			$values[] = $earlier_version->same_by_ip[0];
+			$values[] = $earlier_version->same_by_ip[0]->actor_ip();
 		}
 		else {
 			assert(false);
@@ -251,7 +252,7 @@ class Debiki_Database {
 					action_value_byte = %d,
 					modification_date_utc = UTC_TIMESTAMP(),
 					modification_count = modification_count + 1
-				where ".$where_clause;
+				where comment_id = %d and ".$where_clause;
 
 		$wpdb->query($wpdb->prepare($sql, $values));
 
