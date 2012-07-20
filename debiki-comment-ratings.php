@@ -377,36 +377,38 @@ class Comment_Ratings {
 
 
 	/**
-	 * Returns an int if +1 / -1 rating system is used, oterwise perhaps
-	 * a float.
+	 * Counts upvotes and downvotes, and upvotes and downvotes by $user_id.
 	 *
-	 * If a user has tagged the coment with both positive and negative rating
-	 * tags, this would increment both num_upvotes and num_downvotes,
-	 * with values < 1.0.
+	 * Values are integers, if +1 / -1 rating system is used, oterwise perhaps
+	 * floats.
 	 */
-	function upvote_count_for_comment($comment_id) {
-		return $this->_count_ratings($comment_id, 1);
-	}
-
-
-	function downvote_count_for_comment($comment_id) {
-		return $this->_count_ratings($comment_id, -1);
-	}
-
-
-	private function _count_ratings($comment_id, $value) {
+	function count_ratings_for_comment($comment_id, $user_id) {
+		$counts = new \stdClass;
+		$counts->upvote_count = 0;
+		$counts->downvote_count = 0;
+		$counts->users_upvote_count = 0;
+		$counts->users_downvote_count = 0;
 		# $comment_id is a string when invoked from the comment rendering loop.
 		$comment_id = (int) $comment_id;
 		$ratings = $this->ratings_for_comment($comment_id);
-		$count = 0;
 		foreach ($ratings as $rating) {
-			# In the future, what happens here would depend on
+			# In the future, what happens here would/could depend on
 			# the sort_score_algorithm().
-			if ($rating->action_value_byte() == $value) {
-				++$count;
+
+			$value = $rating->action_value_byte();
+			if ($value == 1) ++$counts->upvote_count;
+			else if ($value === -1)	++$counts->downvote_count;
+			else {
+				# COULD assert(false), but only if debug
+			}
+
+			if ($user_id && $user_id === $rating->actor_user_id()) {
+				if ($value == 1) ++$counts->users_upvote_count;
+				else if ($value === -1)	++$counts->users_downvote_count;
+				# else — no, don't need to log yet another error?
 			}
 		}
-		return $count;
+		return $counts;
 	}
 
 

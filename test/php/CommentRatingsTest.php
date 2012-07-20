@@ -259,30 +259,57 @@ class Vote_Count_Test extends \WP_UnitTestCase {
 
 	public function test_counts_0_if_no_ratings() {
 		$ratings = Comment_Ratings::none();
-		$this->assertEquals(0, $ratings->upvote_count_for_comment(2));
-		$this->assertEquals(0, $ratings->downvote_count_for_comment(2));
+		$this->_check_counts($ratings, false, 0, 0, 0, 0);
 	}
 
 	public function test_counts_0_if_only_other_comments_rated() {
 		$ratings = Comment_Ratings::with(new_rating()->comment_id(999));
-		$this->assertEquals(0, $ratings->upvote_count_for_comment(2));
-		$this->assertEquals(0, $ratings->downvote_count_for_comment(2));
+		$this->_check_counts($ratings, false, 0, 0, 0, 0);
 	}
 
 	public function test_counts_1_with_one_like() {
 		$ratings = Comment_Ratings::with(new_rating());
-		$this->assertEquals(1, $ratings->upvote_count_for_comment(2));
-		$this->assertEquals(0, $ratings->downvote_count_for_comment(2));
+		$this->_check_counts($ratings, false, 1, 0, 0, 0);
 	}
 
 	public function test_counts_m1_with_one_diss() {
 		$ratings = Comment_Ratings::with(new_rating()->liked_it(false));
-		$this->assertEquals(0, $ratings->upvote_count_for_comment(2));
-		$this->assertEquals(1, $ratings->downvote_count_for_comment(2));
+		$this->_check_counts($ratings, false, 0, 1, 0, 0);
 	}
 
+	public function test_counts_1_with_users_like() {
+		$ratings = Comment_Ratings::with(new_rating());
+		$this->_check_counts($ratings, default_user_id(), 1, 0, 1, 0);
+	}
+
+	public function test_counts_m1_with_users_diss() {
+		$ratings = Comment_Ratings::with(new_rating()->liked_it(false));
+		$this->_check_counts($ratings, default_user_id(), 0, 1, 0, 1);
+	}
+
+	public function test_counts_1_0_with_other_users_like() {
+		$ratings = Comment_Ratings::with(new_rating());
+		$this->_check_counts($ratings, 999, 1, 0, 0, 0);
+	}
+
+	public function test_counts_m1_0_with_other_users_diss() {
+		$ratings = Comment_Ratings::with(new_rating()->liked_it(false));
+		$this->_check_counts($ratings, 999, 0, 1, 0, 0);
+	}
+
+	private function _check_counts($ratings, $user_id,
+			$ups, $downs, $user_ups, $user_downs) {
+		$counts = $ratings->count_ratings_for_comment(
+				default_comment_id(), $user_id);
+		$this->assertEquals($ups, $counts->upvote_count);
+		$this->assertEquals($downs, $counts->downvote_count);
+		$this->assertEquals($user_ups, $counts->users_upvote_count);
+		$this->assertEquals($user_downs, $counts->users_downvote_count);
+	}
 }
 
+function default_comment_id() { return 2; }
+function default_user_id() { return 3; }
 
 function new_rating() {
 	return Comment_Rating::create()->post_id(1)->comment_id(2)

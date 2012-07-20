@@ -112,6 +112,24 @@ function debiki_default_comment( $comment, $args, $depth ) {
 	$comment_id = get_comment_ID();
 	$comment_ratings = $args['debiki_comment_ratings'];
 
+	# Only render special HTML, with .dw-wp-my-vote classes, for logged in
+	# registered users — otherwise HTML caching plugins might cache the
+	# wrong version of the page, with vote info for someone else.
+	# (I'll store my-vote-info in browser local storage,
+	# for non-registered users?)
+
+	$user = wp_get_current_user();
+	# (This: wp_get_current_commenter() reads name and email cookies)
+
+	$vote_counts = $comment_ratings->count_ratings_for_comment(
+			$comment_id, $user->exists() ? $user->ID : false);
+
+	$my_upvote_classes = $vote_counts->users_upvote_count > 0 ?
+			'dw-wp-my-vote' : '';
+
+	$my_downvote_classes = $vote_counts->users_downvote_count > 0 ?
+			'dw-wp-my-vote' : '';
+
 	switch ( $comment->comment_type ) :
 		case 'pingback' :
 		case 'trackback' :
@@ -172,25 +190,6 @@ function debiki_default_comment( $comment, $args, $depth ) {
 				COULD include comment permalink:
 					esc_url( get_comment_link( $comment->comment_ID ) )
 				*/?>
-
-				<?php
-					$current_actor = '?'; # for now
-					$rate_classes = '';
-					/*
-					if ($comment_ratings.num_upvotes_for_comment_by_actor(
-							$comment_id, $current_actor) > 0) {
-						$rate_classes .= 'dw-wp-user-voted-up';
-					}
-					if ($comment_ratings.num_downvotes_for_comment_by_actor(
-							$comment_id, $current_actor) > 0) {
-						$rate_classes .= 'dw-wp-user-voted-down';
-					}
-					 */
-					$num_upvotes =
-							$comment_ratings->upvote_count_for_comment($comment_id);
-					$num_downvotes =
-							$comment_ratings->downvote_count_for_comment($comment_id);
-				?>
 				<span class="dw-wp-rate-links">
 					<span class="dw-wp-vote-up <?php echo $my_upvote_classes ?>">
 						<span class="dw-wp-vote-count" title="Number of up votes">
