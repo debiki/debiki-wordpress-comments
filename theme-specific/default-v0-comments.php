@@ -191,14 +191,18 @@ function debiki_default_comment( $comment, $args, $depth ) {
 					$num_downvotes =
 							$comment_ratings->downvote_count_for_comment($comment_id);
 				?>
-				<span class="dw-wp-rate-links <?php echo $rate_classes ?>">
-					<span class="dw-wp-vote-up-count" title="Number of up votes">
-						<?php echo $num_upvotes ?>
+				<span class="dw-wp-rate-links">
+					<span class="dw-wp-vote-up <?php echo $my_upvote_classes ?>">
+						<span class="dw-wp-vote-count" title="Number of up votes">
+							<?php echo $vote_counts->upvote_count ?>
+						</span>
+						<a class="dw-wp-vote-link" title="Vote up"></a>
 					</span>
-					<a class="dw-wp-vote-up" title="Vote up"></a>
-					<a class="dw-wp-vote-down" title="Vote down"></a>
-					<span class="dw-wp-vote-down-count" title="Number of down votes">
-						<?php echo $num_downvotes ?>
+					<span class="dw-wp-vote-down <?php echo $my_downvote_classes ?>">
+						<a class="dw-wp-vote-link" title="Vote down"></a>
+						<span class="dw-wp-vote-count" title="Number of down votes">
+							<?php echo $vote_counts->downvote_count ?>
+						</span>
 					</span>
 				</span>
 			</span>

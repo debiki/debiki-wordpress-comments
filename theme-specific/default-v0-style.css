@@ -295,8 +295,8 @@ a.comment-edit-link {
   margin-left: 2em;
 }
 
-.dw-wp-vote-up,
-.dw-wp-vote-down {
+.dw-wp-vote-up .dw-wp-vote-link,
+.dw-wp-vote-down .dw-wp-vote-link {
   display: inline-block;
   position: relative;
   background-image:  /* BUG don't hardcode img path */
@@ -304,18 +304,29 @@ a.comment-edit-link {
   /* Actual background size is 26x49, but shrink image somewhat. */
   width: 20px;
   height: 18px;
-  background-size: 20px 37px;
+  background-size: 20px 72px;
 }
 
-.dw-wp-vote-up {
-  background-position: 0 18px;
-  top: 5px;
+.dw-wp-vote-up .dw-wp-vote-link {
+  background-position: 0 -17px;
+  top: 3px;
 }
 
-.dw-wp-vote-down {
-  background-position: 0 0;
-  top: 7px;
+.dw-wp-vote-down .dw-wp-vote-link {
+  background-position: 0 1px;
+  top: 6px;
   margin-left: 5px;
+}
+
+/* Show bold images and vote count text, for users' own votes. */
+.dw-wp-vote-up.dw-wp-my-vote .dw-wp-vote-link {
+  background-position: 0 -54px;
+}
+.dw-wp-vote-down.dw-wp-my-vote .dw-wp-vote-link {
+  background-position: 0 -36px;
+}
+.dw-wp-my-vote .dw-wp-vote-count {
+  font-weight: bold;
 }
 
 #dw-wp-rate-comment-form {
