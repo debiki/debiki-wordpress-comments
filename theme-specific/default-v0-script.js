@@ -122,23 +122,50 @@ function moveReplyFormOnReplyClick() {
  * Posts a comment rating, on thumbs up/down click.
  */
 function submitRatingsOnThumbsClick() {
-  $(document).on('click', '.dw-wp-vote-up, .dw-wp-vote-down',
-      function(event) {
+  $(document).on('click', '.dw-wp-vote-up .dw-wp-vote-link, '+
+        '.dw-wp-vote-down .dw-wp-vote-link', function(event) {
     event.preventDefault();
-    var $i = $(this);
-    var voteValue = $i.is('.dw-wp-vote-up') ? '+1' : '-1';
+    var $voteLink = $(this);
+    var voteValue = $voteLink.closest('.dw-wp-vote-up').length ? '+1' : '-1';
     var $rateCommentForm = $('#dw-wp-rate-comment-form');
-    var data = getCommentData($i);
+    var data = getCommentData($voteLink);
     $rateCommentForm.find('input[name=comment-id]').val(data.commentId);
     $rateCommentForm.find('input[name=vote-value]').val(voteValue);
     $.post($rateCommentForm.attr('action'), $rateCommentForm.serialize(),
         'html')
-        .done(function(data) {
-        })
+        .done(highlightMyVote)
         .fail(function() {
         })
         .always(function() {
         });
+
+    function highlightMyVote(data) {
+      // Remove all my-vote marks from current post,
+      // then add new mark.
+      var $myNewVote = $voteLink.parent();
+      var $myOldVote =
+        $voteLink.closest('.dw-wp-rate-links').find('.dw-wp-my-vote');
+      var myOldVoteValue = '0';
+      if ($myOldVote.is('.dw-wp-vote-up')) myOldVoteValue = '+1';
+      if ($myOldVote.is('.dw-wp-vote-down')) myOldVoteValue = '-1';
+      if (myOldVoteValue === voteValue)
+        return;
+
+      function incDecVoteCount($vote, change) {
+        var $voteCount = $vote.find('.dw-wp-vote-count');
+        var voteCountStr = $voteCount.text();
+        var voteCount = parseInt(voteCountStr);
+        $voteCount.text('' + (voteCount + change));
+      }
+
+      if ($myOldVote.length) {
+        $myOldVote.removeClass('dw-wp-my-vote');
+        incDecVoteCount($myOldVote, -1);
+      }
+
+      $myNewVote.addClass('dw-wp-my-vote');
+      incDecVoteCount($myNewVote, 1);
+    }
   });
 }
 
