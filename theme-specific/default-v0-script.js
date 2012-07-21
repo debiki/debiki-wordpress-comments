@@ -9,7 +9,10 @@
  *    adds jQuery animations that smoothly moves the reply form to where
  *    it is to be placed (when you've clicked a reply link, to reply
  *    to a specific comment).
- *  2. Submits comment ratings, on thumbs up/down click.
+ *  2. Submits comment ratings, on thumbs up/down click, and highlights the
+ *    ratings.
+ *  3. Highlights the user's ratings on page load (loads them
+ *    from localStorage).
  *
  * This script is supposed to work with most / all themes actually,
  * not just Twenty Eleven. (Twenty Eleven files are fallbacked to,
@@ -128,12 +131,15 @@ function submitRatingsOnThumbsClick() {
     var $voteLink = $(this);
     var voteValue = $voteLink.closest('.dw-wp-vote-up').length ? '+1' : '-1';
     var $rateCommentForm = $('#dw-wp-rate-comment-form');
-    var data = getCommentData($voteLink);
-    $rateCommentForm.find('input[name=comment-id]').val(data.commentId);
+    var commentData = getCommentData($voteLink);
+    $rateCommentForm.find('input[name=comment-id]').val(commentData.commentId);
     $rateCommentForm.find('input[name=vote-value]').val(voteValue);
     $.post($rateCommentForm.attr('action'), $rateCommentForm.serialize(),
         'html')
-        .done(highlightMyVote)
+        .done(function(data) {
+          highlightMyVote();
+          if (!isLoggedIn()) rememberVoteInLocalStorage();
+        })
         .fail(function() {
         })
         .always(function() {
@@ -144,7 +150,7 @@ function submitRatingsOnThumbsClick() {
       // then add new mark.
       var $myNewVote = $voteLink.parent();
       var $myOldVote =
-        $voteLink.closest('.dw-wp-rate-links').find('.dw-wp-my-vote');
+          $voteLink.closest('.dw-wp-rate-links').find('.dw-wp-my-vote');
       var myOldVoteValue = '0';
       if ($myOldVote.is('.dw-wp-vote-up')) myOldVoteValue = '+1';
       if ($myOldVote.is('.dw-wp-vote-down')) myOldVoteValue = '-1';
@@ -166,7 +172,81 @@ function submitRatingsOnThumbsClick() {
       $myNewVote.addClass('dw-wp-my-vote');
       incDecVoteCount($myNewVote, 1);
     }
+
+    function rememberVoteInLocalStorage() {
+      var ratingsByPostAndComment = getMyOldRatings();
+      var ratingsByComment = ratingsByPostAndComment[commentData.blogPostId];
+      ratingsByComment[commentData.commentId] = voteValue;
+      saveMyRatings(commentData.blogPostId, ratingsByComment);
+    }
   });
+}
+
+
+/**
+ * Looks up an unregistered user's earlier ratings in HTML5 local storage,
+ * and highlights those ratings.
+ */
+function highlightMyOldRatings() {
+  var ratingsByPostAndComment = getMyOldRatings();
+  $.each(ratingsByPostAndComment, function(postId, ratingsByComment) {
+    $.each(ratingsByComment, highlightRating);
+  });
+
+  function highlightRating(commentId, rating) {
+    var $comment = $('#comment-'+ commentId);
+    var $myVote = $();
+    if (rating === '+1') {
+      $myVote = $comment.find('.dw-wp-vote-up');
+    }
+    else if (rating === '-1') {
+      $myVote = $comment.find('.dw-wp-vote-down');
+    }
+    else if (rating === '0') {
+    }
+    else {
+      // COULD throw error?
+    }
+    $myVote.addClass('dw-wp-my-vote');
+  }
+}
+
+
+/**
+ * Returns an unregistered user's old ratings stored in HTML5 local storage.
+ *
+ * Access like so: returnValue[postId][commentId] -> rating
+ */
+function getMyOldRatings() {
+  if (!localStorage || !JSON) return null; // IE 6 and 7
+  var ratingsByPost = {};
+  $('.dw-page').each(function() {
+    var postId = $(this).data('dw_wp_post_id');
+    var oldRatingsJson = localStorage.getItem(myRatingsItemName(postId));
+    var oldRatings = JSON.parse(oldRatingsJson);
+    ratingsByPost[postId] = $.extend({}, oldRatings);
+  });
+  return ratingsByPost;
+}
+
+
+function saveMyRatings(postId, ratings) {
+  if (!localStorage || !JSON) return; // IE 6 and 7
+  var ratingsJson = JSON.stringify(ratings);
+  localStorage.setItem(myRatingsItemName(postId), ratingsJson);
+}
+
+
+function myRatingsItemName(postId) {
+  // v0 means version 0. ((Some day in the future, I suppose we'll have to
+  // migrate to version 1, and it feels safer to do that by copy-updating
+  // from the v0 key to the v1 key, than by upgrading in place.))
+  return 'dw-wp-v0-comment-ratings-on-post-'+ postId;
+}
+
+
+function isLoggedIn() {
+  return debiki.wp.userId != 0;
 }
 
 
@@ -185,6 +265,12 @@ function getCommentData($elemInComment) {
 
 moveReplyFormOnReplyClick();
 submitRatingsOnThumbsClick();
+
+// For a registered logged in user, the html from the server already
+// includes his/her ratings, highligted.
+if (!isLoggedIn())
+  highlightMyOldRatings();
+
 
 // ---------------------------------------------------------------------------
   });
