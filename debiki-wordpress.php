@@ -460,7 +460,7 @@ function debiki_comment_data_attrs($comment, $opt_post = null) {
 	$post_id = $opt_post ? $opt_post->ID : $comment->comment_post_ID;
 	return
 		" data-dw_wp_comment_id='$comment->comment_ID'" .
-		" data-dw_wp_post_id='$post_id'";
+		" data-dw_wp_post_id='$post_id'"; # COULD remove, now incl in .dw-page tag
 }
 
 
@@ -532,16 +532,18 @@ function debiki_echo_head() {
 	// Enable Utterscroll even if comments not open. Otherwise, if dragscroll
 	// is enabled on only some pages, people would be confused?
 	$on_complete = comments_open() ? "" : "debiki.Utterscroll.enable();";
-
+	$user_id = wp_get_current_user()->ID;
 	echo "
     <meta name='viewport' content='initial-scale=1.0, minimum-scale=0.01'/>
 	 <link rel='stylesheet' href='" . $res . "jquery-ui/jquery-ui-1.8.16.custom.css'>
-	 <link rel='stylesheet' href='" . $res . "debiki.css'>";
+	 <link rel='stylesheet' href='" . $res . "debiki.css'>
+		<script>
+		var debiki = { wp: {} };
+		debiki.wp.userId = $user_id;";
 
 	# For production.
 	if (true) echo "
-		<script>
-		  var debiki = { scriptLoad: $.Deferred() };
+		  debiki.scriptLoad = $.Deferred();
 		  Modernizr.load({
 		    test: Modernizr.touch,
 		    yep: '".$res."combined-debiki-touch.min.js',
@@ -555,12 +557,11 @@ function debiki_echo_head() {
 
 	# For development.
 	if (false) echo "
-		<script>
 		// Play Framework 2's `require` and `exports` not available.
 		window.require = function() {};
 		window.exports = {};
 
-		var debiki = { scriptLoad: $.Deferred() };
+		debiki.scriptLoad = $.Deferred();
 		Modernizr.load({
 			test: Modernizr.touch,
 			nope: [

@@ -51,7 +51,7 @@ if (comments_open()) :
 		</h2>
 	<?php endif; ?>
 
-	<div class='debiki dw-debate'>
+	<div class='debiki dw-debate dw-page' data-dw_wp_post_id='<?php the_ID() ?>'>
 	<div id='dw-t-1' class='dw-t dw-depth-0 dw-hor dw-svg-gparnt'>
 	<div class='dw-p'></div>
 	<div class='dw-t-vspace'></div>
