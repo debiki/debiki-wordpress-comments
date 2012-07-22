@@ -125,7 +125,7 @@ function get_comment_rating_cookie_value_safe_or_throw() {
 	$value = $_COOKIE[DEBIKI_COMMENT_RATING_COOKIE];
 	$matches_evil_char = preg_match('/[^0-9a-zA-Z]/', $value);
 	if ($matches_evil_char) throw_forbidden('Bad comment rating cookie');
-	return $value;
+	return $value ? $value : '';
 }
 
 
