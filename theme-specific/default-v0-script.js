@@ -157,26 +157,20 @@ function submitRatingsOnThumbsClick() {
       if (myOldVoteValue === voteValue)
         return;
 
-      function incDecVoteCount($vote, change) {
-        var $voteCount = $vote.find('.dw-wp-vote-count');
-        var voteCountStr = $voteCount.text();
-        var voteCount = parseInt(voteCountStr);
-        $voteCount.text('' + (voteCount + change));
-      }
-
       if ($myOldVote.length) {
         $myOldVote.removeClass('dw-wp-my-vote');
-        incDecVoteCount($myOldVote, -1);
+        incDecCommentVoteCount($myOldVote, -1);
       }
 
       $myNewVote.addClass('dw-wp-my-vote');
-      incDecVoteCount($myNewVote, 1);
+      incDecCommentVoteCount($myNewVote, 1);
     }
 
     function rememberVoteInLocalStorage() {
       var ratingsByPostAndComment = getMyOldRatings();
       var ratingsByComment = ratingsByPostAndComment[commentData.blogPostId];
-      ratingsByComment[commentData.commentId] = voteValue;
+      ratingsByComment[commentData.commentId] =
+          { value: voteValue, datiStr: (new Date()).toISOString() };
       saveMyRatings(commentData.blogPostId, ratingsByComment);
     }
   });
@@ -187,26 +181,35 @@ function submitRatingsOnThumbsClick() {
  * Looks up an unregistered user's earlier ratings in HTML5 local storage,
  * and highlights those ratings.
  */
-function highlightMyOldRatings() {
+function highlightAndIncMyRatings() {
   var ratingsByPostAndComment = getMyOldRatings();
   $.each(ratingsByPostAndComment, function(postId, ratingsByComment) {
-    $.each(ratingsByComment, highlightRating);
+    $.each(ratingsByComment, highlightAndIncRating);
   });
 
-  function highlightRating(commentId, rating) {
+  function highlightAndIncRating(commentId, rating) {
     var $comment = $('#comment-'+ commentId);
     var $myVote = $();
-    if (rating === '+1') {
+    if (rating.value === '+1') {
       $myVote = $comment.find('.dw-wp-vote-up');
     }
-    else if (rating === '-1') {
+    else if (rating.value === '-1') {
       $myVote = $comment.find('.dw-wp-vote-down');
     }
-    else if (rating === '0') {
+    else if (rating.value === '0') {
     }
     else {
       // COULD throw error?
     }
+
+    // If we're being served an old cached version of the page,
+    // it doesn't take $myVote into account. Then increment the
+    // vote count manually here — otherwise the user might wonder if the
+    // rating was suddenly lost, after voting and also reloading the page.
+    if (debiki.wp.pageDatiStr < rating.datiStr) {
+      incDecCommentVoteCount($myVote, +1);
+    }
+
     $myVote.addClass('dw-wp-my-vote');
   }
 }
@@ -263,13 +266,42 @@ function getCommentData($elemInComment) {
 }
 
 
+function incDecCommentVoteCount($vote, change) {
+  var $voteCount = $vote.find('.dw-wp-vote-count');
+  var voteCountStr = $voteCount.text();
+  var voteCount = parseInt(voteCountStr);
+  $voteCount.text('' + (voteCount + change));
+}
+
+
+function createDateToISOStringIfAbsent() {
+  // IE 6, 7, 8 has no toISOString.
+  if (Date.prototype.toISOString)
+    return;
+
+  Date.prototype.toISOString = function () {
+    function pad(n) {
+      return n < 10 ? '0' + n : n;
+    }
+    return '"' + this.getUTCFullYear() + '-' +
+        pad(this.getUTCMonth() + 1) + '-' +
+        pad(this.getUTCDate())      + 'T' +
+        pad(this.getUTCHours())     + ':' +
+        pad(this.getUTCMinutes())   + ':' +
+        pad(this.getUTCSeconds())   + 'Z"';
+  };
+}
+
+
+createDateToISOStringIfAbsent();
 moveReplyFormOnReplyClick();
 submitRatingsOnThumbsClick();
 
 // For a registered logged in user, the html from the server already
-// includes his/her ratings, highligted.
+// includes his/her ratings, highligted (at least if the cache settings
+// recommended by WordPress Super Cache are used).
 if (!isLoggedIn())
-  highlightMyOldRatings();
+  highlightAndIncMyRatings();
 
 
 // ---------------------------------------------------------------------------

@@ -533,13 +533,15 @@ function debiki_echo_head() {
 	// is enabled on only some pages, people would be confused?
 	$on_complete = comments_open() ? "" : "debiki.Utterscroll.enable();";
 	$user_id = wp_get_current_user()->ID;
+	$datetime_utc = gmdate('c');
 	echo "
     <meta name='viewport' content='initial-scale=1.0, minimum-scale=0.01'/>
 	 <link rel='stylesheet' href='" . $res . "jquery-ui/jquery-ui-1.8.16.custom.css'>
 	 <link rel='stylesheet' href='" . $res . "debiki.css'>
 		<script>
 		var debiki = { wp: {} };
-		debiki.wp.userId = $user_id;";
+		debiki.wp.userId = $user_id;
+		debiki.wp.pageDatiStr = '$datetime_utc';";
 
 	# For production.
 	if (true) echo "
