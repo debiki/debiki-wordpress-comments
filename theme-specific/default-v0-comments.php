@@ -179,7 +179,7 @@ function debiki_default_comment( $comment, $args, $depth ) {
 
 			<span class="dw-wp-actions">
 				<span class="dw-wp-reply-link">
-					<?php comment_reply_link( array_merge( $args, array( 'reply_text' => __( 'Reply <span>&darr;</span>', 'twentyeleven' ), 'depth' => $depth, 'max_depth' => $args['max_depth'] ) ) ); ?>
+					<?php comment_reply_link( array_merge( $args, array( 'reply_text' => __( 'Reply', 'twentyeleven' ), 'depth' => $depth, 'max_depth' => $args['max_depth'] ) ) ); ?>
 				</span>
 				<span class="dw-wp-edit-link">
 					<?php edit_comment_link(
