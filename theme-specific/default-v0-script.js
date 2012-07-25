@@ -298,8 +298,10 @@ moveReplyFormOnReplyClick();
 submitRatingsOnThumbsClick();
 
 // For a registered logged in user, the html from the server already
-// includes his/her ratings, highligted (at least if the cache settings
-// recommended by WordPress Super Cache are used).
+// includes his/her ratings, highligted — if the cache settings
+// recommended by WordPress Super Cache are used. However, these are not
+// the default settings, which I would need to inform users of the plugin
+// about.
 if (!isLoggedIn())
   highlightAndIncMyRatings();
 
