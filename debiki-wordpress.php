@@ -539,13 +539,13 @@ function debiki_echo_head() {
 	 <link rel='stylesheet' href='" . $res . "jquery-ui/jquery-ui-1.8.16.custom.css'>
 	 <link rel='stylesheet' href='" . $res . "debiki.css'>
 		<script>
-		var debiki = { wp: {} };
+		var debiki = { v0: { util: {} }, internal: {}, wp: {} };
 		debiki.wp.userId = $user_id;
-		debiki.wp.pageDatiStr = '$datetime_utc';";
+		debiki.wp.pageDatiStr = '$datetime_utc';
+		debiki.scriptLoad = $.Deferred();";
 
 	# For production.
-	if (true) echo "
-		  debiki.scriptLoad = $.Deferred();
+	if (false) echo "
 		  Modernizr.load({
 		    test: Modernizr.touch,
 		    yep: '".$res."combined-debiki-touch.min.js',
@@ -558,12 +558,11 @@ function debiki_echo_head() {
 		</script>";
 
 	# For development.
-	if (false) echo "
+	if (true) echo "
 		// Play Framework 2's `require` and `exports` not available.
 		window.require = function() {};
 		window.exports = {};
 
-		debiki.scriptLoad = $.Deferred();
 		Modernizr.load({
 			test: Modernizr.touch,
 			nope: [
