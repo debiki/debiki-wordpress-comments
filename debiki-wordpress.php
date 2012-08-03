@@ -526,66 +526,39 @@ add_action('wp_head', '\Debiki\debiki_echo_head');
 function debiki_echo_head() {
 	if (!debiki_comments_enabled())
 		return;
-	$res = plugin_dir_url(__FILE__).'res/';
-	$theme_specific = plugin_dir_url(__FILE__).'theme-specific/';
+	$res = plugin_dir_url(__FILE__).'res';
+	$theme_specific_dir = plugin_dir_url(__FILE__).'theme-specific/';
+	$theme_specific_js =
+			$theme_specific_dir . debiki_theme_specific_javascript_file_name();
+	$theme_specific_css =
+			$theme_specific_dir . debiki_theme_specific_style_file_name();
 
 	// Enable Utterscroll even if comments not open. Otherwise, if dragscroll
 	// is enabled on only some pages, people would be confused?
 	$on_complete = comments_open() ? "" : "debiki.Utterscroll.enable();";
 	$user_id = wp_get_current_user()->ID;
 	$datetime_utc = gmdate('c');
+	$min_js = "js"; # or min.js";
 	echo "
     <meta name='viewport' content='initial-scale=1.0, minimum-scale=0.01'/>
-	 <link rel='stylesheet' href='" . $res . "jquery-ui/jquery-ui-1.8.16.custom.css'>
-	 <link rel='stylesheet' href='" . $res . "debiki.css'>
+	 <link rel='stylesheet' href='$res/jquery-ui/jquery-ui-1.8.16.custom.css'>
+	 <link rel='stylesheet' href='$res/debiki.css'>
 		<script>
-		var debiki = { v0: { util: {} }, internal: {}, wp: {} };
+		var debiki = { v0: { util: {} }, internal: { $: jQuery }, wp: {} };
 		debiki.wp.userId = $user_id;
 		debiki.wp.pageDatiStr = '$datetime_utc';
-		debiki.scriptLoad = $.Deferred();";
-
-	# For production.
-	if (false) echo "
-		  Modernizr.load({
-		    test: Modernizr.touch,
-		    yep: '".$res."combined-debiki-touch.min.js',
-		    nope: '".$res."combined-debiki-desktop.min.js',
-		    both: '".$theme_specific.debiki_theme_specific_javascript_file_name()."',
-		    complete: function() {".
-				$on_complete."
-			}
-		});
-		</script>";
-
-	# For development.
-	if (true) echo "
-		// Play Framework 2's `require` and `exports` not available.
-		window.require = function() {};
-		window.exports = {};
-
+		debiki.scriptLoad = $.Deferred();
 		Modernizr.load({
 			test: Modernizr.touch,
-			nope: [
-			'" . $res . "jquery-scrollable.js',
-			'" . $res . "debiki-utterscroll.js',
-			'" . $res . "bootstrap-tooltip.js'],
-			both: [
-			'" . $res . "diff_match_patch.js',
-			'" . $res . "html-sanitizer-bundle.js',
-			'" . $res . "jquery-cookie.js',
-			'" . $res . "tagdog.js',
-			'" . $res . "javascript-yaml-parser.js',
-			'" . $res . "debiki.js',
-			'" . $theme_specific.debiki_theme_specific_javascript_file_name()."'],
-			complete: function() {".
-				$on_complete."
+			yep: '$res/combined-debiki-touch.$min_js',
+			nope: '$res/combined-debiki-desktop.$min_js',
+			both: '$theme_specific_js',
+			complete: function() {
+				$on_complete
 			}
 		});
-		</script>";
-
-	echo "
-		<link rel='stylesheet' href='".
-				$theme_specific.debiki_theme_specific_style_file_name()."'>";
+		</script>
+		<link rel='stylesheet' href='$theme_specific_css'>";
 }
 
 
