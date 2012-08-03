@@ -540,9 +540,10 @@ function debiki_echo_head() {
 	$datetime_utc = gmdate('c');
 	$min_js = "js"; # or min.js";
 	echo "
-    <meta name='viewport' content='initial-scale=1.0, minimum-scale=0.01'/>
-	 <link rel='stylesheet' href='$res/jquery-ui/jquery-ui-1.8.16.custom.css'>
-	 <link rel='stylesheet' href='$res/debiki.css'>
+		<meta name='viewport' content='initial-scale=1.0, minimum-scale=0.01'/>
+		<link rel='stylesheet' href='$res/jquery-ui/jquery-ui-1.8.16.custom.css'>
+		<link rel='stylesheet' href='$res/debiki.css'>
+		<link rel='stylesheet' href='$theme_specific_css'>
 		<script>
 		var debiki = { v0: { util: {} }, internal: { $: jQuery }, wp: {} };
 		debiki.wp.userId = $user_id;
@@ -557,8 +558,7 @@ function debiki_echo_head() {
 				$on_complete
 			}
 		});
-		</script>
-		<link rel='stylesheet' href='$theme_specific_css'>";
+		</script>";
 }
 
 
