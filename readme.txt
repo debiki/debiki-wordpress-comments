@@ -39,6 +39,7 @@ that lacks those changes -- as long as the trunk's `readme.txt` points to the co
 you put the stable version, in order to eliminate any doubt.
 
 
+
 == Installation ==
 
 This section describes how to install the plugin and get it working.
@@ -61,11 +62,13 @@ An answer to that question.
 Answer to foo bar dilemma.
 
 
+
 == Screenshots ==
 
 1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
 the directory of the stable readme.txt, so in this case, `/tags/4.3/screenshot-1.png` (or jpg, jpeg, gif)
 2. This is the second screen shot
+
 
 
 == Changelog ==
@@ -87,8 +90,105 @@ Upgrade notices describe the reason a user should upgrade.  No more than 300 cha
 This version fixes a security related bug.  Upgrade immediately.
 
 
-== Arbitrary section ==
 
-You may provide arbitrary sections, in the same format as the ones above.  This may be of use for extremely complicated
-plugins where more information needs to be conveyed that doesn't fit into the categories of "description" or
-"installation."  Arbitrary sections will be shown below the built-in sections outlined above.
+== Building ==
+
+To compile, minify, and combine Javascript and LiveScript, you need to install Node.js and Brunch.
+
+Install Node.js:
+
+$ git clone https://github.com/joyent/node.git
+$ cd node/
+$ ./configure 
+$ make
+$ make install
+
+(perhaps with `sudo`)
+(On my Ubuntu TurnKey Linux virtual machine, I also needed to `aptitude install g++`.)
+
+Then install Brunch. I'm using the lates version, not yet available in the Node Package Manager repository, so install from source:
+
+$ git clone https://github.com/brunch/brunch.git brunch
+$ cd brunch
+$ less README.md
+$ vi package.json
+$ npm install
+$ npm link
+$ git checkout package.json
+$ brunch -v  # should print version number
+             # However I also had to do this:  npm install coffee-script -g
+	     # for Brunch to work.
+
+Then CD to Debiki Wordpress Comments, and:
+$ npm install  # installs Node dependencies
+
+Now you can bundle JS and CSS files like so:
+$ brunch build -c config/nodejs-brunch-config.ls
+
+And rebuild automatically on changes:
+$ brunch watch -c config/nodejs-brunch-config.ls
+
+
+== Testing ==
+
+1. Install PEAR and PHPUnit
+
+Install PEAR:
+
+Install version >= 1.9.4, because earlier version(s) are broken and won't work
+with PHPUnit. See: http://stackoverflow.com/a/8952814/694469
+Many Linux/Mac distros ship the broken version, it seems. (My did.)
+If you need to uninstall the old broken version:
+  $ sudo apt-get purge php5-pear  # with Ubuntu Linux.
+                                  # Or simply `... purge php-pear`.
+
+Installation instructions:
+  http://pear.php.net/manual/en/installation.getting.php
+
+This worked for me: (I'm using Ubuntu Linux)
+  $ wget http://pear.php.net/go-pear.phar
+  $ sudo php go-pear.phar
+
+
+Configure PEAR: (I think `sudo` is needed, not sure)
+$ sudo pear config-set auto_discover 1
+
+Install PHPUnit: (I think `sudo` is needed, not sure)
+$ sudo pear install pear.phpunit.de/PHPUnit
+
+(In the future, will I use: pear install phpunit/DbUnit and
+phpunit/PHPUnit_Selenium ?)
+
+Configure wordpress-tests:
+Edit wordpress-tests/unittests-config.php
+and specify path to the WordPress codebase and database credentials.
+
+
+2. Create a test database and a test user
+
+$ mysql -h localhost -u root -p  # for example
+
+CREATE USER wordpress_test@localhost IDENTIFIED BY 'wordpress_test';
+CREATE DATABASE wordpress_test;
+GRANT ALL ON wordpress_test.* TO wordpress_test@localhost;
+FLUSH PRIVILEGES;
+
+3.
+
+Read
+http://blog.doh.ms/2011/05/13/debugging-phpunit-tests-in-netbeans-with-xdebug/
+
+4.
+
+If you're using Netbeans, and debugging phpunit on a *remote machine*
+(I do, I have my WordPress installation in a virtual machine),
+then I think you need to:
+  Add a Run Configuration to project `debiki-wordpress-comments`
+  (File | Project Properties | Run Configuration)
+  You could name it "Remote_phpunit_debugging"
+  Click [Advanced]
+  Select (o) Do Not Open Web Browser
+  Map Server Path:  /var/www/wordpress/	  (for example)
+  to Project Path:  /home/you/path/to/wp-content/parent/dir/
+
+

@@ -4,9 +4,13 @@ Git:
 by-step tutorial for publishing a WordPress plugin using Git. 
 http://eamann.com/tech/how-to-publish-a-wordpress-plugin-git/?ref=mindshare
 
+Using Git to manage a web site:
+http://toroid.org/ams/git-website-howto
+
 Read:
 http://wordpress.stackexchange.com/questions/715/objective-best-practices-for-plugin-development
 
+? http://en.wp.obenland.it/creating-and-maintaining-wordpress-plugins/
 
 Automatic tests:
 - Install  http://wordpress.org/extend/plugins/wordpress-importer/
@@ -48,3 +52,13 @@ Dev, test release related:
 
 SVN: http://wordpress.org/extend/plugins/about/svn/#task-3
 Task 3: "Tagging" a new version
+
+
+Social comments:
+http://wordpress.org/extend/plugins/oa-social-login/
+
+http://wordpress.org/extend/plugins/loginradius-for-wordpress/
+https://www.loginradius.com/default.aspx
+
+http://wordpress.org/extend/plugins/gigya-socialize-for-wordpress/
+http://www.gigya.com/social-login/

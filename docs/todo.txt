@@ -1,4 +1,50 @@
 
+============================
+Simplify
+============================
+
+- Add clearfix to .dw-res, so can remove ui-helper-clearfix from .php?
+- Remove .dw-ar-t from everywhere?
+- Replace:
+   wp_list_comments(array(
+					'walker' => new Debiki_Walker_Comment,
+					'callback' => 'debiki_cfct_threaded_comment',
+					'style' => 'ol'));
+  with  debiki_list_comments  which calls wp_list_comments
+
+- .dw-p and .dw-p-bd  (and .dw-p-diff ?) shouldn't specify background: white,
+  that prevents themes from coloring .bypostathour comments.
+
+============================
+Misc
+============================
+
+- Test works ok with WP multisite
+- Test works ok with Jetpack by WordPress.com
+- Check if WP Super Cache's [x] Don’t cache pages for known users. (Recommended)
+  is checked, if not, don't include their ratings in the generated html.
+- Enable comment nesting to anly level? (Override default 5?)
+  And don't mess up indentation?
+
+
+============================
+Security
+============================
+
+- Check nonce on form submission
+- Proofread everything: check for XSS exploits
+
+
+============================
+Performance
+============================
+
+- Compute sort score while handling POST request,
+  not when serving page
+  Optionally, compute sort score after having replied to the HTTP reques,
+  see: http://stackoverflow.com/questions/4806637/
+          continue-processing-after-closing-connection
+
 
 ============================
 Bugs
@@ -11,6 +57,8 @@ Bugs
 ============================
 Styles
 ============================
+
+{{{1 Change PNG image color to gray (from blue)
 
 {{{1 Merge Twenty Eleven and Annotum Base stylesheets
 }}}1
@@ -30,6 +78,7 @@ Otherwise, comments jump upwards.
 Theme specific
 ============================
 
+(Nice theme: http://www.rodrigogalindez.com/themes/modernist/)
 
 {{{1 Twenty Ten
 ==============
@@ -49,3 +98,8 @@ Debiki loads everything via Google's CDN, should be faster.
 
 }}}1
 
+============================
+Admin page
+============================
+
+?? "Thanks for choosing or testing Debiki Wordpress Comments. If you like this plugin, please help promoting its use — there is actually a vision, at the website of the plugin. Also, if you want to, you could rate the plugin at WordPress.org Plugins."
