@@ -3,7 +3,7 @@ exports.config =
 
   paths:
     app: 'client'
-    public: 'res'
+    public: 'client'
 
   files:
     javascripts:
@@ -46,9 +46,14 @@ exports.config =
     stylesheets:
       defaultExtension: 'styl'
       joinTo:
-        'combined-debiki.min.css': /^client\/debiki/
+        'combined-debiki.min.css':
+          // ^client/debiki/
+           | ^client/vendor/
+          //
       order:
-        before: ['client/debiki/debiki.css']
+        before:
+          * 'client/vendor/debiki.css'
+          * 'client/vendor/jquery-ui/jquery-ui-1.8.16.custom.css'
 
   modules:
     definition: false
