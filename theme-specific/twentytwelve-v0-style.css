@@ -1,0 +1,45 @@
+/**
+ * Copyright (c) 2012 Kaj Magnus Lindberg (born 1979)
+ * License: GPL v2 or later
+ */
+
+/* BUG don't hard code path */
+@import url(/wp-content/plugins/debiki-wordpress-comments/theme-specific/default-v0-style.css);
+
+
+#page {
+  overflow: visible; /* or comments cropped */
+}
+
+
+/* Place sidebar above comments, if mouse on sidebar. But below comments,
+if mouse hovers comments. */
+#secondary {
+  position: relative;
+  background: white;
+  padding: 0 3px 5px 15px;
+}
+
+.dw-page { z-index: 1; }
+#secondary:hover { z-index: 2; }
+.dw-page:hover { z-index: 3; }
+
+/* Border not needed since box-shadow around comments. */
+.site-content article {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+#colophon {
+  border-top: none;
+  padding-top: 0
+}
+
+/* Paint a box-shadow around the comments, or it looks weird when
+they stretch outside the #page column. */
+.dw-page {
+  background-color: white;
+  box-shadow: 4px 2px 2px 2px hsla(0, 0%, 39%, 0.3);
+  margin-top: 20px;
+  padding: 10px 20px 10px 4px;
+  left: -4px;
+}
