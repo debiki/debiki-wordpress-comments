@@ -106,20 +106,9 @@ $ make install
 (perhaps with `sudo`)
 (On my Ubuntu TurnKey Linux virtual machine, I also needed to `aptitude install g++`.)
 
-Then install Brunch. I'm using the lates version, not yet available in the Node Package Manager repository, so install from source:
+Then install Brunch, and nodejs dependencies:
 
-$ git clone https://github.com/brunch/brunch.git brunch
-$ cd brunch
-$ less README.md
-$ vi package.json
-$ npm install
-$ npm link
-$ git checkout package.json
-$ brunch -v  # should print version number
-             # However I also had to do this:  npm install coffee-script -g
-	     # for Brunch to work.
-
-Then CD to Debiki Wordpress Comments, and:
+$ npm install brunch
 $ npm install  # installs Node dependencies
 
 Now you can bundle JS and CSS files like so:
