@@ -145,8 +145,12 @@ function debiki_default_comment( $comment, $args, $depth ) {
 	Otherwise Themes that color the background for .bypostauthor comments would paint
    the whole <li> — which doesn't look nice, and is not needed,
 	with Debiki's two dimensional layout.
+	Iff the thread list is laid out horizontally, place the thread in a <div>
+	wrapped in the <li> (expected by JS and CSS).
 	*/?>
-	<li <?php echo "class='dw-t dw-depth-$depth'" ?> id="li-comment-<?php comment_ID(); ?>">
+	<?php
+	$tag = $depth == 1 ? '<li><div ' : '<li ';
+	echo "$tag class='dw-t dw-depth-$depth'" ?> id="li-comment-<?php comment_ID(); ?>">
 		<a class="dw-z">[–]</a>
 		<article id="comment-<?php comment_ID(); ?>"
 				class="<?php echo \Debiki\debiki_comment_classes(), ' dw-p' ?>"

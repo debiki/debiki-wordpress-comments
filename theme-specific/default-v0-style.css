@@ -11,6 +11,10 @@
   overflow: visible;
 }
 
+.dw-hor > ol > li > #respond {
+  float: none; /* breaks parent's display: table-cell */
+}
+
 #respond {
   /* Place above any <svg> and <ol>. */
   position: relative;
@@ -73,7 +77,8 @@
 }
 
 
-.dw-debate {
+.dw-page {
+  float: left; /* or won't expand eastwards to wrap all threads */
   margin-bottom: 40px; /* or page footer might be too close to the comments */
 }
 
