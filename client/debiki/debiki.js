@@ -37,7 +37,6 @@ d.i.SVG = (function () {
 // Call on posts.
 d.i.$initPostsThread = function() {
   $initPostsThreadStep1.apply(this);
-  $initPostsThreadStep2.apply(this);
   $initPostsThreadStep3.apply(this);
   $initPostsThreadStep4.apply(this);
 };
@@ -47,11 +46,6 @@ function $initPostsThreadStep1() {
   // Open/close threads if the fold link is clicked.
   var $thread = $(this).closest('.dw-t');
   $thread.children('.dw-z').click(d.i.$threadToggleFolded);
-};
-
-
-function $initPostsThreadStep2() {
-  d.i.makeHeaderPrettyForPost(this);
 };
 
 
@@ -69,7 +63,6 @@ function $initPostsThreadStep4() {
 
 // Inits a post, not its parent thread.
 d.i.$initPost = function() {
-  d.i.makeHeaderPrettyForPost(this);
   d.i.SVG.$initPostSvg.apply(this);
 };
 
@@ -96,20 +89,11 @@ function renderPageEtc() {
     d.i.initUtterscrollAndTips();
   }
 
-  // When you zoom in or out, the width of the root thread might change
-  // a few pixels — then its parent should be resized so the root
-  // thread fits inside with no float drop.
-  d.u.zoomListeners.push(d.i.resizeRootThread);
-
   var steps = [];
 
   steps.push(function() {
     $posts.each($initPostsThreadStep1);
     $('html').removeClass('dw-render-actions-pending');
-  });
-
-  steps.push(function() {
-    $posts.each($initPostsThreadStep2)
   });
 
   steps.push(function() {
@@ -130,11 +114,7 @@ function renderPageEtc() {
 
   steps.push(d.i.scrollToUrlAnchorPost);
 
-  // Resize the article, now when the page has been rendered, and all inline
-  // threads have been placed and can be taken into account.
   steps.push(function() {
-    d.i.resizeRootThread();
-    $('html').removeClass('dw-render-layout-pending');
     debiki.scriptLoad.resolve();
   });
 
