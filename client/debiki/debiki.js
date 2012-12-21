@@ -129,10 +129,11 @@ function renderPageEtc() {
 };
 
 
-// Dont render page, if there is no root post, or some error happens,
-// which kills other Javascript that runs on page load.
-if (!d.i.rootPostId)
+if (!d.i.rootPostId) {
+  // Skip most of the rendering step, since there is no root post.
+  d.i.initUtterscrollAndTips();
   return;
+}
 
 renderPageEtc();
 
