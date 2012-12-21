@@ -21,6 +21,7 @@ exports.config =
            | ^client/debiki/debiki-scroll-into-view.js
            | ^client/debiki/debiki-show-and-highlight.js
            | ^client/debiki/debiki-util.js
+           | ^client/debiki/debiki-util-browser.js
            | ^client/debiki/debiki-utterscroll-init-tips.js
            | ^client/debiki/debiki-utterscroll.js
            | ^client/vendor/jquery-scrollable.js
@@ -38,6 +39,7 @@ exports.config =
            | ^client/debiki/debiki-scroll-into-view.js
            | ^client/debiki/debiki-show-and-highlight.js
            | ^client/debiki/debiki-util.js
+           | ^client/debiki/debiki-util-browser.js
           //
 
       order:
@@ -57,6 +59,10 @@ exports.config =
 
   modules:
     definition: false
-    wrapper: false
+    wrapper: (path, data) -> """
+      (function() {
+        #{data}
+      })();\n\n
+      """
 
 # vim: et ts=2 sw=2 list
