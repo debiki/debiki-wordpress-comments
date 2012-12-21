@@ -7,6 +7,17 @@ var d = { i: debiki.internal, u: debiki.v0.util };
 var $ = d.i.$;
 
 
+
+d.i.findThread$ = function(threadId) {
+  return $('#dw-t-'+ threadId);
+}
+
+
+d.i.findPost$ = function(postId) {
+  return $('#post-'+ postId);
+}
+
+
 d.i.findPostHeader$ = function(postId) {
   return $('#post-'+ postId +' > .dw-p-hd');
 };
@@ -16,6 +27,37 @@ $.fn.dwPostId = function() {
   // Drop initial "post-".
   return this.dwCheckIs('.dw-p').attr('id').substr(5, 999);
 };
+
+
+/**
+ * Returns info on the page in which $(whatever) is located.
+ * (There might be more than one Debiki page included on a single browser page.)
+ */
+$.fn.dwPageMeta = function() {
+  var $page = this.closest('.dw-page');
+  return {
+    pageId: $page.attr('id').substr(5, 999), // drops initial "page-"
+    pagePath: $page.data('page_path'),
+    pageRole: $page.data('page_role'),
+    parentPageId: $page.data('parent_page_id'),
+    pageExists: $page.data('page_exists')
+  };
+};
+
+
+$.fn.dwClosestThread = function() {
+  return this.closest('.dw-t');
+}
+
+
+$.fn.dwChildPost = function() {
+  return this.children('.dw-p');
+}
+
+
+$.fn.dwFindPosts = function() {
+  return this.find('.dw-p');
+}
 
 
 $.fn.dwPostFindHeader = function() {
@@ -46,10 +88,17 @@ $.fn.dwLastChange = function() {
 };
 
 
-// The user id of the author of a post.
+/**
+ * The user id of the author of a post, or '' if the post is a dummy post,
+ * wich has no author.
+ */
 $.fn.dwAuthorId = function() {
   var uid = this.dwCheckIs('.dw-p')
       .find('> .dw-p-hd > .dw-p-by').attr('data-dw-u-id');
+  // Sometimes there is no author. Then return ''.
+  // (The server creates e.g. a dummy title "Unnamed page (click to edit)"
+  // if the page has no title. But there's no author of that text.)
+  uid = uid || '';
   return uid;
 };
 
