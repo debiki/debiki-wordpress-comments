@@ -147,6 +147,15 @@
   margin-top: 10px;
   margin-bottom: 1.11111px;
   padding: 6px; /* default 10px makes it look so very large */
+  resize: none; /* seems unable to resize eastwards; use jQuery instead.
+                  Doesn't work with IE anyway? */
+}
+
+#respond .ui-resizable-se {
+  background-position: -80px -222px;
+  background-color: transparent;
+  right: -1px;
+  bottom: 11px;
 }
 
 #respond input#submit {

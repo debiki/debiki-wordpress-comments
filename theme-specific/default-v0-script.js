@@ -293,9 +293,21 @@ function createDateToISOStringIfAbsent() {
 }
 
 
+function makeReplyTextareaResizable() {
+  // If the textarea itself is made resizable, the resize handle is offset
+  // incorrectly. See this bug report: http://bugs.jqueryui.com/ticket/4440
+  var $textarea = $('#respond textarea').wrap('<div></div>');
+  $textarea.parent().resizable({
+    alsoResize: $textarea
+  });
+}
+
+
 createDateToISOStringIfAbsent();
 moveReplyFormOnReplyClick();
+makeReplyTextareaResizable();
 submitRatingsOnThumbsClick();
+
 
 // For a registered logged in user, the html from the server already
 // includes his/her ratings, highligted — if the cache settings
