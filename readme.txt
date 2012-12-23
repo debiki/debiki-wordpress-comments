@@ -93,7 +93,10 @@ This version fixes a security related bug.  Upgrade immediately.
 
 == Building ==
 
-To compile, minify, and combine Javascript and LiveScript, you need to install Node.js and Brunch.
+(Please read LICENSE.txt: there's no warranty.)
+
+To compile, minify, and combine Javascript and LiveScript, you need to install
+Node.js and Grunt.
 
 Install Node.js:
 
@@ -106,16 +109,16 @@ $ make install
 (perhaps with `sudo`)
 (On my Ubuntu TurnKey Linux virtual machine, I also needed to `aptitude install g++`.)
 
-Then install Brunch, and nodejs dependencies:
+Then install Grunt, and nodejs dependencies:
 
-$ npm install brunch
-$ npm install  # installs Node dependencies
+$ sudo npm install -g grunt  # see http://gruntjs.com/
+
+$ npm install  # installs Node and Grunt dependencies
 
 Now you can bundle JS and CSS files like so:
-$ brunch build -c config/nodejs-brunch-config.ls
 
-And rebuild automatically on changes:
-$ brunch watch -c config/nodejs-brunch-config.ls
+$ grunt
+
 
 
 == Testing ==
