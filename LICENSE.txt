@@ -18,13 +18,13 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (You have indeed received copies GPL v2 and v3; see these files:
-license-gpl-2.0.txt and license-gpl-3.0.txt)
+docs/license-gpl-2.0.txt and docs/license-gpl-3.0.txt)
 
 
 3rd party code/images/CSS/etcetera licenses:
 ============================================
 
-Some code snippets is copyrighted by other people and licensed under
+Some code snippets are copyrighted by other people and licensed under
 other licenses:
 
 
@@ -48,9 +48,9 @@ common in desktop or mobile software).
 WordPress source code snippets
 -------------------
 
-I've copy-paste-edited some WordPress source code. Whenever I've done
-so, I've clarified this in the relevant files. WordPress is licensed
-under the GPL.
+I (KajMagnus) have copy-paste-edited some WordPress source code.
+Whenever I've done so, I've clarified this in the relevant files.
+WordPress is licensed under the GPL.
 
 
 jQuery :scrollable selector
@@ -68,8 +68,8 @@ Utterscroll
 This file: client/debiki/debiki-utterscroll.js
 
 Utterscoll (written by me, Kaj Magnus Lindberg) is licensed under LGPL
-v2.1 or later.  Find LGPL licenses here: license-lgpl-2.1.txt and
-license-lgpl-3.0.txt.
+v2.1 or later.  Find LGPL licenses here: docs/license-lgpl-2.1.txt and
+docs/license-lgpl-3.0.txt.
 
 
 
