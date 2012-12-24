@@ -1,4 +1,7 @@
-/* Copyright (c) 2012 Kaj Magnus Lindberg. All rights reserved. */
+/* Copyright (c) 2012 - 2013 Kaj Magnus Lindberg (born 1979).
+ * Licensed under GNU GPL v2 or later, see LICENSE.txt and
+ * http://www.gnu.org/licenses/gpl-2.0.html
+ */
 
 
 (function() {

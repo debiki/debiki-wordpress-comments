@@ -1,8 +1,18 @@
-/**
- * Debiki Utterscroll — dragscroll everywhere
+/* Debiki Utterscroll — dragscroll everywhere
+ * http://www.debiki.com/dev/utterscroll
  *
- * Copyright (c) 2012 Kaj Magnus Lindberg. All rights reserved.
+ * Copyright (c) 2012 - 2013 Kaj Magnus Lindberg (born 1979)
  *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
  * Find in the rest of this file:
  * - jQuery extensions: jQuery.dwEnableSelection and dwDisableSelection
  *     (Hmm perhaps they can be removed now, when I stop event propagation
