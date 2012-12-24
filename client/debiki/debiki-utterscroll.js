@@ -12,81 +12,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Find in the rest of this file:
- * - jQuery extensions: jQuery.dwEnableSelection and dwDisableSelection
- *     (Hmm perhaps they can be removed now, when I stop event propagation
- *     early, so no text is ever selected, if you start scrolling.
- *     Everything should work anyway, but I'd get rid of some code.)
- * - Debiki Utterscroll
- */
-
-
-// dwEnableSelection and jQuery.dwDisableSelection
-// =======================================
-// Create a jQuery extension that Enable/Disable text selection.
-// — There's a function jQuery.disableSelection, but it won't cancel
-// a selection that has already started.
-// — There's a jQuery plugin, jquery.disable.text.select.js,
-// with creates a function $.fn.disableTextSelect,
-// but it's not able to cancel a selection that has already
-// started (it doesn't specify -webkit-user-select).
-// — Regrettably, in Opera, dwDisableSelection won't cancel any
-// current selection.
-//----------------------------------------
-  (function($) {
-//----------------------------------------
-
-$.fn.dwEnableSelection = function() {
-  return this.each(function() {  // ?? is `this.each' really needed
-    $(this)
-        .attr('unselectable', 'off')
-        .css({
-          'user-select': '',
-          '-ms-user-select': '',
-          '-moz-user-select': '',
-          '-webkit-user-select': '',
-          '-o-user-select': '',
-          '-khtml-user-select': ''
-        })
-        .each(function() {  // for IE
-          this.onselectstart = function() { return true; };
-        });
-  });
-};
-
-$.fn.dwDisableSelection = function() {
-  // This function is based on answers to this question:
-  //  <http://stackoverflow.com/questions/2700000/
-  //      how-to-disable-text-selection-using-jquery>
-  //  namely this answer: <http://stackoverflow.com/a/2700029/694469>
-  //  and this: <http://stackoverflow.com/a/7254601/694469>.
-
-  return this.each(function() {  // ?? is `this.each' really needed
-    $(this)
-        .attr('unselectable', 'on')
-        .css({
-          'user-select': 'none',
-          '-ms-user-select': 'none',
-          '-moz-user-select': 'none',
-          '-webkit-user-select': 'none',
-          '-o-user-select': 'none',
-          '-khtml-user-select': 'none'
-        })
-        .each(function() {  // for IE
-          this.onselectstart = function() { return false; };
-        });
-  });
-};
-
-//----------------------------------------
-  })(jQuery);
-//----------------------------------------
-
-
-
-// Debiki Utterscroll
-// =======================================
 //----------------------------------------
   (function($){
 //----------------------------------------
@@ -407,22 +332,9 @@ debiki.Utterscroll.enable = function(options) {
     startPos = { x: event.clientX, y: event.clientY };
     lastPos = { x: event.clientX, y: event.clientY }; 
 
-    // Don't select text whilst dragging.
-    // It's terribly annoying if scrolling results in selecting text.
-    // Emptying the selection from doScroll results in a
-    // flickering fledgling selection. (The selection starts, is
-    // emptied, starts again, is emptied, and so on.) So disable
-    // selections completely. — But don't use jQuery's disableSelection,
-    // because it won't cancel an already existing selection. (There might
-    // be one, because if you keep the mouse button down for a while,
-    // on text (then the browser thinks you have selected an empty string),
-    // without moving the mouse, then you start scrolling.)
-    $(document.body).dwDisableSelection();
-    // (If doesn't work, could try:  $(document.body).focus()?
-    // see: http://stackoverflow.com/questions/113750/ )
-    emptyWindowSelection();
     return false;
   };
+
 
   function doScroll(event) {
     // Find movement since mousedown, and since last scroll step.
@@ -483,41 +395,18 @@ debiki.Utterscroll.enable = function(options) {
       y: event.clientY
     };
 
-    // In Opera, dwDisableSelection doesn't clear any existing selection.
-    // So clear the selection each scroll step instead. (It's very
-    // annoying if you select text when you scrolldrag.)
-    if ($.browser.opera)
-      emptyWindowSelection();
-
     return false;
   };
+
 
   function stopScroll(event) {
     $elemToScroll = undefined;
     startPos = undefined;
     lastPos = undefined;
-    $(document.body).dwEnableSelection();
     $(document.body).css('cursor', '');  // cancel 'move' cursor
     $.event.remove(document, 'mousemove', doScroll);
     $.event.remove(document, 'mouseup', stopScroll);
     return false;
-  };
-
-  function emptyWindowSelection() {
-    // Based on <http://groups.google.com/group/jquery-ui-layout/
-    //    browse_thread/thread/875b5f2ae68821b6>
-    if (window.getSelection) {
-      if (window.getSelection().empty) {
-        // Chrome
-        window.getSelection().empty();
-      } else if (window.getSelection().removeAllRanges) {
-        // Old FF versions?
-        window.getSelection().removeAllRanges();
-      }
-    } else if (document.selection) {
-      // IE
-      document.selection.empty();
-    }
   };
 
 };
