@@ -184,3 +184,9 @@ then I think you need to:
   to Project Path:  /home/you/path/to/wp-content/parent/dir/
 
 
+== Possible Todo ==
+
+Cache JS and CSS forever client side; use automatic asset versioning.
+Use grunt-hashres?  https://npmjs.org/package/grunt-hashres
+
+
