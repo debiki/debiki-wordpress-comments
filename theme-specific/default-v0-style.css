@@ -16,12 +16,13 @@
 }
 
 #respond {
-  /* Place above any <svg> and <ol>. */
+  /* Place on top of any <svg> and <ol>. */
   position: relative;
   z-index: 3;
   float: left;
-  min-width: 0; /* or spans whole screen if Theme sets 100% (Graphene does) */
-  max-width: 350px; /* don't want to fix widht though?? */
+  min-width: 250px; /* or too small when logged in and other inputs hidden */
+  max-width: 350px; /* but don't want to fix width? Can still resize textarea
+                       though so it becomes > 350px */
   margin: 0;
   border: none;
   width: 100%;
@@ -45,7 +46,7 @@
   margin-top: 0 !important; /* or pushes label too far away */
 }
 
-#respond textarea {
+#respond form textarea {
   width: 100% !important;
   padding: 0 !important;
   margin-top: 0;
