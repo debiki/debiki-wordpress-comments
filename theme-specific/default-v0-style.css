@@ -22,11 +22,11 @@
   float: left;
   min-width: 0; /* or spans whole screen if Theme sets 100% (Graphene does) */
   max-width: 350px; /* don't want to fix widht though?? */
-  padding-right: 40px; /* or there'll be no whitespace */
   margin: 0;
   border: none;
   width: 100%;
   background: white;
+  overflow: visible; /* or textarea cropped in Twenty-Ten, since hidden */
 }
 
 #respond .row, #respond .form-submit {
@@ -92,7 +92,7 @@
   position: relative;
 }
 
-#respond input[type="text"] {
+#respond form input[type="text"] {
   width: 250px;
 }
 
@@ -141,7 +141,7 @@
   left: 2px;
 }
 
-#respond input[type="text"], #respond textarea {
+#respond form input[type="text"], #respond form textarea {
   border: 1px solid #ccc;
   box-shadow: none;
   margin-top: 10px;

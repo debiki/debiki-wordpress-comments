@@ -43,3 +43,10 @@ they stretch outside the #page column. */
   padding: 10px 20px 10px 4px;
   left: -4px;
 }
+
+#respond .comment-form-author .required,
+#respond .comment-form-email .required,
+#respond .comment-form-url .required {
+  left: 237px; /* don't know why 247px from default-v0-style.css
+	       won't work well here too?  */
+}
