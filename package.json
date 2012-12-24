@@ -3,7 +3,7 @@
   "name": "debiki-wordpress-comments",
   "description": "Javascripts and styles for Debiki Wordpress Comments",
   "version": "0.0.1",
-  "homepage": "www.debiki.com",
+  "homepage": "wordpress.debiki.com",
   "repository": {
     "type": "git",
     "url": ""
