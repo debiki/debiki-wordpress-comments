@@ -30,7 +30,6 @@ cp client/combined-* $temp/client/
 cp -a client/img $temp/img
 cp *.php $temp/
 cp docs/license-* $temp/docs/
-cp images.png $temp/
 cp LICENSE.txt $temp/
 cp readme.txt $temp/
 cp theme-specific/* $temp/theme-specific/

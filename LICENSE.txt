@@ -24,15 +24,14 @@ docs/license-gpl-2.0.txt and docs/license-gpl-3.0.txt)
 3rd party code/images/CSS/etcetera licenses:
 ============================================
 
-Some code snippets are copyrighted by other people and licensed under
-other licenses:
+Some libraries and resources are licensed under other licenses:
 
 
 Font Awesome images
 -------------------
 
-The thumbs up and down images in images.png are from Font Awesome, by
-Dave Gandy.
+The thumbs up and down images in client/img/awesome/images.png are from
+Font Awesome, by Dave Gandy.
 
 License: (as written here: http://fortawesome.github.com/Font-Awesome/ )
 
