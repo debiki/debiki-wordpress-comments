@@ -39,6 +39,9 @@ Security
 Performance
 ============================
 
+- Cache JS and CSS forever client side; use automatic asset versioning.
+  Use grunt-hashres?  https://npmjs.org/package/grunt-hashres
+
 - Compute sort score while handling POST request,
   not when serving page
   Optionally, compute sort score after having replied to the HTTP reques,
@@ -58,11 +61,6 @@ Bugs
 Styles
 ============================
 
-{{{1 Change PNG image color to gray (from blue)
-
-{{{1 Merge Twenty Eleven and Annotum Base stylesheets
-}}}1
-
 
 ============================
 Animations
@@ -80,10 +78,6 @@ Theme specific
 
 (Nice theme: http://www.rodrigogalindez.com/themes/modernist/)
 
-{{{1 Twenty Ten
-==============
-
-BUG Hardcoded path to default CSS file
 
 {{{1 Annotum Base
 ==============
@@ -103,3 +97,5 @@ Admin page
 ============================
 
 ?? "Thanks for choosing or testing Debiki Wordpress Comments. If you like this plugin, please help promoting its use — there is actually a vision, at the website of the plugin. Also, if you want to, you could rate the plugin at WordPress.org Plugins."
+
+vim: fdm=marker et ts=2 sw=2 list
