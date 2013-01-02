@@ -3,8 +3,7 @@
  * License: GPL v2 or later
  */
 
-/* BUG don't hard code path */
-@import url(/wp-content/plugins/debiki-wordpress-comments/theme-specific/default-v0-style.css);
+@import url(default-v0-style.css);
 
 body {
   background-color: white;

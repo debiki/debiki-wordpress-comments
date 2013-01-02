@@ -3,8 +3,7 @@
  * License: GPL v2 or later
  */
 
-/* BUG don't hard code path */
-@import url(/wp-content/plugins/debiki-wordpress-comments/theme-specific/default-v0-style.css);
+@import url(default-v0-style.css);
 
 
 #page {
@@ -50,3 +49,4 @@ they stretch outside the #page column. */
   left: 237px; /* don't know why 247px from default-v0-style.css
 	       won't work well here too?  */
 }
+
