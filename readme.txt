@@ -58,31 +58,50 @@ This is the initial release.
 
 == Building ==
 
-(Please read LICENSE.txt: there's no warranty.)
+(Please have a look at LICENSE.txt: there's no warranty.)
 
 To compile, minify, and combine Javascript and LiveScript, you need to install
-Node.js and Grunt.
+Node.js and Grunt. Here follows instructions on how to do this, with Ubuntu
+Linux and CentOS.
 
-Install Node.js:
+(If you're using another operating system, have a look at:
+  https://www.google.se/search?q=install+nodejs )
+
+
+To build Node.js you need a C compiler, so first:
+
+$ sudo aptitude install g++ git  # for Ubuntu Linux
+$ sudo yum install gcc-c++ make git  # for CentOS
+
+
+Now, install Node.js:
 
 $ git clone https://github.com/joyent/node.git
 $ cd node/
+$ git checkout v0.8.16  # or perhaps some more recent version
 $ ./configure 
 $ make
-$ make install
+$ sudo make install
 
-(perhaps with `sudo`)
-(On my Ubuntu TurnKey Linux virtual machine, I also needed to `aptitude install g++`.)
 
 Then install Grunt, and nodejs dependencies:
 
 $ sudo npm install -g grunt  # see http://gruntjs.com/
 
+(But on CentOS I had to do this:
+$ sudo /usr/local/bin/npm install -g grunt
+)
+
 $ npm install  # installs Node and Grunt dependencies
+
 
 Now you can bundle JS and CSS files like so:
 
 $ grunt
+
+
+Now you're done. Run `grunt` whenever you've edited JS and CSS files, for
+the changes to take effect.
 
 
 
