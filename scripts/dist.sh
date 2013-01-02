@@ -15,30 +15,34 @@ build=build
 name=debiki-wordpress-comments
 temp=$build/debiki-wordpress-comments
 
-mkdir -p $temp
-mkdir -p $temp/client
-mkdir -p $temp/docs
-mkdir -p $temp/theme-specific
+rm -fr $temp
+rm $build/$name.zip
 
-echo "Bundling and minifying Javascript...
-(If this fails, please read the 'Building' section in readme.txt.)"
+mkdir $temp
+mkdir $temp/client
+mkdir $temp/docs
+mkdir $temp/theme-specific
+
+echo "Bundling and minifying Javascript..."
+echo "(If this fails, please read the 'Building' section in readme.txt.)"
 
 grunt
 
 
 cp client/combined-* $temp/client/
-cp -a client/img $temp/img
+cp -a client/img $temp/client/
 cp *.php $temp/
 cp docs/license-* $temp/docs/
 cp LICENSE.txt $temp/
 cp readme.txt $temp/
-cp theme-specific/* $temp/theme-specific/
+cp -a theme-specific $temp/
 
 pushd .
 cd $build/
+echo "Creating: `pwd`/$name.zip"
 zip -r $name.zip $name
 popd
 
-echo "Done. Find a Zip archive with Debiki WordPress Comments here:
-  $build/$name.zip"
+echo "Done. Find a Zip archive with Debiki WordPress Comments here:"
+echo "  $build/$name.zip"
 

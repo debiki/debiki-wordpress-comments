@@ -16,8 +16,9 @@ unzip_dir=$name-unzipped
 # (this script exits on non-zero exit code).
 ls ../../../wp-content/plugins >> /dev/null
 
-# Create wp-content/plugins/debiki-wordpress-comments-unzipped/.
-mkdir -p ../$unzip_dir
+# Recreate wp-content/plugins/debiki-wordpress-comments-unzipped/.
+rm -fr ../$unzip_dir
+mkdir ../$unzip_dir
 
 # Unzip files.
 unzip build/$name.zip -d ../$unzip_dir/
