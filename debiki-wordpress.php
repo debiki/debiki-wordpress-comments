@@ -47,20 +47,22 @@ debiki_define_default( 'DEBIKI_SETTINGS_SLUG', 'debiki_comments_options' );
 debiki_define_default( 'DEBIKI_ENABLED_QUERY_PARAM', 'debiki-comments-enabled' );
 debiki_define_default( 'DEBIKI_LAYOUT_QUERY_PARAM', 'debiki-layout' );
 
-# Twenty Eleven is a good default theme (I suppose since it's Automattics' latest one).
 debiki_define_default( 'DEBIKI_DEFAULT_THEME', 'default' );
 
-debiki_define_default( 'DEBIKI_MODERNIZR_VERSION', '2.5.3');
+debiki_define_default( 'DEBIKI_MODERNIZR_VERSION', '2.6.2');
 debiki_define_default( 'DEBIKI_MODERNIZR_URL',
-		'http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.5.3/modernizr.min.js' );
+		'http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js' );
 
-debiki_define_default( 'DEBIKI_JQUERY_VERSION', '1.7.2');
+# Use the jQuery versions used by WordPress 3.5, see:
+# http://codex.wordpress.org/Version_3.5#Scripts.2C_External_Libraries
+
+debiki_define_default( 'DEBIKI_JQUERY_VERSION', '1.8.3');
 debiki_define_default( 'DEBIKI_JQUERY_URL',
-		'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js'); # MIN!
+		'http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js');
 
-debiki_define_default( 'DEBIKI_JQUERY_UI_VERSION', '1.8.19'); # 1.8.21 available, not .20
+debiki_define_default( 'DEBIKI_JQUERY_UI_VERSION', '1.9.2');
 debiki_define_default( 'DEBIKI_JQUERY_UI_URL',
-		'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.19/jquery-ui.js'); # MIN!
+		'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js');
 
 
 function debiki__( $text ) {
