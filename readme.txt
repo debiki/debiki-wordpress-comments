@@ -8,8 +8,8 @@ Stable tag: 3.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-A hopefully better WordPress discussion system that contributes to fruitful
-discusions. Main features: Comment ratings and a two dimensional layout.
+A hopefully better commenting system that contributes to fruitful
+discussions. Main features: Comment ratings and a two dimensional layout.
 
 
 
@@ -44,14 +44,14 @@ Have a look at this page instead: http://wordpress.debiki.com/demo-1/
 
 == Changelog ==
 
-= v0.1 =
+= v0.00.01 =
 * Initial release (January 2013).
 
 
 
 == Upgrade Notice ==
 
-= v0.1 =
+= v0.00.01 =
 This is the initial release.
 
 

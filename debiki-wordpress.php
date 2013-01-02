@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: Debiki for Wordpress
+Plugin Name: Debiki Wordpress Comments
 Plugin URI: http://wordpress.debiki.com
 Description: A more efficient commenting system that hopefully contributes to fruitful discussions.
 Version: 0.00.01
