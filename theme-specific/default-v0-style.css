@@ -314,8 +314,7 @@ a.comment-edit-link {
 .dw-wp-vote-down .dw-wp-vote-link {
   display: inline-block;
   position: relative;
-  background-image:  /* BUG don't hardcode img path */
-    url(/wp-content/plugins/debiki-wordpress-comments/client/img/awesome/images.png);
+  background-image: url(../client/img/awesome/images.png);
   /* Actual background size is 26x49, but shrink image somewhat. */
   width: 20px;
   height: 18px;
