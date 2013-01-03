@@ -583,3 +583,26 @@ function handle_any_form_subbmission(){
 	}
 }
 
+
+#===========================================================
+# Attribution link
+#===========================================================
+
+
+add_action('comment_form_after', '\Debiki\add_attribution_link');
+
+function add_attribution_link() {
+	$options = get_option('debiki_settings');
+	$setting_attr_link = $options['debiki_setting_attribution_link'];
+	if ($setting_attr_link != 'show')
+		return;
+
+	?>
+	<div id="debiki-comments-attribution-link" style="clear: both; font-size: 70%;
+	    padding: 20px 0;
+	    text-align: center;
+	    opacity: 0.8;
+	">Comments powered by<br><a href="http://wordpress.debiki.com">
+			Debiki WordPress Comments</a></div>
+	<?php
+}
